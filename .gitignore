@@ -1,0 +1,25 @@
+# ===== BACKEND =====
+backend/target/
+backend/.mvn/
+backend/*.jar
+backend/*.war
+backend/.env
+
+# ===== FRONTEND =====
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+
+# ===== IDE =====
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+Thumbs.db
+
+# ===== DOCKER =====
+*.log
