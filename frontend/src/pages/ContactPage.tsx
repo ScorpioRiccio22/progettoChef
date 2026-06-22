@@ -6,7 +6,6 @@ import LocationOnIcon from '@mui/icons-material/LocationOn'
 import PageHero from '@/components/ui/PageHero'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { sendContactMessage, resetContactStatus } from '@/store/slices/contactSlice'
-import { CONTACT, SOCIAL_LINKS } from '@/lib/content'
 import type { ContactFormValues } from '@/types'
 
 const EMPTY_FORM: ContactFormValues = { name: '', email: '', phone: '', subject: '', message: '' }
@@ -15,6 +14,8 @@ export default function ContactPage() {
   const [form, setForm] = useState<ContactFormValues>(EMPTY_FORM)
   const dispatch = useAppDispatch()
   const { status, error } = useAppSelector((state) => state.contact)
+  const contact = useAppSelector((state) => state.content.contact)
+  const socialLinks = useAppSelector((state) => state.content.socialLinks)
 
   const handleChange = (field: keyof ContactFormValues) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [field]: event.target.value }))
@@ -43,14 +44,7 @@ export default function ContactPage() {
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1.2fr' }, gap: { xs: 6, md: 8 } }}>
             {/* Contatti diretti */}
             <Stack spacing={3}>
-              <Box
-                sx={{
-                  backgroundColor: '#3A4430',
-                  borderRadius: 3,
-                  p: 4,
-                  color: '#FBF6EC',
-                }}
-              >
+              <Box sx={{ backgroundColor: '#3A4430', borderRadius: 3, p: 4, color: '#FBF6EC' }}>
                 <WhatsAppIcon sx={{ fontSize: '2rem', mb: 1.5, color: '#D9B679' }} />
                 <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.3rem', fontWeight: 600, mb: 1 }}>
                   WhatsApp aziendale
@@ -59,7 +53,7 @@ export default function ContactPage() {
                   Il modo più veloce per ricevere disponibilità e prima proposta di menu.
                 </Typography>
                 <Button
-                  href={CONTACT.whatsappLink}
+                  href={contact.whatsappLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   variant="contained"
@@ -67,7 +61,7 @@ export default function ContactPage() {
                   startIcon={<WhatsAppIcon />}
                   sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
                 >
-                  {CONTACT.whatsappNumber}
+                  {contact.whatsappNumber}
                 </Button>
               </Box>
 
@@ -80,23 +74,27 @@ export default function ContactPage() {
                   Per richieste più strutturate o preventivi per eventi importanti.
                 </Typography>
                 <Button
-                  href={`mailto:${CONTACT.email}`}
+                  href={`mailto:${contact.email}`}
                   variant="outlined"
                   fullWidth
                   startIcon={<EmailIcon />}
                   sx={{ borderColor: '#B8893E', color: '#8A6428', '&:hover': { borderColor: '#8A6428' } }}
                 >
-                  {CONTACT.email}
+                  {contact.email}
                 </Button>
               </Box>
 
               <Stack direction="row" spacing={1.2} alignItems="center" sx={{ color: '#332A21' }}>
                 <LocationOnIcon sx={{ color: '#8A6428' }} />
-                <Typography>{CONTACT.area}</Typography>
+                <Typography>{contact.area}</Typography>
               </Stack>
 
-              <Stack direction="row" spacing={1.2} sx={{ pt: 1 }}>
-                {SOCIAL_LINKS.map((social) => (
+              {contact.address && (
+                <Typography sx={{ color: '#332A21', fontSize: '0.9rem', pl: 0.5 }}>{contact.address}</Typography>
+              )}
+
+              <Stack direction="row" spacing={1.2} sx={{ pt: 1, flexWrap: 'wrap', gap: 1 }}>
+                {socialLinks.map((social) => (
                   <Button
                     key={social.id}
                     href={social.href}
@@ -125,21 +123,8 @@ export default function ContactPage() {
                 <Box component="form" onSubmit={handleSubmit}>
                   <Stack spacing={2.5}>
                     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2.5}>
-                      <TextField
-                        required
-                        fullWidth
-                        label="Nome e cognome"
-                        value={form.name}
-                        onChange={handleChange('name')}
-                      />
-                      <TextField
-                        required
-                        fullWidth
-                        type="email"
-                        label="Email"
-                        value={form.email}
-                        onChange={handleChange('email')}
-                      />
+                      <TextField required fullWidth label="Nome e cognome" value={form.name} onChange={handleChange('name')} />
+                      <TextField required fullWidth type="email" label="Email" value={form.email} onChange={handleChange('email')} />
                     </Stack>
                     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2.5}>
                       <TextField fullWidth label="Telefono (opzionale)" value={form.phone} onChange={handleChange('phone')} />

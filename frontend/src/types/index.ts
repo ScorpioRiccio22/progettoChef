@@ -15,6 +15,7 @@ export interface Dish {
   category: 'antipasti' | 'primi' | 'secondi' | 'dolci'
   description: string
   tags: string[]
+  imageUrl?: string
 }
 
 export interface EventType {
@@ -23,13 +24,44 @@ export interface EventType {
   description: string
   details: string[]
   icon: 'private' | 'corporate' | 'catering' | 'cooking-class'
+  imageUrl?: string
 }
 
-export interface Testimonial {
+// Testi editabili dal pannello /admin
+export interface SiteTexts {
+  heroEyebrow: string
+  heroTitle: string
+  heroDescription: string
+  aboutTitle: string
+  aboutDescription: string
+  aboutQuote: string
+}
+
+// Immagini del sito caricate dal pannello admin
+export interface SiteImages {
+  logo?: string         // Logo del brand (navbar + footer)
+  heroBanner?: string   // Immagine/video di sfondo dell'Hero
+  aboutPhoto?: string   // Foto nella sezione Chi siamo
+}
+
+// Statistiche della sezione Chi siamo
+export interface AboutStat {
   id: string
-  author: string
-  role: string
-  quote: string
+  value: string
+  label: string
+}
+
+export interface AboutContent {
+  stats: AboutStat[]
+}
+
+// Informazioni di contatto gestibili dal pannello admin
+export interface ContactInfo {
+  email: string
+  whatsappNumber: string
+  whatsappLink: string
+  area: string
+  address?: string
 }
 
 export interface SocialLink {
@@ -37,6 +69,13 @@ export interface SocialLink {
   label: string
   href: string
   icon: 'instagram' | 'facebook' | 'tiktok' | 'whatsapp' | 'threads'
+}
+
+// Iscritti alla newsletter (lato admin)
+export interface NewsletterSubscriber {
+  id: string
+  email: string
+  subscribedAt: string
 }
 
 export interface ContactFormValues {

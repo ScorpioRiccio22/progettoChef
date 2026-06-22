@@ -3,10 +3,11 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { Link as RouterLink } from 'react-router-dom'
 import SectionHeading from '@/components/ui/SectionHeading'
 import DishCard from '@/components/ui/DishCard'
-import { DISHES } from '@/lib/content'
+import { useAppSelector } from '@/hooks/redux'
 
 export default function RecipesPreviewSection() {
-  const featured = DISHES.slice(0, 3)
+  const dishes = useAppSelector((state) => state.content.dishes)
+  const featured = dishes.slice(0, 3)
 
   return (
     <Box id="ricettario" sx={{ backgroundColor: '#FBF6EC', py: { xs: 9, md: 13 } }}>

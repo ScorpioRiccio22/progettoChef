@@ -1,9 +1,12 @@
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
-import { BRAND, CONTACT } from '@/lib/content'
+import { useAppSelector } from '@/hooks/redux'
 
 export default function HeroSection() {
+  const texts = useAppSelector((state) => state.content.texts)
+  const contact = useAppSelector((state) => state.content.contact)
+  const images = useAppSelector((state) => state.content.images)
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 
   return (
@@ -18,30 +21,48 @@ export default function HeroSection() {
         overflow: 'hidden',
       }}
     >
-      {/* Silhouette del Vesuvio, elemento di firma del brand, in scala monumentale */}
-      <Box
-        component="svg"
-        viewBox="0 0 1000 320"
-        preserveAspectRatio="none"
-        sx={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-          height: { xs: '38%', md: '52%' },
-          opacity: 1,
-        }}
-      >
-        <path
-          d="M0 320 L310 95 C330 80 352 80 368 98 L410 148 L460 70 C474 48 500 48 514 70 L568 152 L612 86 C628 64 654 64 670 88 L1000 320 Z"
-          fill="#241D16"
+      {/* Banner hero caricato dal pannello admin */}
+      {images.heroBanner && (
+        <Box
+          component="img"
+          src={images.heroBanner}
+          alt="Hero banner"
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: 0.35,
+          }}
         />
-        <path
-          d="M0 320 L260 145 C278 130 298 130 312 146 L344 184 L460 70 C474 48 500 48 514 70 L660 250 L700 200 C714 182 738 182 752 202 L1000 320 Z"
-          fill="#2E2519"
-        />
-        <circle cx="460" cy="70" r="5" fill="#B8893E" opacity="0.85" />
-      </Box>
+      )}
+
+      {/* Silhouette del Vesuvio (visibile quando non c'è banner) */}
+      {!images.heroBanner && (
+        <Box
+          component="svg"
+          viewBox="0 0 1000 320"
+          preserveAspectRatio="none"
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            height: { xs: '38%', md: '52%' },
+          }}
+        >
+          <path
+            d="M0 320 L310 95 C330 80 352 80 368 98 L410 148 L460 70 C474 48 500 48 514 70 L568 152 L612 86 C628 64 654 64 670 88 L1000 320 Z"
+            fill="#241D16"
+          />
+          <path
+            d="M0 320 L260 145 C278 130 298 130 312 146 L344 184 L460 70 C474 48 500 48 514 70 L660 250 L700 200 C714 182 738 182 752 202 L1000 320 Z"
+            fill="#2E2519"
+          />
+          <circle cx="460" cy="70" r="5" fill="#B8893E" opacity="0.85" />
+        </Box>
+      )}
 
       <Box
         sx={{
@@ -64,7 +85,7 @@ export default function HeroSection() {
                 fontWeight: 600,
               }}
             >
-              {BRAND.role} a {BRAND.city}
+              {texts.heroEyebrow}
             </Typography>
           </Stack>
 
@@ -76,21 +97,18 @@ export default function HeroSection() {
               lineHeight: 1.05,
             }}
           >
-            La cucina napoletana,
-            <br />
-            portata a casa tua.
+            {texts.heroTitle}
           </Typography>
 
           <Typography sx={{ color: 'rgba(251,246,236,0.78)', fontSize: '1.15rem', maxWidth: 480, lineHeight: 1.7 }}>
-            Sono {BRAND.name}: chef a domicilio per cene private, eventi e nuove attività che vogliono partire
-            con il piede giusto in cucina.
+            {texts.heroDescription}
           </Typography>
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ pt: 1 }}>
             <Button
               size="large"
               variant="contained"
-              href={CONTACT.whatsappLink}
+              href={contact.whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
               startIcon={<WhatsAppIcon />}

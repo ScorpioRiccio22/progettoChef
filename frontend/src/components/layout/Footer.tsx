@@ -4,10 +4,9 @@ import FacebookIcon from '@mui/icons-material/Facebook'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import { Link as RouterLink } from 'react-router-dom'
 import VesuvioMark from '@/components/ui/VesuvioMark'
-import { BRAND, CONTACT, SOCIAL_LINKS } from '@/lib/content'
+import { BRAND } from '@/lib/content'
+import { useAppSelector } from '@/hooks/redux'
 
-// TikTok e Threads non hanno un'icona dedicata in @mui/icons-material:
-// li rappresentiamo con le iniziali in un badge circolare coerente con lo stile.
 function BadgeIcon({ label, href }: { label: string; href: string }) {
   return (
     <IconButton
@@ -38,6 +37,10 @@ const ICONS: Record<string, JSX.Element> = {
 }
 
 export default function Footer() {
+  const contact = useAppSelector((state) => state.content.contact)
+  const socialLinks = useAppSelector((state) => state.content.socialLinks)
+  const images = useAppSelector((state) => state.content.images)
+
   return (
     <Box component="footer" sx={{ backgroundColor: '#1C1712', color: '#FBF6EC', pt: 8, pb: 4 }}>
       <Container maxWidth="lg">
@@ -62,9 +65,14 @@ export default function Footer() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: '#D9B679',
+                  overflow: 'hidden',
                 }}
               >
-                <VesuvioMark className="w-5 h-3" color="currentColor" />
+                {images.logo ? (
+                  <Box component="img" src={images.logo} alt="Logo" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <VesuvioMark className="w-5 h-3" color="currentColor" />
+                )}
               </Box>
               <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.2rem', fontWeight: 600 }}>
                 {BRAND.name}
@@ -74,7 +82,7 @@ export default function Footer() {
               {BRAND.payoff}. Chef a domicilio, eventi privati e consulenza per nuove attività a {BRAND.city}.
             </Typography>
             <Stack direction="row" spacing={1.2} sx={{ mt: 3 }}>
-              {SOCIAL_LINKS.map((social) =>
+              {socialLinks.map((social) =>
                 ICONS[social.icon] ? (
                   <IconButton
                     key={social.id}
@@ -129,19 +137,22 @@ export default function Footer() {
               Contatti
             </Typography>
             <Stack spacing={1.2}>
-              <MuiLink href={`mailto:${CONTACT.email}`} underline="none" sx={{ color: 'rgba(251,246,236,0.75)', '&:hover': { color: '#D9B679' } }}>
-                {CONTACT.email}
+              <MuiLink href={`mailto:${contact.email}`} underline="none" sx={{ color: 'rgba(251,246,236,0.75)', '&:hover': { color: '#D9B679' } }}>
+                {contact.email}
               </MuiLink>
               <MuiLink
-                href={CONTACT.whatsappLink}
+                href={contact.whatsappLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 underline="none"
                 sx={{ color: 'rgba(251,246,236,0.75)', '&:hover': { color: '#D9B679' } }}
               >
-                {CONTACT.whatsappNumber} (WhatsApp)
+                {contact.whatsappNumber} (WhatsApp)
               </MuiLink>
-              <Typography sx={{ color: 'rgba(251,246,236,0.55)' }}>{CONTACT.area}</Typography>
+              <Typography sx={{ color: 'rgba(251,246,236,0.55)' }}>{contact.area}</Typography>
+              {contact.address && (
+                <Typography sx={{ color: 'rgba(251,246,236,0.55)' }}>{contact.address}</Typography>
+              )}
             </Stack>
           </Box>
         </Box>

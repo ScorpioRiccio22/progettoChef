@@ -7,7 +7,7 @@ import RestaurantIcon from '@mui/icons-material/Restaurant'
 import SchoolIcon from '@mui/icons-material/School'
 import PageHero from '@/components/ui/PageHero'
 import SectionHeading from '@/components/ui/SectionHeading'
-import { EVENTS, CONTACT } from '@/lib/content'
+import { useAppSelector } from '@/hooks/redux'
 
 const ICONS = {
   private: CelebrationIcon,
@@ -24,6 +24,8 @@ const PROCESS = [
 ]
 
 export default function EventsPage() {
+  const events = useAppSelector((state) => state.content.events)
+  const contact = useAppSelector((state) => state.content.contact)
   return (
     <>
       <PageHero
@@ -35,7 +37,7 @@ export default function EventsPage() {
       <Box sx={{ backgroundColor: '#FBF6EC', py: { xs: 8, md: 11 } }}>
         <Container maxWidth="lg">
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 3 }}>
-            {EVENTS.map((event) => {
+            {events.map((event) => {
               const Icon = ICONS[event.icon]
               return (
                 <Box
@@ -111,7 +113,7 @@ export default function EventsPage() {
           <Button
             variant="contained"
             size="large"
-            href={CONTACT.whatsappLink}
+            href={contact.whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
             startIcon={<WhatsAppIcon />}

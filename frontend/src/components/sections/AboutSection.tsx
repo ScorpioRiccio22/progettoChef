@@ -1,10 +1,15 @@
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import PersonIcon from '@mui/icons-material/Person'
 import { Link as RouterLink } from 'react-router-dom'
 import SectionHeading from '@/components/ui/SectionHeading'
-import { BRAND } from '@/lib/content'
+import { useAppSelector } from '@/hooks/redux'
 
 export default function AboutSection() {
+  const texts = useAppSelector((state) => state.content.texts)
+  const about = useAppSelector((state) => state.content.about)
+  const images = useAppSelector((state) => state.content.images)
+
   return (
     <Box id="chi-siamo" sx={{ backgroundColor: '#FBF6EC', py: { xs: 9, md: 13 } }}>
       <Container maxWidth="lg">
@@ -28,16 +33,37 @@ export default function AboutSection() {
               p: 4,
             }}
           >
-            <Box
-              sx={{
-                position: 'absolute',
-                inset: 0,
-                background:
-                  'radial-gradient(circle at 30% 20%, rgba(184,137,62,0.35), transparent 60%), linear-gradient(160deg, #2E2519, #1C1712)',
-              }}
-            />
+            {images.aboutPhoto ? (
+              <Box
+                component="img"
+                src={images.aboutPhoto}
+                alt="Chef Andrea Moio"
+                sx={{
+                  position: 'absolute',
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  opacity: 0.7,
+                }}
+              />
+            ) : (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  inset: 0,
+                  background:
+                    'radial-gradient(circle at 30% 20%, rgba(184,137,62,0.35), transparent 60%), linear-gradient(160deg, #2E2519, #1C1712)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <PersonIcon sx={{ fontSize: '5rem', color: 'rgba(184,137,62,0.3)' }} />
+              </Box>
+            )}
             <Typography sx={{ position: 'relative', color: '#D9B679', fontFamily: '"Fraunces", serif', fontSize: '1.6rem', fontStyle: 'italic' }}>
-              "Ogni piatto racconta una storia di famiglia."
+              "{texts.aboutQuote}"
             </Typography>
           </Box>
 
@@ -45,16 +71,12 @@ export default function AboutSection() {
             <SectionHeading
               align="left"
               eyebrow="Chi siamo"
-              title={`La cucina di ${BRAND.name}`}
-              description="Cresciuto tra i fornelli di casa e le cucine professionali di Napoli, porto la tradizione partenopea dove serve davvero: sulla tua tavola. Ogni servizio nasce da un'idea semplice — la cucina di qualità non ha bisogno di un ristorante, ha bisogno di cura."
+              title={texts.aboutTitle}
+              description={texts.aboutDescription}
             />
             <Stack direction="row" spacing={3} sx={{ mb: 4 }}>
-              {[
-                { value: '8+', label: 'anni di esperienza' },
-                { value: '150+', label: 'eventi curati' },
-                { value: '100%', label: 'materie prime locali' },
-              ].map((stat) => (
-                <Box key={stat.label}>
+              {about.stats.map((stat) => (
+                <Box key={stat.id}>
                   <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.8rem', color: '#8A6428', fontWeight: 600 }}>
                     {stat.value}
                   </Typography>

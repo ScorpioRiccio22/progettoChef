@@ -3,7 +3,7 @@ import { Box, Button, Container, Stack, Typography } from '@mui/material'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import PageHero from '@/components/ui/PageHero'
 import DishCard from '@/components/ui/DishCard'
-import { DISHES, CONTACT } from '@/lib/content'
+import { useAppSelector } from '@/hooks/redux'
 import type { Dish } from '@/types'
 
 const CATEGORIES: { key: Dish['category'] | 'tutti'; label: string }[] = [
@@ -15,11 +15,13 @@ const CATEGORIES: { key: Dish['category'] | 'tutti'; label: string }[] = [
 ]
 
 export default function RecipesPage() {
+  const dishes = useAppSelector((state) => state.content.dishes)
+  const contact = useAppSelector((state) => state.content.contact)
   const [activeCategory, setActiveCategory] = useState<Dish['category'] | 'tutti'>('tutti')
 
   const filteredDishes = useMemo(
-    () => (activeCategory === 'tutti' ? DISHES : DISHES.filter((dish) => dish.category === activeCategory)),
-    [activeCategory],
+    () => (activeCategory === 'tutti' ? dishes : dishes.filter((dish) => dish.category === activeCategory)),
+    [activeCategory, dishes],
   )
 
   return (
@@ -75,7 +77,7 @@ export default function RecipesPage() {
           <Button
             variant="contained"
             size="large"
-            href={CONTACT.whatsappLink}
+            href={contact.whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
             startIcon={<WhatsAppIcon />}

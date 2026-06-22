@@ -6,7 +6,7 @@ import RestaurantIcon from '@mui/icons-material/Restaurant'
 import SchoolIcon from '@mui/icons-material/School'
 import { Link as RouterLink } from 'react-router-dom'
 import SectionHeading from '@/components/ui/SectionHeading'
-import { EVENTS } from '@/lib/content'
+import { useAppSelector } from '@/hooks/redux'
 
 const ICONS = {
   private: CelebrationIcon,
@@ -16,6 +16,7 @@ const ICONS = {
 }
 
 export default function EventsPreviewSection() {
+  const events = useAppSelector((state) => state.content.events)
   return (
     <Box id="eventi" sx={{ backgroundColor: '#1C1712', py: { xs: 9, md: 13 } }}>
       <Container maxWidth="lg">
@@ -33,7 +34,7 @@ export default function EventsPreviewSection() {
             mb: 5,
           }}
         >
-          {EVENTS.map((event) => {
+          {events.map((event) => {
             const Icon = ICONS[event.icon]
             return (
               <Box

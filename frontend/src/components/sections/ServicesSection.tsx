@@ -3,7 +3,7 @@ import HomeIcon from '@mui/icons-material/Home'
 import CelebrationIcon from '@mui/icons-material/Celebration'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import SectionHeading from '@/components/ui/SectionHeading'
-import { SERVICES } from '@/lib/content'
+import { useAppSelector } from '@/hooks/redux'
 
 const ICONS = {
   home: HomeIcon,
@@ -12,6 +12,8 @@ const ICONS = {
 }
 
 export default function ServicesSection() {
+  const services = useAppSelector((state) => state.content.services)
+
   return (
     <Box id="servizi" sx={{ backgroundColor: '#F3E9D6', py: { xs: 9, md: 13 } }}>
       <Container maxWidth="lg">
@@ -27,8 +29,8 @@ export default function ServicesSection() {
             gap: 3,
           }}
         >
-          {SERVICES.map((service) => {
-            const Icon = ICONS[service.icon]
+          {services.map((service) => {
+            const Icon = ICONS[service.icon] ?? HomeIcon
             return (
               <Box
                 key={service.id}
