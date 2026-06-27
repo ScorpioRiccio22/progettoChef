@@ -1,53 +1,60 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
+import api, { ADMIN_TOKEN_STORAGE_KEY } from '@/services/api'
+import type { AdminUser, LoginFormValues, LoginResponse } from '@/types'
 
-// Stato di autenticazione per l'area /admin. In questa fase il login è mock:
-// genera un token finto con la stessa forma (struttura) di un vero JWT, così
-// quando il backend Spring Boot sarà pronto basterà sostituire `mockLogin`
-// con una vera chiamata a POST /api/auth/login — la UI non dovrà cambiare.
-
-export interface AdminUser {
-  username: string
-  role: 'admin'
-}
+type AuthStatus = 'idle' | 'loading' | 'authenticated' | 'error'
 
 interface AuthState {
-  token: string | null
   user: AdminUser | null
-  status: 'idle' | 'loading' | 'error'
+  token: string | null
+  status: AuthStatus
   error: string | null
+  // true mentre verifichiamo un token già salvato (refresh pagina) prima di
+  // decidere se mostrare l'area admin o il login.
+  isBootstrapping: boolean
 }
-
-const TOKEN_STORAGE_KEY = 'chefproject_admin_token'
 
 const initialState: AuthState = {
-  token: localStorage.getItem(TOKEN_STORAGE_KEY),
-  user: localStorage.getItem(TOKEN_STORAGE_KEY) ? { username: 'admin', role: 'admin' } : null,
+  user: null,
+  token: localStorage.getItem(ADMIN_TOKEN_STORAGE_KEY),
   status: 'idle',
   error: null,
+  isBootstrapping: Boolean(localStorage.getItem(ADMIN_TOKEN_STORAGE_KEY)),
 }
 
-// Credenziali mock — quando arriva il backend reale questa funzione verrà
-// sostituita da una chiamata a src/services/api.ts (POST /api/auth/login).
-function mockLogin(username: string, password: string): Promise<{ token: string; user: AdminUser }> {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (username === 'andrea' && password === 'andrea123') {
-        // Token finto ma "shaped like" un JWT (header.payload.signature in base64)
-        const fakePayload = btoa(JSON.stringify({ sub: username, role: 'admin', iat: Date.now() }))
-        const fakeToken = `mock.${fakePayload}.signature`
-        resolve({ token: fakeToken, user: { username, role: 'admin' } })
-      } else {
-        reject(new Error('Credenziali non valide'))
-      }
-    }, 500)
-  })
+function extractErrorMessage(error: unknown, fallback: string): string {
+  if (typeof error === 'object' && error !== null && 'response' in error) {
+    const response = (error as { response?: { data?: { message?: string } } }).response
+    if (response?.data?.message) return response.data.message
+  }
+  return fallback
 }
 
-export const loginAdmin = createAsyncThunk(
+export const login = createAsyncThunk(
   'auth/login',
-  async ({ username, password }: { username: string; password: string }) => {
-    return mockLogin(username, password)
+  async (values: LoginFormValues, { rejectWithValue }) => {
+    try {
+      const { data } = await api.post<LoginResponse>('/auth/login', values)
+      return data
+    } catch (error) {
+      return rejectWithValue(extractErrorMessage(error, 'Email o password non corretti'))
+    }
+  },
+)
+
+// Richiamato all'avvio dell'app se in localStorage c'è già un token, per
+// verificarne la validità e recuperare i dati dell'admin senza richiedere
+// di nuovo le credenziali a ogni refresh della pagina.
+export const fetchCurrentUser = createAsyncThunk(
+  'auth/fetchCurrentUser',
+  async (_: void, { rejectWithValue }) => {
+    try {
+      const { data } = await api.get<AdminUser>('/auth/me')
+      return data
+    } catch (error) {
+      return rejectWithValue(extractErrorMessage(error, 'Sessione non valida'))
+    }
   },
 )
 
@@ -56,32 +63,50 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout(state) {
-      state.token = null
+      localStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY)
       state.user = null
-      localStorage.removeItem(TOKEN_STORAGE_KEY)
+      state.token = null
+      state.status = 'idle'
+      state.error = null
     },
-    clearError(state) {
+    clearAuthError(state) {
       state.error = null
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loginAdmin.pending, (state) => {
+      .addCase(login.pending, (state) => {
         state.status = 'loading'
         state.error = null
       })
-      .addCase(loginAdmin.fulfilled, (state, action: PayloadAction<{ token: string; user: AdminUser }>) => {
-        state.status = 'idle'
-        state.token = action.payload.token
+      .addCase(login.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
+        state.status = 'authenticated'
         state.user = action.payload.user
-        localStorage.setItem(TOKEN_STORAGE_KEY, action.payload.token)
+        state.token = action.payload.accessToken
+        localStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, action.payload.accessToken)
       })
-      .addCase(loginAdmin.rejected, (state, action) => {
+      .addCase(login.rejected, (state, action) => {
         state.status = 'error'
-        state.error = action.error.message ?? 'Errore di login'
+        state.error = (action.payload as string) ?? 'Errore di accesso'
+      })
+      .addCase(fetchCurrentUser.pending, (state) => {
+        state.isBootstrapping = true
+      })
+      .addCase(fetchCurrentUser.fulfilled, (state, action: PayloadAction<AdminUser>) => {
+        state.user = action.payload
+        state.status = 'authenticated'
+        state.isBootstrapping = false
+      })
+      .addCase(fetchCurrentUser.rejected, (state) => {
+        // Token assente/scaduto/non valido: torniamo allo stato "sloggato".
+        localStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY)
+        state.user = null
+        state.token = null
+        state.status = 'idle'
+        state.isBootstrapping = false
       })
   },
 })
 
-export const { logout, clearError } = authSlice.actions
+export const { logout, clearAuthError } = authSlice.actions
 export default authSlice.reducer

@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import type { SubmissionStatus } from '@/types'
-import { addNewsletterSubscriber } from './contentSlice'
 
 interface NewsletterState {
   status: SubmissionStatus
@@ -14,16 +13,13 @@ const initialState: NewsletterState = {
 
 // MOCK: simula una chiamata API. Quando il backend Spring Boot sarà pronto,
 // sostituire il corpo con: await api.post('/newsletter', { email })
-// Il backend si occuperà di salvare il subscriber e inviare email di conferma.
 export const subscribeToNewsletter = createAsyncThunk(
   'newsletter/subscribe',
-  async (email: string, { dispatch }) => {
+  async (email: string) => {
     await new Promise((resolve) => setTimeout(resolve, 900))
     if (!email.includes('@')) {
       throw new Error('Email non valida')
     }
-    // Salva anche nel contentSlice per mostrarla nell'admin
-    dispatch(addNewsletterSubscriber(email))
     return { email }
   },
 )

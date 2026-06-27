@@ -16,16 +16,13 @@ import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import VesuvioMark from '@/components/ui/VesuvioMark'
-import { NAV_ITEMS, BRAND } from '@/lib/content'
-import { useAppSelector } from '@/hooks/redux'
+import { NAV_ITEMS, CONTACT, BRAND } from '@/lib/content'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
-  const contact = useAppSelector((state) => state.content.contact)
-  const images = useAppSelector((state) => state.content.images)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -89,14 +86,9 @@ export default function Navbar() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: isTransparent ? '#FBF6EC' : '#B8893E',
-                overflow: 'hidden',
               }}
             >
-              {images.logo ? (
-                <Box component="img" src={images.logo} alt="Logo" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <VesuvioMark className="w-5 h-3" color="currentColor" />
-              )}
+              <VesuvioMark className="w-5 h-3" color="currentColor" />
             </Box>
             <Box sx={{ textAlign: 'left' }}>
               <Typography
@@ -143,7 +135,7 @@ export default function Navbar() {
               </Button>
             ))}
             <Button
-              href={contact.whatsappLink}
+              href={CONTACT.whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
               startIcon={<WhatsAppIcon />}
@@ -189,7 +181,7 @@ export default function Navbar() {
         </List>
         <Box sx={{ p: 2, mt: 'auto' }}>
           <Button
-            href={contact.whatsappLink}
+            href={CONTACT.whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
             fullWidth

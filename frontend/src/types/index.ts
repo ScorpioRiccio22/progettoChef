@@ -15,7 +15,6 @@ export interface Dish {
   category: 'antipasti' | 'primi' | 'secondi' | 'dolci'
   description: string
   tags: string[]
-  imageUrl?: string
 }
 
 export interface EventType {
@@ -24,44 +23,13 @@ export interface EventType {
   description: string
   details: string[]
   icon: 'private' | 'corporate' | 'catering' | 'cooking-class'
-  imageUrl?: string
 }
 
-// Testi editabili dal pannello /admin
-export interface SiteTexts {
-  heroEyebrow: string
-  heroTitle: string
-  heroDescription: string
-  aboutTitle: string
-  aboutDescription: string
-  aboutQuote: string
-}
-
-// Immagini del sito caricate dal pannello admin
-export interface SiteImages {
-  logo?: string         // Logo del brand (navbar + footer)
-  heroBanner?: string   // Immagine/video di sfondo dell'Hero
-  aboutPhoto?: string   // Foto nella sezione Chi siamo
-}
-
-// Statistiche della sezione Chi siamo
-export interface AboutStat {
+export interface Testimonial {
   id: string
-  value: string
-  label: string
-}
-
-export interface AboutContent {
-  stats: AboutStat[]
-}
-
-// Informazioni di contatto gestibili dal pannello admin
-export interface ContactInfo {
-  email: string
-  whatsappNumber: string
-  whatsappLink: string
-  area: string
-  address?: string
+  author: string
+  role: string
+  quote: string
 }
 
 export interface SocialLink {
@@ -69,13 +37,6 @@ export interface SocialLink {
   label: string
   href: string
   icon: 'instagram' | 'facebook' | 'tiktok' | 'whatsapp' | 'threads'
-}
-
-// Iscritti alla newsletter (lato admin)
-export interface NewsletterSubscriber {
-  id: string
-  email: string
-  subscribedAt: string
 }
 
 export interface ContactFormValues {
@@ -92,3 +53,24 @@ export interface NewsletterFormValues {
 }
 
 export type SubmissionStatus = 'idle' | 'submitting' | 'success' | 'error'
+
+// --- Area admin ---------------------------------------------------------
+
+export interface AdminUser {
+  id: number
+  email: string
+  fullName: string
+  role: 'ADMIN'
+}
+
+export interface LoginFormValues {
+  email: string
+  password: string
+}
+
+export interface LoginResponse {
+  accessToken: string
+  tokenType: string
+  expiresInSeconds: number
+  user: AdminUser
+}

@@ -4,11 +4,9 @@ import EmailIcon from '@mui/icons-material/Email'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { Link as RouterLink } from 'react-router-dom'
 import SectionHeading from '@/components/ui/SectionHeading'
-import { useAppSelector } from '@/hooks/redux'
+import { CONTACT } from '@/lib/content'
 
 export default function ContactPreviewSection() {
-  const contact = useAppSelector((state) => state.content.contact)
-
   return (
     <Box id="contatti" sx={{ backgroundColor: '#FBF6EC', py: { xs: 9, md: 13 } }}>
       <Container maxWidth="md">
@@ -21,7 +19,7 @@ export default function ContactPreviewSection() {
           <Button
             size="large"
             variant="contained"
-            href={contact.whatsappLink}
+            href={CONTACT.whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
             startIcon={<WhatsAppIcon />}
@@ -32,7 +30,7 @@ export default function ContactPreviewSection() {
           <Button
             size="large"
             variant="outlined"
-            href={`mailto:${contact.email}`}
+            href={`mailto:${CONTACT.email}`}
             startIcon={<EmailIcon />}
             sx={{ borderColor: '#B8893E', color: '#8A6428', '&:hover': { borderColor: '#8A6428', backgroundColor: 'rgba(184,137,62,0.08)' } }}
           >
@@ -50,7 +48,7 @@ export default function ContactPreviewSection() {
           </Button>
         </Box>
         <Typography sx={{ textAlign: 'center', mt: 2, color: '#8A6428', fontSize: '0.9rem' }}>
-          {contact.area}
+          {CONTACT.area}
         </Typography>
       </Container>
     </Box>

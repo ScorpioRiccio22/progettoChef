@@ -1,117 +1,118 @@
 import { useState, type FormEvent } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { Box, Button, Container, Stack, TextField, Typography, Alert } from '@mui/material'
+import { Alert, Box, Button, CircularProgress, Paper, Stack, TextField, Typography } from '@mui/material'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import VesuvioMark from '@/components/ui/VesuvioMark'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import { loginAdmin, clearError } from '@/store/slices/authSlice'
+import { clearAuthError, login } from '@/store/slices/authSlice'
+import type { LoginFormValues } from '@/types'
+
+const EMPTY_FORM: LoginFormValues = { email: '', password: '' }
 
 export default function AdminLoginPage() {
+  const [form, setForm] = useState<LoginFormValues>(EMPTY_FORM)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
-  const { token, status, error } = useAppSelector((state) => state.auth)
+  const { status, error, token, user } = useAppSelector((state) => state.auth)
 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-
-  if (token) {
-    const from = (location.state as { from?: Location })?.from?.pathname ?? '/admin/texts'
-    return <Navigate to={from} replace />
+  // Già autenticato: non mostrare di nuovo il form di login.
+  if (token && user) {
+    const redirectTo = (location.state as { from?: Location })?.from?.pathname ?? '/admin'
+    return <Navigate to={redirectTo} replace />
   }
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleChange = (field: keyof LoginFormValues) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, [field]: event.target.value }))
+  }
+
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
-    dispatch(clearError())
-    const result = await dispatch(loginAdmin({ username, password }))
-    if (loginAdmin.fulfilled.match(result)) {
-      navigate('/admin/texts', { replace: true })
-    }
+    dispatch(clearAuthError())
+    dispatch(login(form)).then((result) => {
+      if (result.meta.requestStatus === 'fulfilled') {
+        navigate('/admin', { replace: true })
+      }
+    })
   }
+
+  const isSubmitting = status === 'loading'
 
   return (
     <Box
       sx={{
         minHeight: '100vh',
-        backgroundColor: '#1C1712',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: '#1C1712',
+        px: 2,
       }}
     >
-      <Container maxWidth="xs">
-        <Box
-          sx={{
-            backgroundColor: '#FBF6EC',
-            borderRadius: 3,
-            p: 4.5,
-            boxShadow: '0 24px 60px rgba(0,0,0,0.35)',
-          }}
-        >
-          <Stack spacing={0.5} alignItems="center" sx={{ mb: 3 }}>
-            <Box
-              sx={{
-                width: 50,
-                height: 50,
-                borderRadius: '50%',
-                backgroundColor: 'rgba(184,137,62,0.16)',
-                color: '#8A6428',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                mb: 1,
-              }}
-            >
-              <LockOutlinedIcon />
-            </Box>
-            <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.4rem', fontWeight: 600 }}>
-              Area Admin
-            </Typography>
-            <Typography sx={{ fontSize: '0.85rem', color: '#332A21', textAlign: 'center' }}>
-              Accedi per gestire testi, piatti ed eventi del sito.
-            </Typography>
-          </Stack>
-
-          {error && (
-            <Alert severity="error" sx={{ mb: 2.5 }}>
-              {error}
-            </Alert>
-          )}
-
-          <Box component="form" onSubmit={handleSubmit}>
-            <Stack spacing={2}>
-              <TextField
-                label="Username"
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-                fullWidth
-                autoFocus
-                required
-              />
-              <TextField
-                label="Password"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                fullWidth
-                required
-              />
-              <Button
-                type="submit"
-                variant="contained"
-                size="large"
-                disabled={status === 'loading'}
-                sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#8A6428' } }}
-              >
-                {status === 'loading' ? 'Accesso in corso…' : 'Accedi'}
-              </Button>
-            </Stack>
-          </Box>
-
-          <Typography sx={{ fontSize: '0.72rem', color: 'rgba(28,23,18,0.5)', textAlign: 'center', mt: 2.5 }}>
-            Demo: andrea / andrea123 — login mock, sostituito dal backend reale in seguito.
+      <Paper
+        elevation={0}
+        sx={{
+          maxWidth: 420,
+          width: '100%',
+          p: { xs: 4, md: 5 },
+          borderRadius: 3,
+          backgroundColor: '#FBF6EC',
+        }}
+      >
+        <Stack spacing={1} alignItems="center" sx={{ mb: 3 }}>
+          <VesuvioMark className="h-10 w-28" color="#B8893E" />
+          <Typography
+            variant="h5"
+            sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600, color: '#1C1712' }}
+          >
+            Area Admin
           </Typography>
+          <Typography sx={{ color: '#332A21', fontSize: '0.9rem', textAlign: 'center' }}>
+            Accedi per gestire i contenuti del sito di Andrea Moio Chef.
+          </Typography>
+        </Stack>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        <Box component="form" onSubmit={handleSubmit} noValidate>
+          <Stack spacing={2.5}>
+            <TextField
+              label="Email"
+              type="email"
+              value={form.email}
+              onChange={handleChange('email')}
+              required
+              fullWidth
+              autoComplete="username"
+              autoFocus
+            />
+            <TextField
+              label="Password"
+              type="password"
+              value={form.password}
+              onChange={handleChange('password')}
+              required
+              fullWidth
+              autoComplete="current-password"
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              fullWidth
+              disabled={isSubmitting}
+              startIcon={isSubmitting ? <CircularProgress size={18} color="inherit" /> : <LockOutlinedIcon />}
+              sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+            >
+              {isSubmitting ? 'Accesso in corso…' : 'Accedi'}
+            </Button>
+          </Stack>
         </Box>
-      </Container>
+      </Paper>
     </Box>
   )
 }
