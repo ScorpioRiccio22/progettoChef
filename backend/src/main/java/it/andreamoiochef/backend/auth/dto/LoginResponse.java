@@ -1,3 +1,4 @@
+
 package it.andreamoiochef.backend.auth.dto;
 
 public record LoginResponse(
