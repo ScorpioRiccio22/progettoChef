@@ -13,6 +13,11 @@ import ContactPage from '@/pages/ContactPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import AdminLoginPage from '@/pages/admin/AdminLoginPage'
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
+import AdminContactsPage from '@/pages/admin/AdminContactsPage'
+import AdminNewsletterPage from '@/pages/admin/AdminNewsletterPage'
+import AdminDishesPage from '@/pages/admin/AdminDishesPage'
+import AdminTestimonialsPage from '@/pages/admin/AdminTestimonialsPage'
+import AdminBrandPage from '@/pages/admin/AdminBrandPage'
 import AdminLayout from '@/components/admin/AdminLayout'
 import ProtectedRoute from '@/components/admin/ProtectedRoute'
 
@@ -45,6 +50,11 @@ export default function App() {
               }
             >
               <Route index element={<AdminDashboardPage />} />
+              <Route path="contatti" element={<AdminContactsPage />} />
+              <Route path="newsletter" element={<AdminNewsletterPage />} />
+              <Route path="ricettario" element={<AdminDishesPage />} />
+              <Route path="testimonianze" element={<AdminTestimonialsPage />} />
+              <Route path="brand" element={<AdminBrandPage />} />
             </Route>
           </Routes>
         </BrowserRouter>
