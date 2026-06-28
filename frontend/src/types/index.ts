@@ -1,34 +1,96 @@
-// Tipi di dominio condivisi — riflettono i DTO esposti dal backend Spring Boot.
+// Tipi di dominio condivisi. Rispecchiano i DTO esposti dalle API REST del
+// backend Spring Boot (package it.andreamoiochef.backend.content / leads).
 
 export interface ServiceOffering {
-  id: string
+  id: number
   title: string
   tagline: string
   description: string
-  icon: 'home' | 'event' | 'business'
+  icon: 'home' | 'event' | 'business' | string
+  imageUrl: string | null
+  sortOrder: number
+  published: boolean
 }
 
 export interface Dish {
-  id: string
+  id: number
   name: string
-  category: 'antipasti' | 'primi' | 'secondi' | 'dolci'
+  category: 'antipasti' | 'primi' | 'secondi' | 'dolci' | string
   description: string
+  imageUrl: string | null
   tags: string[]
+  sortOrder: number
+  published: boolean
 }
 
 export interface EventType {
-  id: string
+  id: number
   title: string
   description: string
+  icon: 'private' | 'corporate' | 'catering' | 'cooking-class' | string
+  imageUrl: string | null
   details: string[]
-  icon: 'private' | 'corporate' | 'catering' | 'cooking-class'
+  sortOrder: number
+  published: boolean
 }
 
 export interface Testimonial {
-  id: string
+  id: number
   author: string
   role: string
   quote: string
+  sortOrder: number
+  published: boolean
+}
+
+export interface Milestone {
+  id: number
+  year: string
+  text: string
+  sortOrder: number
+}
+
+export interface CoreValue {
+  id: number
+  title: string
+  text: string
+  sortOrder: number
+}
+
+export interface AboutPageContent {
+  milestones: Milestone[]
+  values: CoreValue[]
+}
+
+export interface SiteSettings {
+  brandName: string
+  brandHandle: string
+  brandRole: string
+  brandCity: string
+  brandPayoff: string
+  logoUrl: string | null
+  faviconUrl: string | null
+  contactEmail: string
+  whatsappNumber: string
+  whatsappLink: string
+  contactArea: string
+  instagramUrl: string
+  facebookUrl: string
+  tiktokUrl: string
+  threadsUrl: string
+  heroTitle: string
+  heroSubtitle: string
+  heroImageUrl: string | null
+  aboutIntro: string
+  aboutParagraph1: string
+  aboutParagraph2: string
+  aboutImageUrl: string | null
+  statYearsValue: string
+  statYearsLabel: string
+  statEventsValue: string
+  statEventsLabel: string
+  statIngredientsValue: string
+  statIngredientsLabel: string
 }
 
 export interface SocialLink {
@@ -74,99 +136,22 @@ export interface LoginResponse {
   user: AdminUser
 }
 
-// --- Content API types --------------------------------------------------
+// --- Messaggi di contatto e iscritti newsletter (vista admin) -----------
 
-export interface ServiceDto {
-  id: number
-  slug: string
-  title: string
-  tagline: string
-  description: string
-  icon: string
-  displayOrder: number
-  active: boolean
-}
-
-export interface DishDto {
-  id: number
-  slug: string
-  name: string
-  category: 'antipasti' | 'primi' | 'secondi' | 'dolci'
-  description: string
-  tags: string[]       // JSON array from backend
-  imageUrl?: string
-  active: boolean
-}
-
-export interface EventTypeDto {
-  id: number
-  slug: string
-  title: string
-  description: string
-  details: string[]    // JSON array from backend
-  icon: string
-  displayOrder: number
-  active: boolean
-}
-
-export interface TestimonialDto {
-  id: number
-  author: string
-  role: string
-  quote: string
-  approved: boolean
-  displayOrder: number
-}
-
-export interface SocialLinkDto {
-  id: number
-  platform: string
-  label: string
-  href: string
-  icon: string
-  displayOrder: number
-  active: boolean
-}
-
-export interface BrandDto {
-  id: number
-  name: string
-  handle: string
-  role: string
-  city: string
-  payoff: string
-  email: string
-  whatsappNumber: string
-  whatsappLink: string
-  area: string
-}
-
-// --- Leads types --------------------------------------------------------
-
-export interface ContactLeadDto {
+export interface ContactMessage {
   id: number
   name: string
   email: string
-  phone?: string
+  phone: string | null
   subject: string
   message: string
   read: boolean
   createdAt: string
 }
 
-export interface NewsletterSubscriberDto {
+export interface NewsletterSubscriber {
   id: number
   email: string
-  active: boolean
   subscribedAt: string
 }
 
-// --- Pagination ---------------------------------------------------------
-
-export interface Page<T> {
-  content: T[]
-  totalElements: number
-  totalPages: number
-  number: number
-  size: number
-}

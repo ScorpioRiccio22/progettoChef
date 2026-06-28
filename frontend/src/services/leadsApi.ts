@@ -1,25 +1,54 @@
-// API client per il modulo leads (contatti + newsletter)
-import api from './api'
-import type { ContactLeadDto, NewsletterSubscriberDto, Page } from '@/types'
+// Chiamate REST verso il package it.andreamoiochef.backend.leads:
+// invio pubblico di messaggi/iscrizioni, gestione admin (lista, lettura,
+// cancellazione, export CSV).
 
-export const leadsApi = {
-  // ---- CONTACTS (admin) ----
-  getContacts: (page = 0, size = 20, unreadOnly = false) =>
-    api.get<Page<ContactLeadDto>>('/admin/contacts', {
-      params: { page, size, unreadOnly },
-    }).then(r => r.data),
-  markRead: (id: number) =>
-    api.patch<ContactLeadDto>(`/admin/contacts/${id}/read`).then(r => r.data),
-  deleteContact: (id: number) =>
-    api.delete(`/admin/contacts/${id}`),
+import api from '@/services/api'
+import type { ContactFormValues, ContactMessage, NewsletterSubscriber } from '@/types'
 
-  // ---- NEWSLETTER (admin) ----
-  getSubscribers: (page = 0, size = 20) =>
-    api.get<Page<NewsletterSubscriberDto>>('/admin/newsletter', {
-      params: { page, size },
-    }).then(r => r.data),
-  deleteSubscriber: (id: number) =>
-    api.delete(`/admin/newsletter/${id}`),
-  exportCsv: () =>
-    api.get('/admin/newsletter/export', { responseType: 'blob' }).then(r => r.data as Blob),
+// --- Pubblico ----------------------------------------------------------
+
+export const publicSendContactMessage = (values: ContactFormValues) => api.post('/public/contact', values)
+
+export const publicSubscribeNewsletter = (email: string) => api.post('/public/newsletter', { email })
+
+// --- Admin: messaggi di contatto ----------------------------------------
+
+export const adminListContactMessages = () =>
+  api.get<ContactMessage[]>('/admin/contact-messages').then((r) => r.data)
+
+export const adminCountUnreadMessages = () =>
+  api.get<{ count: number }>('/admin/contact-messages/unread-count').then((r) => r.data.count)
+
+export const adminMarkMessageRead = (id: number, read = true) =>
+  api.patch<ContactMessage>(`/admin/contact-messages/${id}/read`, null, { params: { read } }).then((r) => r.data)
+
+export const adminDeleteContactMessage = (id: number) => api.delete(`/admin/contact-messages/${id}`)
+
+/** Scarica il CSV dei messaggi e ne avvia il download nel browser. */
+export const adminExportContactMessages = async () => {
+  const response = await api.get('/admin/contact-messages/export', { responseType: 'blob' })
+  downloadBlob(response.data, 'messaggi-contatto.csv')
+}
+
+// --- Admin: iscritti newsletter ------------------------------------------
+
+export const adminListNewsletterSubscribers = () =>
+  api.get<NewsletterSubscriber[]>('/admin/newsletter-subscribers').then((r) => r.data)
+
+export const adminDeleteNewsletterSubscriber = (id: number) => api.delete(`/admin/newsletter-subscribers/${id}`)
+
+export const adminExportNewsletterSubscribers = async () => {
+  const response = await api.get('/admin/newsletter-subscribers/export', { responseType: 'blob' })
+  downloadBlob(response.data, 'iscritti-newsletter.csv')
+}
+
+function downloadBlob(data: Blob, filename: string) {
+  const url = window.URL.createObjectURL(new Blob([data]))
+  const link = document.createElement('a')
+  link.href = url
+  link.setAttribute('download', filename)
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  window.URL.revokeObjectURL(url)
 }

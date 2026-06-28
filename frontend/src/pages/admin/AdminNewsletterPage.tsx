@@ -1,157 +1,115 @@
 import { useEffect, useState } from 'react'
-import {
-  Box, Typography, Stack, Chip, Tooltip, IconButton,
-  Table, TableBody, TableCell, TableContainer, TableHead,
-  TableRow, Paper, Pagination, CircularProgress, Alert, Button
-} from '@mui/material'
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import { Alert, Box, Button, CircularProgress, IconButton, Paper, Stack, Typography } from '@mui/material'
 import DownloadIcon from '@mui/icons-material/Download'
-import { leadsApi } from '@/services/leadsApi'
-import type { NewsletterSubscriberDto, Page } from '@/types'
+import DeleteIcon from '@mui/icons-material/Delete'
+import {
+  adminDeleteNewsletterSubscriber,
+  adminExportNewsletterSubscribers,
+  adminListNewsletterSubscribers,
+} from '@/services/leadsApi'
+import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'
+import type { NewsletterSubscriber } from '@/types'
 
 export default function AdminNewsletterPage() {
-  const [data, setData] = useState<Page<NewsletterSubscriberDto> | null>(null)
-  const [page, setPage] = useState(0)
+  const [items, setItems] = useState<NewsletterSubscriber[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<NewsletterSubscriber | null>(null)
   const [exporting, setExporting] = useState(false)
 
-  const load = async () => {
+  const load = () => {
     setLoading(true)
-    setError(null)
-    try {
-      const res = await leadsApi.getSubscribers(page, 20)
-      setData(res)
-    } catch {
-      setError('Impossibile caricare gli iscritti. Controlla la connessione al backend.')
-    } finally {
-      setLoading(false)
-    }
+    adminListNewsletterSubscribers()
+      .then(setItems)
+      .catch(() => setError('Impossibile caricare gli iscritti'))
+      .finally(() => setLoading(false))
   }
 
-  useEffect(() => { load() }, [page])
+  useEffect(load, [])
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Rimuovere questo iscritto dalla newsletter?')) return
-    await leadsApi.deleteSubscriber(id)
-    load()
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+    try {
+      await adminDeleteNewsletterSubscriber(deleteTarget.id)
+      setDeleteTarget(null)
+      load()
+    } catch {
+      setError('Eliminazione non riuscita')
+    }
   }
 
   const handleExport = async () => {
     setExporting(true)
     try {
-      const blob = await leadsApi.exportCsv()
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'newsletter-subscribers.csv'
-      a.click()
-      URL.revokeObjectURL(url)
+      await adminExportNewsletterSubscribers()
     } catch {
-      setError('Export CSV non riuscito.')
+      setError('Esportazione non riuscita')
     } finally {
       setExporting(false)
     }
   }
 
+  const formatDate = (iso: string) =>
+    new Date(iso).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+
   return (
-    <Stack spacing={3}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+    <Box>
+      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
         <Box>
           <Typography variant="h5" sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600 }}>
             Iscritti newsletter
           </Typography>
-          {data && (
-            <Typography variant="body2" sx={{ color: '#7B6A58', mt: 0.5 }}>
-              {data.totalElements} iscritti
-            </Typography>
-          )}
+          <Typography sx={{ color: '#5C5246' }}>
+            {items.length} {items.length === 1 ? 'iscritto' : 'iscritti'} alla newsletter.
+          </Typography>
         </Box>
         <Button
-          startIcon={<DownloadIcon />}
           variant="outlined"
+          startIcon={<DownloadIcon />}
           onClick={handleExport}
-          disabled={exporting}
-          sx={{
-            borderColor: '#D9B679', color: '#332A21',
-            '&:hover': { borderColor: '#C4A060', backgroundColor: 'rgba(217,182,121,0.08)' }
-          }}
+          disabled={exporting || items.length === 0}
+          sx={{ borderColor: '#B8893E', color: '#1C1712' }}
         >
-          Esporta CSV
+          {exporting ? 'Esportazione…' : 'Esporta CSV'}
         </Button>
-      </Box>
+      </Stack>
 
-      {error && <Alert severity="error">{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
 
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-          <CircularProgress sx={{ color: '#D9B679' }} />
+          <CircularProgress />
         </Box>
-      ) : data && data.content.length === 0 ? (
-        <Paper variant="outlined" sx={{ p: 4, textAlign: 'center', borderRadius: 3 }}>
-          <Typography sx={{ color: '#7B6A58' }}>Nessun iscritto alla newsletter.</Typography>
-        </Paper>
-      ) : data && (
-        <>
-          <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 3 }}>
-            <Table size="small">
-              <TableHead>
-                <TableRow sx={{ '& th': { fontWeight: 700, fontSize: '0.8rem', color: '#7B6A58' } }}>
-                  <TableCell>Email</TableCell>
-                  <TableCell align="center">Stato</TableCell>
-                  <TableCell>Iscritto il</TableCell>
-                  <TableCell align="right">Azioni</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.content.map(sub => (
-                  <TableRow key={sub.id} hover>
-                    <TableCell>
-                      <Typography variant="body2">{sub.email}</Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Chip
-                        label={sub.active ? 'Attivo' : 'Disattivo'}
-                        size="small"
-                        sx={{
-                          backgroundColor: sub.active ? 'rgba(39,174,96,0.15)' : 'rgba(0,0,0,0.07)',
-                          color: sub.active ? '#27ae60' : '#7B6A58',
-                          fontWeight: 600,
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="caption" sx={{ color: '#7B6A58' }}>
-                        {new Date(sub.subscribedAt).toLocaleDateString('it-IT', {
-                          day: '2-digit', month: 'short', year: 'numeric'
-                        })}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Tooltip title="Rimuovi">
-                        <IconButton size="small" onClick={() => handleDelete(sub.id)} sx={{ color: '#c0392b' }}>
-                          <DeleteOutlineIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          {data.totalPages > 1 && (
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Pagination
-                count={data.totalPages}
-                page={page + 1}
-                onChange={(_, v) => setPage(v - 1)}
-                sx={{ '& .MuiPaginationItem-root.Mui-selected': { backgroundColor: '#D9B679', color: '#1C1712' } }}
-              />
-            </Box>
-          )}
-        </>
+      ) : items.length === 0 ? (
+        <Typography sx={{ color: '#5C5246' }}>Nessun iscritto ancora.</Typography>
+      ) : (
+        <Stack spacing={1.5}>
+          {items.map((s) => (
+            <Paper key={s.id} variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+              <Stack direction="row" spacing={2} alignItems="center">
+                <Typography sx={{ flex: 1 }}>{s.email}</Typography>
+                <Typography sx={{ color: '#8A7F70', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                  iscritto il {formatDate(s.subscribedAt)}
+                </Typography>
+                <IconButton onClick={() => setDeleteTarget(s)} aria-label="Elimina">
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Stack>
+            </Paper>
+          ))}
+        </Stack>
       )}
-    </Stack>
+
+      <ConfirmDeleteDialog
+        open={!!deleteTarget}
+        itemLabel={deleteTarget?.email ?? ''}
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+      />
+    </Box>
   )
 }

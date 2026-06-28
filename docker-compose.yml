@@ -55,6 +55,8 @@ services:
       ADMIN_SEED_FULL_NAME: ${ADMIN_SEED_FULL_NAME:-Andrea Moio}
     ports:
       - '8080:8080'
+    volumes:
+      - andreamoiochef-uploads:/app/uploads
     healthcheck:
       test: ['CMD', 'wget', '-qO-', 'http://localhost:8080/actuator/health']
       interval: 10s
@@ -82,6 +84,7 @@ services:
 volumes:
   andreamoiochef-pgdata:
   andreamoiochef-frontend-node-modules:
+  andreamoiochef-uploads:
 
 # ---------------------------------------------------------------------------
 # Alternativa: solo DB su Docker, backend e frontend in locale (più comodo

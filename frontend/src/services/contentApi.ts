@@ -1,76 +1,181 @@
-// API client per il modulo content (servizi pubblici + admin CRUD)
-import api from './api'
+// Centralizza tutte le chiamate REST verso le risorse di contenuto del
+// backend (package it.andreamoiochef.backend.content). Le funzioni "public*"
+// leggono solo i contenuti pubblicati (usate dal sito pubblico); le funzioni
+// "admin*" richiedono il token JWT (già allegato automaticamente da
+// services/api.ts) e permettono il CRUD completo dall'area admin.
+
+import api from '@/services/api'
 import type {
-  BrandDto, ServiceDto, DishDto, EventTypeDto,
-  TestimonialDto, SocialLinkDto, Page
+  AboutPageContent,
+  CoreValue,
+  Dish,
+  EventType,
+  Milestone,
+  ServiceOffering,
+  SiteSettings,
+  Testimonial,
 } from '@/types'
 
-// ---- Endpoint pubblico aggregato ----
-export interface PublicContent {
-  brand: BrandDto
-  services: ServiceDto[]
-  dishes: DishDto[]
-  eventTypes: EventTypeDto[]
-  testimonials: TestimonialDto[]
-  socialLinks: SocialLinkDto[]
+// --- Site settings -------------------------------------------------------
+
+export const publicGetSiteSettings = () => api.get<SiteSettings>('/public/site-settings').then((r) => r.data)
+
+export const adminGetSiteSettings = () => api.get<SiteSettings>('/admin/site-settings').then((r) => r.data)
+
+export const adminUpdateSiteSettings = (payload: SiteSettings) =>
+  api.put<SiteSettings>('/admin/site-settings', payload).then((r) => r.data)
+
+// --- Servizi ---------------------------------------------------------------
+
+export interface ServiceOfferingRequest {
+  title: string
+  tagline?: string
+  description?: string
+  icon?: string
+  imageUrl?: string | null
+  published?: boolean
 }
 
-export const contentApi = {
-  // ---- PUBLIC ----
-  getAll: () => api.get<PublicContent>('/content').then(r => r.data),
+export const publicListServices = () => api.get<ServiceOffering[]>('/public/services').then((r) => r.data)
 
-  // ---- BRAND (admin) ----
-  getBrand: () => api.get<BrandDto>('/admin/brand').then(r => r.data),
-  updateBrand: (data: Partial<BrandDto>) =>
-    api.put<BrandDto>('/admin/brand', data).then(r => r.data),
+export const adminListServices = () => api.get<ServiceOffering[]>('/admin/services').then((r) => r.data)
 
-  // ---- SERVICES (admin) ----
-  getServices: (page = 0, size = 20) =>
-    api.get<Page<ServiceDto>>('/admin/services', { params: { page, size } }).then(r => r.data),
-  createService: (data: Partial<ServiceDto>) =>
-    api.post<ServiceDto>('/admin/services', data).then(r => r.data),
-  updateService: (id: number, data: Partial<ServiceDto>) =>
-    api.put<ServiceDto>(`/admin/services/${id}`, data).then(r => r.data),
-  deleteService: (id: number) =>
-    api.delete(`/admin/services/${id}`),
+export const adminCreateService = (payload: ServiceOfferingRequest) =>
+  api.post<ServiceOffering>('/admin/services', payload).then((r) => r.data)
 
-  // ---- DISHES (admin) ----
-  getDishes: (page = 0, size = 20) =>
-    api.get<Page<DishDto>>('/admin/dishes', { params: { page, size } }).then(r => r.data),
-  createDish: (data: Partial<DishDto>) =>
-    api.post<DishDto>('/admin/dishes', data).then(r => r.data),
-  updateDish: (id: number, data: Partial<DishDto>) =>
-    api.put<DishDto>(`/admin/dishes/${id}`, data).then(r => r.data),
-  deleteDish: (id: number) =>
-    api.delete(`/admin/dishes/${id}`),
+export const adminUpdateService = (id: number, payload: ServiceOfferingRequest) =>
+  api.put<ServiceOffering>(`/admin/services/${id}`, payload).then((r) => r.data)
 
-  // ---- EVENT TYPES (admin) ----
-  getEventTypes: (page = 0, size = 20) =>
-    api.get<Page<EventTypeDto>>('/admin/event-types', { params: { page, size } }).then(r => r.data),
-  createEventType: (data: Partial<EventTypeDto>) =>
-    api.post<EventTypeDto>('/admin/event-types', data).then(r => r.data),
-  updateEventType: (id: number, data: Partial<EventTypeDto>) =>
-    api.put<EventTypeDto>(`/admin/event-types/${id}`, data).then(r => r.data),
-  deleteEventType: (id: number) =>
-    api.delete(`/admin/event-types/${id}`),
+export const adminDeleteService = (id: number) => api.delete(`/admin/services/${id}`)
 
-  // ---- TESTIMONIALS (admin) ----
-  getTestimonials: (page = 0, size = 20) =>
-    api.get<Page<TestimonialDto>>('/admin/testimonials', { params: { page, size } }).then(r => r.data),
-  createTestimonial: (data: Partial<TestimonialDto>) =>
-    api.post<TestimonialDto>('/admin/testimonials', data).then(r => r.data),
-  updateTestimonial: (id: number, data: Partial<TestimonialDto>) =>
-    api.put<TestimonialDto>(`/admin/testimonials/${id}`, data).then(r => r.data),
-  deleteTestimonial: (id: number) =>
-    api.delete(`/admin/testimonials/${id}`),
+export const adminReorderServices = (orderedIds: number[]) =>
+  api.put('/admin/services/reorder', { orderedIds })
 
-  // ---- SOCIAL LINKS (admin) ----
-  getSocialLinks: (page = 0, size = 20) =>
-    api.get<Page<SocialLinkDto>>('/admin/social-links', { params: { page, size } }).then(r => r.data),
-  createSocialLink: (data: Partial<SocialLinkDto>) =>
-    api.post<SocialLinkDto>('/admin/social-links', data).then(r => r.data),
-  updateSocialLink: (id: number, data: Partial<SocialLinkDto>) =>
-    api.put<SocialLinkDto>(`/admin/social-links/${id}`, data).then(r => r.data),
-  deleteSocialLink: (id: number) =>
-    api.delete(`/admin/social-links/${id}`),
+// --- Piatti (ricettario) ----------------------------------------------------
+
+export interface DishRequest {
+  name: string
+  category: string
+  description?: string
+  imageUrl?: string | null
+  tags?: string[]
+  published?: boolean
+}
+
+export const publicListDishes = () => api.get<Dish[]>('/public/dishes').then((r) => r.data)
+
+export const adminListDishes = () => api.get<Dish[]>('/admin/dishes').then((r) => r.data)
+
+export const adminCreateDish = (payload: DishRequest) => api.post<Dish>('/admin/dishes', payload).then((r) => r.data)
+
+export const adminUpdateDish = (id: number, payload: DishRequest) =>
+  api.put<Dish>(`/admin/dishes/${id}`, payload).then((r) => r.data)
+
+export const adminDeleteDish = (id: number) => api.delete(`/admin/dishes/${id}`)
+
+export const adminReorderDishes = (orderedIds: number[]) => api.put('/admin/dishes/reorder', { orderedIds })
+
+// --- Tipologie di eventi ----------------------------------------------------
+
+export interface EventTypeRequest {
+  title: string
+  description?: string
+  icon?: string
+  imageUrl?: string | null
+  details?: string[]
+  published?: boolean
+}
+
+export const publicListEventTypes = () => api.get<EventType[]>('/public/event-types').then((r) => r.data)
+
+export const adminListEventTypes = () => api.get<EventType[]>('/admin/event-types').then((r) => r.data)
+
+export const adminCreateEventType = (payload: EventTypeRequest) =>
+  api.post<EventType>('/admin/event-types', payload).then((r) => r.data)
+
+export const adminUpdateEventType = (id: number, payload: EventTypeRequest) =>
+  api.put<EventType>(`/admin/event-types/${id}`, payload).then((r) => r.data)
+
+export const adminDeleteEventType = (id: number) => api.delete(`/admin/event-types/${id}`)
+
+export const adminReorderEventTypes = (orderedIds: number[]) =>
+  api.put('/admin/event-types/reorder', { orderedIds })
+
+// --- Testimonianze -----------------------------------------------------------
+
+export interface TestimonialRequest {
+  author: string
+  role?: string
+  quote: string
+  published?: boolean
+}
+
+export const publicListTestimonials = () => api.get<Testimonial[]>('/public/testimonials').then((r) => r.data)
+
+export const adminListTestimonials = () => api.get<Testimonial[]>('/admin/testimonials').then((r) => r.data)
+
+export const adminCreateTestimonial = (payload: TestimonialRequest) =>
+  api.post<Testimonial>('/admin/testimonials', payload).then((r) => r.data)
+
+export const adminUpdateTestimonial = (id: number, payload: TestimonialRequest) =>
+  api.put<Testimonial>(`/admin/testimonials/${id}`, payload).then((r) => r.data)
+
+export const adminDeleteTestimonial = (id: number) => api.delete(`/admin/testimonials/${id}`)
+
+export const adminReorderTestimonials = (orderedIds: number[]) =>
+  api.put('/admin/testimonials/reorder', { orderedIds })
+
+// --- Chi siamo: tappe del percorso (milestones) -----------------------------
+
+export interface MilestoneRequest {
+  year: string
+  text: string
+}
+
+export const publicGetAboutPage = () => api.get<AboutPageContent>('/public/about').then((r) => r.data)
+
+export const adminListMilestones = () => api.get<Milestone[]>('/admin/milestones').then((r) => r.data)
+
+export const adminCreateMilestone = (payload: MilestoneRequest) =>
+  api.post<Milestone>('/admin/milestones', payload).then((r) => r.data)
+
+export const adminUpdateMilestone = (id: number, payload: MilestoneRequest) =>
+  api.put<Milestone>(`/admin/milestones/${id}`, payload).then((r) => r.data)
+
+export const adminDeleteMilestone = (id: number) => api.delete(`/admin/milestones/${id}`)
+
+export const adminReorderMilestones = (orderedIds: number[]) =>
+  api.put('/admin/milestones/reorder', { orderedIds })
+
+// --- Chi siamo: principi/valori della cucina --------------------------------
+
+export interface CoreValueRequest {
+  title: string
+  text: string
+}
+
+export const adminListCoreValues = () => api.get<CoreValue[]>('/admin/core-values').then((r) => r.data)
+
+export const adminCreateCoreValue = (payload: CoreValueRequest) =>
+  api.post<CoreValue>('/admin/core-values', payload).then((r) => r.data)
+
+export const adminUpdateCoreValue = (id: number, payload: CoreValueRequest) =>
+  api.put<CoreValue>(`/admin/core-values/${id}`, payload).then((r) => r.data)
+
+export const adminDeleteCoreValue = (id: number) => api.delete(`/admin/core-values/${id}`)
+
+export const adminReorderCoreValues = (orderedIds: number[]) =>
+  api.put('/admin/core-values/reorder', { orderedIds })
+
+// --- Upload immagini ---------------------------------------------------------
+
+/** Carica un'immagine e restituisce l'URL pubblico da salvare nel campo imageUrl/logoUrl/ecc. */
+export const adminUploadImage = (file: File): Promise<string> => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return api
+    .post<{ url: string }>('/admin/uploads', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    .then((r) => r.data.url)
 }

@@ -1,7 +1,10 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { ThemeProvider, CssBaseline } from '@mui/material'
 import { store } from '@/store'
+import { useAppDispatch } from '@/hooks/redux'
+import { loadSiteContent } from '@/store/slices/siteContentSlice'
 import { muiTheme } from '@/theme'
 import Layout from '@/components/layout/Layout'
 import ScrollToTop from '@/components/layout/ScrollToTop'
@@ -13,13 +16,24 @@ import ContactPage from '@/pages/ContactPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import AdminLoginPage from '@/pages/admin/AdminLoginPage'
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
-import AdminContactsPage from '@/pages/admin/AdminContactsPage'
-import AdminNewsletterPage from '@/pages/admin/AdminNewsletterPage'
-import AdminDishesPage from '@/pages/admin/AdminDishesPage'
-import AdminTestimonialsPage from '@/pages/admin/AdminTestimonialsPage'
-import AdminBrandPage from '@/pages/admin/AdminBrandPage'
 import AdminLayout from '@/components/admin/AdminLayout'
 import ProtectedRoute from '@/components/admin/ProtectedRoute'
+import AdminSiteSettingsPage from '@/pages/admin/AdminSiteSettingsPage'
+import AdminServicesPage from '@/pages/admin/AdminServicesPage'
+import AdminDishesPage from '@/pages/admin/AdminDishesPage'
+import AdminEventsPage from '@/pages/admin/AdminEventsPage'
+import AdminTestimonialsPage from '@/pages/admin/AdminTestimonialsPage'
+import AdminAboutPage from '@/pages/admin/AdminAboutPage'
+import AdminMessagesPage from '@/pages/admin/AdminMessagesPage'
+import AdminNewsletterPage from '@/pages/admin/AdminNewsletterPage'
+
+function ContentLoader() {
+  const dispatch = useAppDispatch()
+  useEffect(() => {
+    dispatch(loadSiteContent())
+  }, [dispatch])
+  return null
+}
 
 export default function App() {
   return (
@@ -27,6 +41,7 @@ export default function App() {
       <ThemeProvider theme={muiTheme}>
         <CssBaseline />
         <BrowserRouter>
+          <ContentLoader />
           <ScrollToTop />
           <Routes>
             {/* Sito pubblico, con navbar/footer */}
@@ -50,11 +65,14 @@ export default function App() {
               }
             >
               <Route index element={<AdminDashboardPage />} />
-              <Route path="contatti" element={<AdminContactsPage />} />
-              <Route path="newsletter" element={<AdminNewsletterPage />} />
+              <Route path="impostazioni" element={<AdminSiteSettingsPage />} />
+              <Route path="servizi" element={<AdminServicesPage />} />
               <Route path="ricettario" element={<AdminDishesPage />} />
+              <Route path="eventi" element={<AdminEventsPage />} />
               <Route path="testimonianze" element={<AdminTestimonialsPage />} />
-              <Route path="brand" element={<AdminBrandPage />} />
+              <Route path="chi-siamo" element={<AdminAboutPage />} />
+              <Route path="messaggi" element={<AdminMessagesPage />} />
+              <Route path="newsletter" element={<AdminNewsletterPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

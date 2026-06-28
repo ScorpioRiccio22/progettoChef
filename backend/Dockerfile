@@ -14,6 +14,7 @@ FROM eclipse-temurin:21-jre-alpine AS runtime
 WORKDIR /app
 
 RUN addgroup -S spring && adduser -S spring -G spring
+RUN mkdir -p /app/uploads && chown -R spring:spring /app/uploads
 USER spring:spring
 
 COPY --from=build /app/target/backend.jar app.jar
