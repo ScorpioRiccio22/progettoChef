@@ -7,9 +7,9 @@ import RestaurantIcon from '@mui/icons-material/Restaurant'
 import SchoolIcon from '@mui/icons-material/School'
 import PageHero from '@/components/ui/PageHero'
 import SectionHeading from '@/components/ui/SectionHeading'
-import { EVENTS, CONTACT } from '@/lib/content'
+import { useSiteContent } from '@/hooks/useSiteContent'
 
-const ICONS = {
+const ICONS: Record<string, typeof CelebrationIcon> = {
   private: CelebrationIcon,
   corporate: BusinessCenterIcon,
   catering: RestaurantIcon,
@@ -24,6 +24,8 @@ const PROCESS = [
 ]
 
 export default function EventsPage() {
+  const { eventTypes, contact } = useSiteContent()
+
   return (
     <>
       <PageHero
@@ -35,8 +37,8 @@ export default function EventsPage() {
       <Box sx={{ backgroundColor: '#FBF6EC', py: { xs: 8, md: 11 } }}>
         <Container maxWidth="lg">
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 3 }}>
-            {EVENTS.map((event) => {
-              const Icon = ICONS[event.icon]
+            {eventTypes.map((event) => {
+              const Icon = ICONS[event.icon] ?? CelebrationIcon
               return (
                 <Box
                   key={event.id}
@@ -47,21 +49,30 @@ export default function EventsPage() {
                     border: '1px solid rgba(28,23,18,0.06)',
                   }}
                 >
-                  <Box
-                    sx={{
-                      width: 50,
-                      height: 50,
-                      borderRadius: '50%',
-                      backgroundColor: 'rgba(184,137,62,0.16)',
-                      color: '#8A6428',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      mb: 2.5,
-                    }}
-                  >
-                    <Icon />
-                  </Box>
+                  {event.imageUrl ? (
+                    <Box
+                      component="img"
+                      src={event.imageUrl}
+                      alt={event.title}
+                      sx={{ width: '100%', height: 160, borderRadius: 2, objectFit: 'cover', mb: 2.5 }}
+                    />
+                  ) : (
+                    <Box
+                      sx={{
+                        width: 50,
+                        height: 50,
+                        borderRadius: '50%',
+                        backgroundColor: 'rgba(184,137,62,0.16)',
+                        color: '#8A6428',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        mb: 2.5,
+                      }}
+                    >
+                      <Icon />
+                    </Box>
+                  )}
                   <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.3rem', fontWeight: 600, mb: 1 }}>
                     {event.title}
                   </Typography>
@@ -111,7 +122,7 @@ export default function EventsPage() {
           <Button
             variant="contained"
             size="large"
-            href={CONTACT.whatsappLink}
+            href={contact.whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
             startIcon={<WhatsAppIcon />}

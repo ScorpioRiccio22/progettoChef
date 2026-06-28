@@ -1,0 +1,16 @@
+# Dockerfile di SVILUPPO: avvia il dev server di Vite con hot-reload.
+# Il codice sorgente viene montato come volume da docker-compose.yml, quindi
+# le modifiche fatte sulla macchina host si riflettono subito nel browser.
+# Per la build di produzione (nginx + bundle statico) vedere Dockerfile.prod.
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]

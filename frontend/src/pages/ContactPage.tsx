@@ -6,12 +6,13 @@ import LocationOnIcon from '@mui/icons-material/LocationOn'
 import PageHero from '@/components/ui/PageHero'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { sendContactMessage, resetContactStatus } from '@/store/slices/contactSlice'
-import { CONTACT, SOCIAL_LINKS } from '@/lib/content'
+import { useSiteContent } from '@/hooks/useSiteContent'
 import type { ContactFormValues } from '@/types'
 
 const EMPTY_FORM: ContactFormValues = { name: '', email: '', phone: '', subject: '', message: '' }
 
 export default function ContactPage() {
+  const { contact, socialLinks } = useSiteContent()
   const [form, setForm] = useState<ContactFormValues>(EMPTY_FORM)
   const dispatch = useAppDispatch()
   const { status, error } = useAppSelector((state) => state.contact)
@@ -59,7 +60,7 @@ export default function ContactPage() {
                   Il modo più veloce per ricevere disponibilità e prima proposta di menu.
                 </Typography>
                 <Button
-                  href={CONTACT.whatsappLink}
+                  href={contact.whatsappLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   variant="contained"
@@ -67,7 +68,7 @@ export default function ContactPage() {
                   startIcon={<WhatsAppIcon />}
                   sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
                 >
-                  {CONTACT.whatsappNumber}
+                  {contact.whatsappNumber}
                 </Button>
               </Box>
 
@@ -80,23 +81,23 @@ export default function ContactPage() {
                   Per richieste più strutturate o preventivi per eventi importanti.
                 </Typography>
                 <Button
-                  href={`mailto:${CONTACT.email}`}
+                  href={`mailto:${contact.email}`}
                   variant="outlined"
                   fullWidth
                   startIcon={<EmailIcon />}
                   sx={{ borderColor: '#B8893E', color: '#8A6428', '&:hover': { borderColor: '#8A6428' } }}
                 >
-                  {CONTACT.email}
+                  {contact.email}
                 </Button>
               </Box>
 
               <Stack direction="row" spacing={1.2} alignItems="center" sx={{ color: '#332A21' }}>
                 <LocationOnIcon sx={{ color: '#8A6428' }} />
-                <Typography>{CONTACT.area}</Typography>
+                <Typography>{contact.area}</Typography>
               </Stack>
 
               <Stack direction="row" spacing={1.2} sx={{ pt: 1 }}>
-                {SOCIAL_LINKS.map((social) => (
+                {socialLinks.map((social) => (
                   <Button
                     key={social.id}
                     href={social.href}

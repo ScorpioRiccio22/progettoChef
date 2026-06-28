@@ -1,10 +1,16 @@
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
-import { BRAND, CONTACT } from '@/lib/content'
+import { useSiteContent } from '@/hooks/useSiteContent'
 
 export default function HeroSection() {
+  const { brand, contact, settings } = useSiteContent()
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+
+  const heroTitle = settings?.heroTitle || 'La cucina napoletana, portata a casa tua.'
+  const heroSubtitle =
+    settings?.heroSubtitle ||
+    `Sono ${brand.name}: chef a domicilio per cene private, eventi e nuove attività che vogliono partire con il piede giusto in cucina.`
 
   return (
     <Box
@@ -64,7 +70,7 @@ export default function HeroSection() {
                 fontWeight: 600,
               }}
             >
-              {BRAND.role} a {BRAND.city}
+              {brand.role} a {brand.city}
             </Typography>
           </Stack>
 
@@ -76,21 +82,18 @@ export default function HeroSection() {
               lineHeight: 1.05,
             }}
           >
-            La cucina napoletana,
-            <br />
-            portata a casa tua.
+            {heroTitle}
           </Typography>
 
           <Typography sx={{ color: 'rgba(251,246,236,0.78)', fontSize: '1.15rem', maxWidth: 480, lineHeight: 1.7 }}>
-            Sono {BRAND.name}: chef a domicilio per cene private, eventi e nuove attività che vogliono partire
-            con il piede giusto in cucina.
+            {heroSubtitle}
           </Typography>
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ pt: 1 }}>
             <Button
               size="large"
               variant="contained"
-              href={CONTACT.whatsappLink}
+              href={contact.whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
               startIcon={<WhatsAppIcon />}

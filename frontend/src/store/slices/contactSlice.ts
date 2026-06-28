@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { publicSendContactMessage } from '@/services/leadsApi'
 import type { ContactFormValues, SubmissionStatus } from '@/types'
 
 interface ContactState {
@@ -11,16 +12,23 @@ const initialState: ContactState = {
   error: null,
 }
 
-// MOCK: simula l'invio del form. Quando il backend sarà pronto, sostituire
-// con: await api.post('/contact', values)
+function extractErrorMessage(error: unknown, fallback: string): string {
+  if (typeof error === 'object' && error !== null && 'response' in error) {
+    const response = (error as { response?: { data?: { message?: string } } }).response
+    if (response?.data?.message) return response.data.message
+  }
+  return fallback
+}
+
 export const sendContactMessage = createAsyncThunk(
   'contact/send',
-  async (values: ContactFormValues) => {
-    await new Promise((resolve) => setTimeout(resolve, 1100))
-    if (!values.email.includes('@')) {
-      throw new Error('Email non valida')
+  async (values: ContactFormValues, { rejectWithValue }) => {
+    try {
+      await publicSendContactMessage(values)
+      return values
+    } catch (error) {
+      return rejectWithValue(extractErrorMessage(error, 'Si è verificato un errore. Riprova più tardi.'))
     }
-    return values
   },
 )
 
@@ -44,7 +52,7 @@ const contactSlice = createSlice({
       })
       .addCase(sendContactMessage.rejected, (state, action) => {
         state.status = 'error'
-        state.error = action.error.message ?? 'Si è verificato un errore.'
+        state.error = (action.payload as string) ?? 'Si è verificato un errore.'
       })
   },
 })

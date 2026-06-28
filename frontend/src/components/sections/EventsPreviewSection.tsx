@@ -6,9 +6,9 @@ import RestaurantIcon from '@mui/icons-material/Restaurant'
 import SchoolIcon from '@mui/icons-material/School'
 import { Link as RouterLink } from 'react-router-dom'
 import SectionHeading from '@/components/ui/SectionHeading'
-import { EVENTS } from '@/lib/content'
+import { useSiteContent } from '@/hooks/useSiteContent'
 
-const ICONS = {
+const ICONS: Record<string, typeof CelebrationIcon> = {
   private: CelebrationIcon,
   corporate: BusinessCenterIcon,
   catering: RestaurantIcon,
@@ -16,6 +16,10 @@ const ICONS = {
 }
 
 export default function EventsPreviewSection() {
+  const { eventTypes } = useSiteContent()
+
+  if (eventTypes.length === 0) return null
+
   return (
     <Box id="eventi" sx={{ backgroundColor: '#1C1712', py: { xs: 9, md: 13 } }}>
       <Container maxWidth="lg">
@@ -33,8 +37,8 @@ export default function EventsPreviewSection() {
             mb: 5,
           }}
         >
-          {EVENTS.map((event) => {
-            const Icon = ICONS[event.icon]
+          {eventTypes.map((event) => {
+            const Icon = ICONS[event.icon] ?? CelebrationIcon
             return (
               <Box
                 key={event.id}
@@ -46,9 +50,18 @@ export default function EventsPreviewSection() {
                   transition: 'all 0.25s ease',
                 }}
               >
-                <Box sx={{ color: '#D9B679', mb: 2 }}>
-                  <Icon />
-                </Box>
+                {event.imageUrl ? (
+                  <Box
+                    component="img"
+                    src={event.imageUrl}
+                    alt={event.title}
+                    sx={{ width: '100%', height: 100, borderRadius: 2, objectFit: 'cover', mb: 2 }}
+                  />
+                ) : (
+                  <Box sx={{ color: '#D9B679', mb: 2 }}>
+                    <Icon />
+                  </Box>
+                )}
                 <Typography sx={{ color: '#FBF6EC', fontFamily: '"Fraunces", serif', fontSize: '1.1rem', fontWeight: 600, mb: 1 }}>
                   {event.title}
                 </Typography>

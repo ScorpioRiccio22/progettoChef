@@ -16,9 +16,10 @@ import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import VesuvioMark from '@/components/ui/VesuvioMark'
-import { NAV_ITEMS, CONTACT, BRAND } from '@/lib/content'
+import { NAV_ITEMS, useSiteContent } from '@/hooks/useSiteContent'
 
 export default function Navbar() {
+  const { brand, contact } = useSiteContent()
   const [scrolled, setScrolled] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const location = useLocation()
@@ -86,9 +87,14 @@ export default function Navbar() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: isTransparent ? '#FBF6EC' : '#B8893E',
+                overflow: 'hidden',
               }}
             >
-              <VesuvioMark className="w-5 h-3" color="currentColor" />
+              {brand.logoUrl ? (
+                <Box component="img" src={brand.logoUrl} alt={brand.name} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <VesuvioMark className="w-5 h-3" color="currentColor" />
+              )}
             </Box>
             <Box sx={{ textAlign: 'left' }}>
               <Typography
@@ -100,7 +106,7 @@ export default function Navbar() {
                   lineHeight: 1.1,
                 }}
               >
-                {BRAND.name}
+                {brand.name}
               </Typography>
               <Typography
                 sx={{
@@ -110,7 +116,7 @@ export default function Navbar() {
                   color: isTransparent ? 'rgba(251,246,236,0.75)' : '#8A6428',
                 }}
               >
-                {BRAND.role} · {BRAND.city}
+                {brand.role} · {brand.city}
               </Typography>
             </Box>
           </Box>
@@ -135,7 +141,7 @@ export default function Navbar() {
               </Button>
             ))}
             <Button
-              href={CONTACT.whatsappLink}
+              href={contact.whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
               startIcon={<WhatsAppIcon />}
@@ -181,7 +187,7 @@ export default function Navbar() {
         </List>
         <Box sx={{ p: 2, mt: 'auto' }}>
           <Button
-            href={CONTACT.whatsappLink}
+            href={contact.whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
             fullWidth

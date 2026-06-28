@@ -2,16 +2,21 @@ import { Box, Container, Typography } from '@mui/material'
 import HomeIcon from '@mui/icons-material/Home'
 import CelebrationIcon from '@mui/icons-material/Celebration'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import RestaurantIcon from '@mui/icons-material/Restaurant'
 import SectionHeading from '@/components/ui/SectionHeading'
-import { SERVICES } from '@/lib/content'
+import { useSiteContent } from '@/hooks/useSiteContent'
 
-const ICONS = {
+const ICONS: Record<string, typeof HomeIcon> = {
   home: HomeIcon,
   event: CelebrationIcon,
   business: TrendingUpIcon,
 }
 
 export default function ServicesSection() {
+  const { services } = useSiteContent()
+
+  if (services.length === 0) return null
+
   return (
     <Box id="servizi" sx={{ backgroundColor: '#F3E9D6', py: { xs: 9, md: 13 } }}>
       <Container maxWidth="lg">
@@ -27,8 +32,8 @@ export default function ServicesSection() {
             gap: 3,
           }}
         >
-          {SERVICES.map((service) => {
-            const Icon = ICONS[service.icon]
+          {services.map((service) => {
+            const Icon = ICONS[service.icon] ?? RestaurantIcon
             return (
               <Box
                 key={service.id}
@@ -44,21 +49,30 @@ export default function ServicesSection() {
                   },
                 }}
               >
-                <Box
-                  sx={{
-                    width: 52,
-                    height: 52,
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(184,137,62,0.14)',
-                    color: '#8A6428',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mb: 3,
-                  }}
-                >
-                  <Icon />
-                </Box>
+                {service.imageUrl ? (
+                  <Box
+                    component="img"
+                    src={service.imageUrl}
+                    alt={service.title}
+                    sx={{ width: '100%', height: 160, borderRadius: 2, objectFit: 'cover', mb: 3 }}
+                  />
+                ) : (
+                  <Box
+                    sx={{
+                      width: 52,
+                      height: 52,
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(184,137,62,0.14)',
+                      color: '#8A6428',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mb: 3,
+                    }}
+                  >
+                    <Icon />
+                  </Box>
+                )}
                 <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.35rem', fontWeight: 600, mb: 0.5 }}>
                   {service.title}
                 </Typography>

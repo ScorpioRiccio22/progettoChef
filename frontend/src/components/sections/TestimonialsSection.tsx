@@ -1,9 +1,13 @@
 import { Box, Container, Typography } from '@mui/material'
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
 import SectionHeading from '@/components/ui/SectionHeading'
-import { TESTIMONIALS } from '@/lib/content'
+import { useSiteContent } from '@/hooks/useSiteContent'
 
 export default function TestimonialsSection() {
+  const { testimonials } = useSiteContent()
+
+  if (testimonials.length === 0) return null
+
   return (
     <Box sx={{ backgroundColor: '#F3E9D6', py: { xs: 9, md: 13 } }}>
       <Container maxWidth="lg">
@@ -15,7 +19,7 @@ export default function TestimonialsSection() {
             gap: 3,
           }}
         >
-          {TESTIMONIALS.map((testimonial) => (
+          {testimonials.map((testimonial) => (
             <Box
               key={testimonial.id}
               sx={{

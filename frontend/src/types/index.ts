@@ -1,35 +1,96 @@
-// Tipi di dominio condivisi. Quando il backend Spring Boot sarà pronto,
-// questi tipi rifletteranno i DTO esposti dalle API REST.
+// Tipi di dominio condivisi. Rispecchiano i DTO esposti dalle API REST del
+// backend Spring Boot (package it.andreamoiochef.backend.content / leads).
 
 export interface ServiceOffering {
-  id: string
+  id: number
   title: string
   tagline: string
   description: string
-  icon: 'home' | 'event' | 'business'
+  icon: 'home' | 'event' | 'business' | string
+  imageUrl: string | null
+  sortOrder: number
+  published: boolean
 }
 
 export interface Dish {
-  id: string
+  id: number
   name: string
-  category: 'antipasti' | 'primi' | 'secondi' | 'dolci'
+  category: 'antipasti' | 'primi' | 'secondi' | 'dolci' | string
   description: string
+  imageUrl: string | null
   tags: string[]
+  sortOrder: number
+  published: boolean
 }
 
 export interface EventType {
-  id: string
+  id: number
   title: string
   description: string
+  icon: 'private' | 'corporate' | 'catering' | 'cooking-class' | string
+  imageUrl: string | null
   details: string[]
-  icon: 'private' | 'corporate' | 'catering' | 'cooking-class'
+  sortOrder: number
+  published: boolean
 }
 
 export interface Testimonial {
-  id: string
+  id: number
   author: string
   role: string
   quote: string
+  sortOrder: number
+  published: boolean
+}
+
+export interface Milestone {
+  id: number
+  year: string
+  text: string
+  sortOrder: number
+}
+
+export interface CoreValue {
+  id: number
+  title: string
+  text: string
+  sortOrder: number
+}
+
+export interface AboutPageContent {
+  milestones: Milestone[]
+  values: CoreValue[]
+}
+
+export interface SiteSettings {
+  brandName: string
+  brandHandle: string
+  brandRole: string
+  brandCity: string
+  brandPayoff: string
+  logoUrl: string | null
+  faviconUrl: string | null
+  contactEmail: string
+  whatsappNumber: string
+  whatsappLink: string
+  contactArea: string
+  instagramUrl: string
+  facebookUrl: string
+  tiktokUrl: string
+  threadsUrl: string
+  heroTitle: string
+  heroSubtitle: string
+  heroImageUrl: string | null
+  aboutIntro: string
+  aboutParagraph1: string
+  aboutParagraph2: string
+  aboutImageUrl: string | null
+  statYearsValue: string
+  statYearsLabel: string
+  statEventsValue: string
+  statEventsLabel: string
+  statIngredientsValue: string
+  statIngredientsLabel: string
 }
 
 export interface SocialLink {
@@ -53,3 +114,44 @@ export interface NewsletterFormValues {
 }
 
 export type SubmissionStatus = 'idle' | 'submitting' | 'success' | 'error'
+
+// --- Area admin ---------------------------------------------------------
+
+export interface AdminUser {
+  id: number
+  email: string
+  fullName: string
+  role: 'ADMIN'
+}
+
+export interface LoginFormValues {
+  email: string
+  password: string
+}
+
+export interface LoginResponse {
+  accessToken: string
+  tokenType: string
+  expiresInSeconds: number
+  user: AdminUser
+}
+
+// --- Messaggi di contatto e iscritti newsletter (vista admin) -----------
+
+export interface ContactMessage {
+  id: number
+  name: string
+  email: string
+  phone: string | null
+  subject: string
+  message: string
+  read: boolean
+  createdAt: string
+}
+
+export interface NewsletterSubscriber {
+  id: number
+  email: string
+  subscribedAt: string
+}
+

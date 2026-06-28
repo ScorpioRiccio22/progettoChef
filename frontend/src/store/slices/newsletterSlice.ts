@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { publicSubscribeNewsletter } from '@/services/leadsApi'
 import type { SubmissionStatus } from '@/types'
 
 interface NewsletterState {
@@ -11,16 +12,23 @@ const initialState: NewsletterState = {
   error: null,
 }
 
-// MOCK: simula una chiamata API. Quando il backend Spring Boot sarà pronto,
-// sostituire il corpo con: await api.post('/newsletter', { email })
+function extractErrorMessage(error: unknown, fallback: string): string {
+  if (typeof error === 'object' && error !== null && 'response' in error) {
+    const response = (error as { response?: { data?: { message?: string } } }).response
+    if (response?.data?.message) return response.data.message
+  }
+  return fallback
+}
+
 export const subscribeToNewsletter = createAsyncThunk(
   'newsletter/subscribe',
-  async (email: string) => {
-    await new Promise((resolve) => setTimeout(resolve, 900))
-    if (!email.includes('@')) {
-      throw new Error('Email non valida')
+  async (email: string, { rejectWithValue }) => {
+    try {
+      await publicSubscribeNewsletter(email)
+      return { email }
+    } catch (error) {
+      return rejectWithValue(extractErrorMessage(error, 'Si è verificato un errore. Riprova più tardi.'))
     }
-    return { email }
   },
 )
 
@@ -44,7 +52,7 @@ const newsletterSlice = createSlice({
       })
       .addCase(subscribeToNewsletter.rejected, (state, action) => {
         state.status = 'error'
-        state.error = action.error.message ?? 'Si è verificato un errore.'
+        state.error = (action.payload as string) ?? 'Si è verificato un errore.'
       })
   },
 })

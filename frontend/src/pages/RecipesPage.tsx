@@ -3,10 +3,9 @@ import { Box, Button, Container, Stack, Typography } from '@mui/material'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import PageHero from '@/components/ui/PageHero'
 import DishCard from '@/components/ui/DishCard'
-import { DISHES, CONTACT } from '@/lib/content'
-import type { Dish } from '@/types'
+import { useSiteContent } from '@/hooks/useSiteContent'
 
-const CATEGORIES: { key: Dish['category'] | 'tutti'; label: string }[] = [
+const CATEGORIES: { key: string; label: string }[] = [
   { key: 'tutti', label: 'Tutti i piatti' },
   { key: 'antipasti', label: 'Antipasti' },
   { key: 'primi', label: 'Primi' },
@@ -15,11 +14,12 @@ const CATEGORIES: { key: Dish['category'] | 'tutti'; label: string }[] = [
 ]
 
 export default function RecipesPage() {
-  const [activeCategory, setActiveCategory] = useState<Dish['category'] | 'tutti'>('tutti')
+  const { dishes, contact } = useSiteContent()
+  const [activeCategory, setActiveCategory] = useState<string>('tutti')
 
   const filteredDishes = useMemo(
-    () => (activeCategory === 'tutti' ? DISHES : DISHES.filter((dish) => dish.category === activeCategory)),
-    [activeCategory],
+    () => (activeCategory === 'tutti' ? dishes : dishes.filter((dish) => dish.category === activeCategory)),
+    [activeCategory, dishes],
   )
 
   return (
@@ -50,17 +50,23 @@ export default function RecipesPage() {
             ))}
           </Stack>
 
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
-              gap: 3,
-            }}
-          >
-            {filteredDishes.map((dish) => (
-              <DishCard key={dish.id} dish={dish} />
-            ))}
-          </Box>
+          {filteredDishes.length === 0 ? (
+            <Typography sx={{ color: '#5C5246', textAlign: 'center', py: 4 }}>
+              Nessun piatto disponibile in questa categoria al momento.
+            </Typography>
+          ) : (
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+                gap: 3,
+              }}
+            >
+              {filteredDishes.map((dish) => (
+                <DishCard key={dish.id} dish={dish} />
+              ))}
+            </Box>
+          )}
         </Container>
       </Box>
 
@@ -75,7 +81,7 @@ export default function RecipesPage() {
           <Button
             variant="contained"
             size="large"
-            href={CONTACT.whatsappLink}
+            href={contact.whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
             startIcon={<WhatsAppIcon />}

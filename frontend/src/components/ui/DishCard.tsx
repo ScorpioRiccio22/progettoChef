@@ -1,7 +1,7 @@
 import { Box, Chip, Stack, Typography } from '@mui/material'
 import type { Dish } from '@/types'
 
-const CATEGORY_LABELS: Record<Dish['category'], string> = {
+const CATEGORY_LABELS: Record<string, string> = {
   antipasti: 'Antipasto',
   primi: 'Primo',
   secondi: 'Secondo',
@@ -21,9 +21,17 @@ export default function DishCard({ dish }: { dish: Dish }) {
         '&:hover': { transform: 'translateY(-4px)', boxShadow: '0 14px 28px rgba(28,23,18,0.1)' },
       }}
     >
+      {dish.imageUrl && (
+        <Box
+          component="img"
+          src={dish.imageUrl}
+          alt={dish.name}
+          sx={{ width: '100%', height: 160, borderRadius: 2, objectFit: 'cover', mb: 2 }}
+        />
+      )}
       <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 1.5 }}>
         <Chip
-          label={CATEGORY_LABELS[dish.category]}
+          label={CATEGORY_LABELS[dish.category] ?? dish.category}
           size="small"
           sx={{ backgroundColor: 'rgba(184,137,62,0.14)', color: '#8A6428', fontWeight: 600 }}
         />
