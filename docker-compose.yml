@@ -1,0 +1,96 @@
+# Ambiente di sviluppo completo: database + backend + frontend.
+#
+# Uso tipico: lavorare sul frontend con il backend e il DB già pronti.
+#
+#   docker compose up --build
+#
+# - Frontend (Vite, hot-reload):  http://localhost:5173
+# - Backend (Spring Boot API):    http://localhost:8080
+# - Postgres:                     localhost:5432 (utile per un client SQL esterno)
+#
+# Le modifiche ai file in frontend/src si riflettono subito nel browser
+# (il codice è montato come volume nel container). Per il backend, invece,
+# va rilanciato `docker compose up --build backend` dopo una modifica
+# (oppure si lancia il backend in locale con `mvn spring-boot:run`,
+# tenendo solo `db` su Docker — vedi sezione in fondo).
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: andreamoiochef-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-andreamoiochef}
+      POSTGRES_USER: ${DB_USERNAME:-andreamoiochef}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-andreamoiochef}
+    ports:
+      - '5432:5432'
+    volumes:
+      - andreamoiochef-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME:-andreamoiochef} -d ${DB_NAME:-andreamoiochef}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: andreamoiochef-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-andreamoiochef}
+      DB_USERNAME: ${DB_USERNAME:-andreamoiochef}
+      DB_PASSWORD: ${DB_PASSWORD:-andreamoiochef}
+      JWT_SECRET: ${JWT_SECRET:-change-this-to-a-long-random-string-min-32-chars}
+      JWT_EXPIRATION_MINUTES: ${JWT_EXPIRATION_MINUTES:-480}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+      ADMIN_SEED_ENABLED: ${ADMIN_SEED_ENABLED:-true}
+      ADMIN_SEED_EMAIL: ${ADMIN_SEED_EMAIL:-admin@andreamoiochef.it}
+      ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:-admin123}
+      ADMIN_SEED_FULL_NAME: ${ADMIN_SEED_FULL_NAME:-Andrea Moio}
+    ports:
+      - '8080:8080'
+    volumes:
+      - andreamoiochef-uploads:/app/uploads
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:8080/actuator/health']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: andreamoiochef-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      # Dentro la rete Docker il backend si chiama 'backend', non 'localhost'.
+      VITE_PROXY_TARGET: http://backend:8080
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./frontend:/app
+      - andreamoiochef-frontend-node-modules:/app/node_modules
+
+volumes:
+  andreamoiochef-pgdata:
+  andreamoiochef-frontend-node-modules:
+  andreamoiochef-uploads:
+
+# ---------------------------------------------------------------------------
+# Alternativa: solo DB su Docker, backend e frontend in locale (più comodo
+# per il debug passo-passo in IDE):
+#
+#   docker compose up db
+#   cd backend && mvn spring-boot:run
+#   cd frontend && npm run dev
+# ---------------------------------------------------------------------------
