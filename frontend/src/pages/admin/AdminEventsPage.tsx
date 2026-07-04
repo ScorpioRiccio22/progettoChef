@@ -29,6 +29,7 @@ import {
   type EventTypeRequest,
 } from '@/services/contentApi'
 import ImageUploadField from '@/components/admin/ImageUploadField'
+import VideoUploadField from '@/components/admin/VideoUploadField'
 import ReorderableList from '@/components/admin/ReorderableList'
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'
 import type { EventType } from '@/types'
@@ -38,6 +39,7 @@ const EMPTY_FORM: EventTypeRequest = {
   description: '',
   icon: '',
   imageUrl: null,
+  videoUrl: null,
   details: [],
   published: true,
 }
@@ -80,6 +82,7 @@ export default function AdminEventsPage() {
       description: item.description,
       icon: item.icon,
       imageUrl: item.imageUrl,
+      videoUrl: item.videoUrl,
       details: item.details,
       published: item.published,
     })
@@ -175,6 +178,7 @@ export default function AdminEventsPage() {
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Typography sx={{ fontWeight: 600 }}>{item.title}</Typography>
                     {!item.published && <Chip label="Non pubblicato" size="small" color="default" />}
+                    {item.videoUrl && <Chip label="Video" size="small" sx={{ backgroundColor: '#D9B679', color: '#1C1712' }} />}
                   </Stack>
                   <Typography sx={{ color: '#5C5246', fontSize: '0.85rem' }}>{item.description}</Typography>
                   <Typography sx={{ color: '#8A7F70', fontSize: '0.78rem', mt: 0.5 }}>
@@ -231,6 +235,11 @@ export default function AdminEventsPage() {
               label="Immagine"
               value={form.imageUrl ?? null}
               onChange={(url) => setForm((p) => ({ ...p, imageUrl: url }))}
+            />
+            <VideoUploadField
+              label="Video (mp4, opzionale)"
+              value={form.videoUrl ?? null}
+              onChange={(url) => setForm((p) => ({ ...p, videoUrl: url }))}
             />
             <FormControlLabel
               control={

@@ -29,6 +29,7 @@ export interface EventType {
   description: string
   icon: 'private' | 'corporate' | 'catering' | 'cooking-class' | string
   imageUrl: string | null
+  videoUrl: string | null
   details: string[]
   sortOrder: number
   published: boolean
@@ -117,11 +118,16 @@ export type SubmissionStatus = 'idle' | 'submitting' | 'success' | 'error'
 
 // --- Area admin ---------------------------------------------------------
 
+export type AdminRole = 'SUPERADMIN' | 'ADMIN' | 'EDITOR'
+
 export interface AdminUser {
   id: number
   email: string
   fullName: string
-  role: 'ADMIN'
+  role: AdminRole
+  enabled: boolean
+  createdAt: string
+  lastLoginAt: string | null
 }
 
 export interface LoginFormValues {
@@ -134,6 +140,20 @@ export interface LoginResponse {
   tokenType: string
   expiresInSeconds: number
   user: AdminUser
+}
+
+// --- Gestione account admin (solo SUPERADMIN) ----------------------------
+
+export interface CreateAdminAccountPayload {
+  email: string
+  fullName: string
+  password: string
+  role: AdminRole
+}
+
+export interface ChangeOwnPasswordPayload {
+  currentPassword: string
+  newPassword: string
 }
 
 // --- Messaggi di contatto e iscritti newsletter (vista admin) -----------

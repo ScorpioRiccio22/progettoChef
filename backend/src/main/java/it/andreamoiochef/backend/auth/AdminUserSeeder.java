@@ -34,16 +34,19 @@ public class AdminUserSeeder {
             return;
         }
 
+        // Il primo account creato deve essere SUPERADMIN: è l'unico ruolo in
+        // grado di creare/gestire tutti gli altri account admin, quindi non
+        // può nascere già "degradato" ad ADMIN.
         AdminUser admin = new AdminUser(
                 adminSeedProperties.email(),
                 passwordEncoder.encode(adminSeedProperties.password()),
                 adminSeedProperties.fullName(),
-                AdminRole.ADMIN
+                AdminRole.SUPERADMIN
         );
 
         adminUserRepository.save(admin);
 
-        log.warn("Creato utente admin di default ({}). Cambiare la password al primo accesso!",
+        log.warn("Creato utente SUPERADMIN di default ({}). Cambiare la password al primo accesso!",
                 adminSeedProperties.email());
     }
 }

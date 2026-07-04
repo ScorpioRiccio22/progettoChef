@@ -1,0 +1,18 @@
+{
+	email {$STAGING_DOMAIN_EMAIL:admin@{$STAGING_DOMAIN}}
+}
+
+{$STAGING_DOMAIN} {
+	# Caddy ottiene e rinnova da solo il certificato HTTPS (Let's Encrypt)
+	# per questo dominio, a patto che il DNS punti già all'IP del server.
+	reverse_proxy frontend:80
+
+	encode gzip
+
+	# Necessario per gli upload video di grandi dimensioni (fino a ~200MB,
+	# vedi backend/README.md): senza questo limite Caddy taglierebbe la
+	# richiesta prima che arrivi al backend.
+	request_body {
+		max_size 220MB
+	}
+}

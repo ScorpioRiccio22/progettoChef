@@ -10,6 +10,7 @@ public record EventTypeDto(
         String description,
         String icon,
         String imageUrl,
+        String videoUrl,
         List<String> details,
         int sortOrder,
         boolean published
@@ -17,7 +18,7 @@ public record EventTypeDto(
     public static EventTypeDto fromEntity(EventType e) {
         return new EventTypeDto(
                 e.getId(), e.getTitle(), e.getDescription(), e.getIcon(),
-                e.getImageUrl(), List.copyOf(e.getDetails()), e.getSortOrder(), e.isPublished()
+                e.getImageUrl(), e.getVideoUrl(), List.copyOf(e.getDetails()), e.getSortOrder(), e.isPublished()
         );
     }
 }

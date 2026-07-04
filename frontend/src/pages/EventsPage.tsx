@@ -49,7 +49,17 @@ export default function EventsPage() {
                     border: '1px solid rgba(28,23,18,0.06)',
                   }}
                 >
-                  {event.imageUrl ? (
+                  {event.videoUrl ? (
+                    <Box
+                      component="video"
+                      src={event.videoUrl}
+                      poster={event.imageUrl ?? undefined}
+                      controls
+                      playsInline
+                      preload="metadata"
+                      sx={{ width: '100%', height: 160, borderRadius: 2, objectFit: 'cover', mb: 2.5, backgroundColor: '#1C1712' }}
+                    />
+                  ) : event.imageUrl ? (
                     <Box
                       component="img"
                       src={event.imageUrl}

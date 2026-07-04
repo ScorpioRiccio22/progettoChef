@@ -115,6 +115,38 @@ Risposta:
 }
 ```
 
+## Upload di media (immagini e video)
+
+`POST /api/admin/uploads` — immagini (JPG/PNG/WEBP/GIF/SVG, max 8MB) →
+`{ "url": "/uploads/<file>.jpg" }`, da salvare nel campo `imageUrl`.
+
+`POST /api/admin/uploads/video` — video **MP4** (max 200MB) → `{ "url":
+"/uploads/videos/<file>.mp4" }`, da salvare nel campo `videoUrl`. Usato
+soprattutto per le tipologie di evento (`event_types.video_url`), mostrato
+nella pagina pubblica "Eventi" al posto della foto quando presente.
+
+Entrambi richiedono `multipart/form-data` con campo `file` e ruolo `ADMIN`.
+I file vengono salvati su disco sotto `app.storage.upload-dir` (di default
+`/app/uploads` nel container, montato come volume Docker persistente
+`andreamoiochef-uploads`) e serviti staticamente sotto il prefisso
+`app.storage.public-url-prefix` (di default `/uploads`), con supporto nativo
+alle richieste HTTP Range — necessario per il seek nel player video.
+
+Quando un video viene sostituito o rimosso da una tipologia di evento, il
+file precedente viene cancellato automaticamente dal disco per evitare di
+accumulare file orfani (i video pesano molto più delle immagini).
+
+⚠️ Il limite `multipart.max-file-size`/`max-request-size` in
+`application.yml` (210MB di default, override con `MULTIPART_MAX_FILE_SIZE`
+/ `MULTIPART_MAX_REQUEST_SIZE`) deve restare **superiore** al limite di
+200MB applicato in `FileStorageService`, altrimenti Spring rifiuta la
+richiesta prima ancora di validarla (risposta 413).
+
+Se il backend sta dietro un reverse proxy (nginx, come nel Dockerfile.prod
+del frontend, o un load balancer in staging/produzione), ricordarsi di
+alzare anche lì il limite di dimensione del body (es. `client_max_body_size`
+in nginx), altrimenti il proxy taglia la richiesta prima che arrivi a Spring.
+
 ## Prossimi passi
 
 1. API pubbliche `/api/public/...` per servizi, ricettario, eventi e
