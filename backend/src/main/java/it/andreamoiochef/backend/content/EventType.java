@@ -34,6 +34,10 @@ public class EventType {
     @Column(name = "image_url", length = 500)
     private String imageUrl;
 
+    /** URL pubblico del video mp4 caricato per questa tipologia di evento (opzionale). */
+    @Column(name = "video_url", length = 500)
+    private String videoUrl;
+
     @ElementCollection
     @CollectionTable(name = "event_type_details", joinColumns = @JoinColumn(name = "event_type_id"))
     @Column(name = "detail", length = 255)

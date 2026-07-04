@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
@@ -12,9 +13,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+// Messaggi dei clienti: dato sensibile, fuori dalla portata del ruolo EDITOR.
 @RestController
 @RequestMapping("/api/admin/contact-messages")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN')")
 public class AdminContactMessageController {
 
     private static final DateTimeFormatter CSV_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");

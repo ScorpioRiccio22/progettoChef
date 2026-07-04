@@ -4,9 +4,11 @@ import it.andreamoiochef.backend.common.NotFoundException;
 import it.andreamoiochef.backend.content.dto.EventTypeDto;
 import it.andreamoiochef.backend.content.dto.EventTypeRequest;
 import it.andreamoiochef.backend.content.dto.ReorderRequest;
+import it.andreamoiochef.backend.storage.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 public class EventTypeService {
 
     private final EventTypeRepository repository;
+    private final FileStorageService fileStorageService;
 
     @Transactional(readOnly = true)
     public List<EventTypeDto> listAll() {
@@ -44,14 +47,24 @@ public class EventTypeService {
     @Transactional
     public EventTypeDto update(Long id, EventTypeRequest request) {
         EventType entity = findOrThrow(id);
+        String previousVideoUrl = entity.getVideoUrl();
         applyRequest(entity, request);
-        return EventTypeDto.fromEntity(repository.save(entity));
+        EventTypeDto dto = EventTypeDto.fromEntity(repository.save(entity));
+
+        // Il video è pesante: se è stato sostituito o rimosso, ripuliamo il
+        // file precedente per non accumulare file orfani su disco.
+        if (StringUtils.hasText(previousVideoUrl) && !previousVideoUrl.equals(entity.getVideoUrl())) {
+            fileStorageService.deleteIfManaged(previousVideoUrl);
+        }
+        return dto;
     }
 
     @Transactional
     public void delete(Long id) {
         EventType entity = findOrThrow(id);
+        String videoUrl = entity.getVideoUrl();
         repository.delete(entity);
+        fileStorageService.deleteIfManaged(videoUrl);
     }
 
     @Transactional
@@ -74,6 +87,7 @@ public class EventTypeService {
         entity.setDescription(request.description());
         entity.setIcon(request.icon());
         entity.setImageUrl(request.imageUrl());
+        entity.setVideoUrl(request.videoUrl());
         entity.setDetails(request.details() == null ? new ArrayList<>() : new ArrayList<>(request.details()));
         entity.setPublished(request.published() == null || request.published());
     }

@@ -25,4 +25,15 @@ public class UploadController {
         String url = fileStorageService.store(file);
         return ResponseEntity.ok(new UploadResponse(url));
     }
+
+    /**
+     * Carica un video MP4 (usato soprattutto per le tipologie di evento) e
+     * restituisce l'URL pubblico da salvare nel campo "videoUrl" della
+     * risorsa di contenuto corrispondente. Richiede ruolo ADMIN.
+     */
+    @PostMapping("/video")
+    public ResponseEntity<UploadResponse> uploadVideo(@RequestParam("file") MultipartFile file) {
+        String url = fileStorageService.storeVideo(file);
+        return ResponseEntity.ok(new UploadResponse(url));
+    }
 }

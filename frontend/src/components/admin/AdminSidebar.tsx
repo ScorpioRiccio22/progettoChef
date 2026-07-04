@@ -9,20 +9,38 @@ import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
 import InfoIcon from '@mui/icons-material/Info'
 import MailIcon from '@mui/icons-material/Mail'
 import MarkEmailUnreadIcon from '@mui/icons-material/MarkEmailUnread'
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
+import { useAppSelector } from '@/hooks/redux'
+import type { AdminRole } from '@/types'
 
-const NAV_LINKS = [
+interface NavLinkItem {
+  to: string
+  label: string
+  icon: JSX.Element
+  /** Se omesso, la voce è visibile a tutti i ruoli admin. */
+  roles?: AdminRole[]
+}
+
+// Il ruolo EDITOR ("solo grafica") vede solo i contenuti visivi del sito:
+// piatti, servizi, eventi, testimonianze e chi siamo. Impostazioni, messaggi,
+// newsletter e gestione account restano riservati ad ADMIN/SUPERADMIN.
+const NAV_LINKS: NavLinkItem[] = [
   { to: '/admin', label: 'Dashboard', icon: <DashboardIcon /> },
-  { to: '/admin/impostazioni', label: 'Impostazioni sito', icon: <SettingsIcon /> },
+  { to: '/admin/impostazioni', label: 'Impostazioni sito', icon: <SettingsIcon />, roles: ['ADMIN', 'SUPERADMIN'] },
   { to: '/admin/servizi', label: 'Servizi', icon: <RoomServiceIcon /> },
   { to: '/admin/ricettario', label: 'Ricettario', icon: <RestaurantMenuIcon /> },
   { to: '/admin/eventi', label: 'Eventi', icon: <CelebrationIcon /> },
   { to: '/admin/testimonianze', label: 'Testimonianze', icon: <FormatQuoteIcon /> },
   { to: '/admin/chi-siamo', label: 'Chi siamo', icon: <InfoIcon /> },
-  { to: '/admin/messaggi', label: 'Messaggi', icon: <MailIcon /> },
-  { to: '/admin/newsletter', label: 'Newsletter', icon: <MarkEmailUnreadIcon /> },
+  { to: '/admin/messaggi', label: 'Messaggi', icon: <MailIcon />, roles: ['ADMIN', 'SUPERADMIN'] },
+  { to: '/admin/newsletter', label: 'Newsletter', icon: <MarkEmailUnreadIcon />, roles: ['ADMIN', 'SUPERADMIN'] },
+  { to: '/admin/account', label: 'Gestione account', icon: <AdminPanelSettingsIcon />, roles: ['SUPERADMIN'] },
 ]
 
 export default function AdminSidebar() {
+  const role = useAppSelector((state) => state.auth.user?.role)
+  const links = NAV_LINKS.filter((item) => !item.roles || (role && item.roles.includes(role)))
+
   return (
     <Box
       component="nav"
@@ -39,7 +57,7 @@ export default function AdminSidebar() {
       }}
     >
       <List dense disablePadding>
-        {NAV_LINKS.map((item) => (
+        {links.map((item) => (
           <ListItemButton
             key={item.to}
             component={NavLink}

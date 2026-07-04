@@ -23,6 +23,8 @@ Thumbs.db
 
 # ===== ROOT =====
 .env
+.env.staging
+.env.production
 
 # ===== DOCKER =====
 *.log

@@ -1,6 +1,7 @@
 package it.andreamoiochef.backend.auth;
 
 import it.andreamoiochef.backend.auth.dto.AdminUserDto;
+import it.andreamoiochef.backend.auth.dto.ChangeOwnPasswordRequest;
 import it.andreamoiochef.backend.auth.dto.LoginRequest;
 import it.andreamoiochef.backend.auth.dto.LoginResponse;
 import jakarta.validation.Valid;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final AdminAccountService accountService;
 
     /**
      * Login per l'area admin. Pubblico (non richiede token).
@@ -32,6 +34,19 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<AdminUserDto> me(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(authService.getCurrentUser(userDetails.getUsername()));
+    }
+
+    /**
+     * Cambio password personale, disponibile per qualunque admin autenticato
+     * (SUPERADMIN, ADMIN o EDITOR) previa verifica della password attuale.
+     */
+    @PatchMapping("/me/password")
+    public ResponseEntity<Void> changeOwnPassword(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody ChangeOwnPasswordRequest request
+    ) {
+        accountService.changeOwnPassword(userDetails.getUsername(), request);
+        return ResponseEntity.noContent().build();
     }
 
     /**

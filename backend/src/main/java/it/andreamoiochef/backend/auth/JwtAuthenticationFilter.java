@@ -47,7 +47,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                if (jwtService.isTokenValid(token, userDetails)) {
+                // Anche con un JWT ancora valido, un account nel frattempo
+                // disabilitato da un SUPERADMIN non deve poter continuare ad
+                // operare fino alla scadenza naturale del token.
+                if (userDetails.isEnabled() && jwtService.isTokenValid(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

@@ -9,6 +9,7 @@ public record EventTypeRequest(
         String description,
         String icon,
         String imageUrl,
+        String videoUrl,
         List<String> details,
         Boolean published
 ) {

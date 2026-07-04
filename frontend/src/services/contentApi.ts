@@ -82,6 +82,7 @@ export interface EventTypeRequest {
   description?: string
   icon?: string
   imageUrl?: string | null
+  videoUrl?: string | null
   details?: string[]
   published?: boolean
 }
@@ -176,6 +177,26 @@ export const adminUploadImage = (file: File): Promise<string> => {
   return api
     .post<{ url: string }>('/admin/uploads', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    .then((r) => r.data.url)
+}
+
+/**
+ * Carica un video mp4 (usato soprattutto per le tipologie di evento) e
+ * restituisce l'URL pubblico da salvare nel campo videoUrl. Accetta un
+ * callback opzionale di progresso, utile per file di grandi dimensioni.
+ */
+export const adminUploadVideo = (file: File, onProgress?: (percent: number) => void): Promise<string> => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return api
+    .post<{ url: string }>('/admin/uploads/video', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: (event) => {
+        if (onProgress && event.total) {
+          onProgress(Math.round((event.loaded / event.total) * 100))
+        }
+      },
     })
     .then((r) => r.data.url)
 }

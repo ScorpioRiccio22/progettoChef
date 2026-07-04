@@ -1,0 +1,30 @@
+name: Deploy staging
+
+# Si attiva ad ogni push sul branch "staging". Per aggiornare lo staging:
+#   git checkout staging
+#   git merge stefano_dev    # o il branch con le modifiche pronte
+#   git push origin staging
+on:
+  push:
+    branches:
+      - staging
+  # Permette anche di lanciarlo a mano dalla tab "Actions" su GitHub.
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Connetti al server e aggiorna i container
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            set -e
+            cd ${{ secrets.STAGING_PATH }}
+            git fetch origin staging
+            git reset --hard origin/staging
+            docker compose -f docker-compose.staging.yml --env-file .env.staging up -d --build
+            docker image prune -f
