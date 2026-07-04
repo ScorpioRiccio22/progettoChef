@@ -72,6 +72,12 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+    environment:
+      # Su un singolo VPS con docker-compose, "backend" è raggiungibile per
+      # nome di servizio sulla rete Docker interna. Su piattaforme senza rete
+      # privata condivisa tra servizi (es. Render), impostare qui l'URL
+      # pubblico del backend, es. https://andreamoiochef-backend.onrender.com
+      BACKEND_ORIGIN: ${BACKEND_ORIGIN:-http://backend:8080}
 
   caddy:
     image: caddy:2-alpine
