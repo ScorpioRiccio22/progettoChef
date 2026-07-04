@@ -1,3 +1,11 @@
+# Template: il placeholder __BACKEND_ORIGIN__ viene sostituito all'avvio del
+# container da docker-entrypoint.d/40-configure-backend.sh (vedi Dockerfile.prod).
+# In sviluppo/VPS (docker-compose) resta "http://backend:8080" (i container si
+# raggiungono per nome di servizio). Su una piattaforma senza rete privata tra
+# i servizi (es. Render, dove ogni servizio ha il suo host pubblico), va
+# impostata la variabile d'ambiente BACKEND_ORIGIN con l'URL pubblico del
+# backend, es. https://andreamoiochef-backend.onrender.com
+
 server {
     listen 80;
     server_name _;
@@ -6,9 +14,10 @@ server {
 
     # Proxy API calls to backend
     location /api/ {
-        proxy_pass http://backend:8080/api/;
+        proxy_pass __BACKEND_ORIGIN__/api/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
+        proxy_ssl_server_name on;
 
         # Necessario per l'upload dei video mp4 dall'area admin (fino a 200MB,
         # vedi FileStorageService nel backend); il default di nginx è 1MB.
@@ -21,11 +30,12 @@ server {
     # Range/If-Range di Spring passa attraverso il proxy senza bufferizzare
     # l'intero file, permettendo seek nei video anche in produzione.
     location /uploads/ {
-        proxy_pass http://backend:8080/uploads/;
+        proxy_pass __BACKEND_ORIGIN__/uploads/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_http_version 1.1;
         proxy_set_header Connection "";
+        proxy_ssl_server_name on;
         proxy_buffering off;
     }
 
