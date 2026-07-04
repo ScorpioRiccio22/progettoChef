@@ -1,0 +1,96 @@
+# Ambiente di STAGING (da mostrare al cliente), pensato per girare su un
+# singolo VPS (es. Hetzner, DigitalOcean, OVH — 4/5 € al mese bastano).
+#
+# Differenze rispetto a docker-compose.yml (sviluppo locale):
+# - il frontend usa la build di produzione (Dockerfile.prod, nginx statico)
+#   invece di Vite in hot-reload;
+# - c'è un servizio "caddy" davanti a tutto, che espone le porte 80/443 e
+#   genera automaticamente un certificato HTTPS (Let's Encrypt) per il
+#   dominio di staging;
+# - nessuna porta del DB o del backend è esposta sull'host: solo Caddy è
+#   raggiungibile da internet.
+#
+# Uso (sul server di staging):
+#   cp .env.staging.example .env.staging
+#   nano .env.staging   # personalizzare dominio, password, JWT secret...
+#   docker compose -f docker-compose.staging.yml --env-file .env.staging up -d --build
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: andreamoiochef-db-staging
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-andreamoiochef}
+      POSTGRES_USER: ${DB_USERNAME:-andreamoiochef}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?la password del DB è obbligatoria in staging}
+    volumes:
+      - andreamoiochef-pgdata-staging:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME:-andreamoiochef} -d ${DB_NAME:-andreamoiochef}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: andreamoiochef-backend-staging
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-andreamoiochef}
+      DB_USERNAME: ${DB_USERNAME:-andreamoiochef}
+      DB_PASSWORD: ${DB_PASSWORD:?la password del DB è obbligatoria in staging}
+      JWT_SECRET: ${JWT_SECRET:?un JWT secret lungo e casuale è obbligatorio in staging}
+      JWT_EXPIRATION_MINUTES: ${JWT_EXPIRATION_MINUTES:-480}
+      CORS_ALLOWED_ORIGINS: https://${STAGING_DOMAIN:?impostare STAGING_DOMAIN, es. staging.andreamoiochef.it}
+      ADMIN_SEED_ENABLED: ${ADMIN_SEED_ENABLED:-true}
+      ADMIN_SEED_EMAIL: ${ADMIN_SEED_EMAIL:-admin@andreamoiochef.it}
+      ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:?impostare una password admin dedicata per lo staging}
+      ADMIN_SEED_FULL_NAME: ${ADMIN_SEED_FULL_NAME:-Andrea Moio}
+      # Limiti upload video: allineati al default dell'app (vedi backend/README.md).
+      MULTIPART_MAX_FILE_SIZE: ${MULTIPART_MAX_FILE_SIZE:-210MB}
+      MULTIPART_MAX_REQUEST_SIZE: ${MULTIPART_MAX_REQUEST_SIZE:-210MB}
+    volumes:
+      - andreamoiochef-uploads-staging:/app/uploads
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:8080/actuator/health']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: andreamoiochef-frontend-staging
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: andreamoiochef-caddy-staging
+    restart: unless-stopped
+    depends_on:
+      - frontend
+    ports:
+      - '80:80'
+      - '443:443'
+    environment:
+      STAGING_DOMAIN: ${STAGING_DOMAIN:?impostare STAGING_DOMAIN, es. staging.andreamoiochef.it}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data-staging:/data
+      - caddy-config-staging:/config
+
+volumes:
+  andreamoiochef-pgdata-staging:
+  andreamoiochef-uploads-staging:
+  caddy-data-staging:
+  caddy-config-staging:

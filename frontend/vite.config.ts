@@ -22,6 +22,12 @@ export default defineConfig({
         target: proxyTarget,
         changeOrigin: true,
       },
+      // File caricati dall'area admin (immagini, video mp4), serviti
+      // direttamente dal backend Spring sotto /uploads (vedi WebMvcConfig).
+      '/uploads': {
+        target: proxyTarget,
+        changeOrigin: true,
+      },
     },
   },
 })

@@ -1,15 +1,26 @@
+import { useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
-import { AppBar, Toolbar, Box, Typography, Button, Container, Stack } from '@mui/material'
+import { AppBar, Toolbar, Box, Typography, Button, Container, Stack, Chip } from '@mui/material'
 import LogoutIcon from '@mui/icons-material/Logout'
+import LockResetIcon from '@mui/icons-material/LockReset'
 import VesuvioMark from '@/components/ui/VesuvioMark'
 import AdminSidebar from '@/components/admin/AdminSidebar'
+import ChangePasswordDialog from '@/components/admin/ChangePasswordDialog'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { logout } from '@/store/slices/authSlice'
+import type { AdminRole } from '@/types'
+
+const ROLE_LABELS: Record<AdminRole, string> = {
+  SUPERADMIN: 'Superadmin',
+  ADMIN: 'Admin',
+  EDITOR: 'Solo grafica',
+}
 
 export default function AdminLayout() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const user = useAppSelector((state) => state.auth.user)
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
 
   const handleLogout = () => {
     dispatch(logout())
@@ -31,10 +42,24 @@ export default function AdminLayout() {
             Area Admin — Andrea Moio Chef
           </Typography>
           {user && (
-            <Typography sx={{ color: 'rgba(251,246,236,0.75)', fontSize: '0.9rem', mr: 1 }}>
-              {user.fullName}
-            </Typography>
+            <Stack direction="row" spacing={1} alignItems="center" sx={{ mr: 1 }}>
+              <Typography sx={{ color: 'rgba(251,246,236,0.75)', fontSize: '0.9rem' }}>
+                {user.fullName}
+              </Typography>
+              <Chip
+                label={ROLE_LABELS[user.role]}
+                size="small"
+                sx={{ backgroundColor: 'rgba(217,182,121,0.18)', color: '#D9B679', fontWeight: 600 }}
+              />
+            </Stack>
           )}
+          <Button
+            onClick={() => setPasswordDialogOpen(true)}
+            startIcon={<LockResetIcon />}
+            sx={{ color: '#FBF6EC', '&:hover': { backgroundColor: 'rgba(251,246,236,0.08)' } }}
+          >
+            Password
+          </Button>
           <Button
             onClick={handleLogout}
             startIcon={<LogoutIcon />}
@@ -53,6 +78,8 @@ export default function AdminLayout() {
           </Box>
         </Stack>
       </Container>
+
+      <ChangePasswordDialog open={passwordDialogOpen} onClose={() => setPasswordDialogOpen(false)} />
     </Box>
   )
 }

@@ -26,6 +26,7 @@ import AdminTestimonialsPage from '@/pages/admin/AdminTestimonialsPage'
 import AdminAboutPage from '@/pages/admin/AdminAboutPage'
 import AdminMessagesPage from '@/pages/admin/AdminMessagesPage'
 import AdminNewsletterPage from '@/pages/admin/AdminNewsletterPage'
+import AdminAccountsPage from '@/pages/admin/AdminAccountsPage'
 
 function ContentLoader() {
   const dispatch = useAppDispatch()
@@ -73,6 +74,14 @@ export default function App() {
               <Route path="chi-siamo" element={<AdminAboutPage />} />
               <Route path="messaggi" element={<AdminMessagesPage />} />
               <Route path="newsletter" element={<AdminNewsletterPage />} />
+              <Route
+                path="account"
+                element={
+                  <ProtectedRoute roles={['SUPERADMIN']}>
+                    <AdminAccountsPage />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
           </Routes>
         </BrowserRouter>
