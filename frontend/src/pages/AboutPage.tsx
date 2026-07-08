@@ -19,9 +19,9 @@ export default function AboutPage() {
   return (
     <>
       <PageHero
-        eyebrow="Chi siamo"
+        eyebrow="La mia storia"
         title={`La storia di ${brand.name}`}
-        description="Una cucina che nasce in famiglia e cresce tra le cucine professionali di Napoli, fino a diventare un servizio su misura per chi vuole offrire un'esperienza autentica."
+        description="Non un'azienda, ma un percorso: dalla cucina di famiglia alle cucine professionali di Napoli, fino a diventare il servizio su misura che porto oggi sulla tua tavola."
       />
 
       <Box sx={{ backgroundColor: '#FBF6EC', py: { xs: 8, md: 11 } }}>
@@ -36,7 +36,7 @@ export default function AboutPage() {
               <Typography
                 sx={{ fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', fontSize: '0.78rem', color: '#8A6428', mb: 3 }}
               >
-                Il percorso
+                Le tappe della mia storia
               </Typography>
               <Stack spacing={0} sx={{ mb: 8, borderLeft: '2px solid #E6C588', pl: 4 }}>
                 {milestones.map((milestone) => (

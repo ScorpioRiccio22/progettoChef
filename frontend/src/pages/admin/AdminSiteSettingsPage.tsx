@@ -194,7 +194,7 @@ export default function AdminSiteSettingsPage() {
         </Paper>
 
         <Paper variant="outlined" sx={{ p: 3, borderRadius: 3 }}>
-          <Typography sx={{ fontWeight: 700, mb: 2 }}>Sezione "Chi siamo" (testi e statistiche)</Typography>
+          <Typography sx={{ fontWeight: 700, mb: 2 }}>Sezione "La mia storia" (testi e statistiche)</Typography>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField label="Intro" fullWidth multiline minRows={2} value={form.aboutIntro} onChange={field('aboutIntro')} />
@@ -246,6 +246,18 @@ export default function AdminSiteSettingsPage() {
               </Stack>
             </Grid>
           </Grid>
+        </Paper>
+
+        <Paper variant="outlined" sx={{ p: 3, borderRadius: 3, backgroundColor: '#FBF6EC' }}>
+          <Typography sx={{ fontWeight: 700, mb: 1 }}>Recensioni Google</Typography>
+          <Typography sx={{ color: '#5C5246', fontSize: '0.92rem', lineHeight: 1.7 }}>
+            La homepage mostra automaticamente le recensioni Google reali del locale al posto delle testimonianze
+            manuali, quando l'integrazione è configurata. Per attivarla il tuo sviluppatore deve impostare, solo
+            lato server (mai in questo pannello, per sicurezza), le variabili d'ambiente{' '}
+            <code>GOOGLE_PLACES_API_KEY</code> (la chiave API di Google Cloud) e{' '}
+            <code>GOOGLE_PLACES_PLACE_ID</code> (l'identificativo della tua scheda Google). Finché non sono
+            impostate, il sito continua a mostrare le testimonianze inserite manualmente qui sopra.
+          </Typography>
         </Paper>
 
         <Box>
