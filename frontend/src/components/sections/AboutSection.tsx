@@ -65,7 +65,7 @@ export default function AboutSection() {
           <Box>
             <SectionHeading
               align="left"
-              eyebrow="Chi siamo"
+              eyebrow="La mia storia"
               title={`La cucina di ${brand.name}`}
               description={aboutIntro}
             />

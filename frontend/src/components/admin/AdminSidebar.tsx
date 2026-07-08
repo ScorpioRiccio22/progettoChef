@@ -31,7 +31,7 @@ const NAV_LINKS: NavLinkItem[] = [
   { to: '/admin/ricettario', label: 'Ricettario', icon: <RestaurantMenuIcon /> },
   { to: '/admin/eventi', label: 'Eventi', icon: <CelebrationIcon /> },
   { to: '/admin/testimonianze', label: 'Testimonianze', icon: <FormatQuoteIcon /> },
-  { to: '/admin/chi-siamo', label: 'Chi siamo', icon: <InfoIcon /> },
+  { to: '/admin/chi-siamo', label: 'La mia storia', icon: <InfoIcon /> },
   { to: '/admin/messaggi', label: 'Messaggi', icon: <MailIcon />, roles: ['ADMIN', 'SUPERADMIN'] },
   { to: '/admin/newsletter', label: 'Newsletter', icon: <MarkEmailUnreadIcon />, roles: ['ADMIN', 'SUPERADMIN'] },
   { to: '/admin/account', label: 'Gestione account', icon: <AdminPanelSettingsIcon />, roles: ['SUPERADMIN'] },

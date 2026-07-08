@@ -44,6 +44,27 @@ export interface Testimonial {
   published: boolean
 }
 
+// --- Recensioni Google (sezione pubblica, sostituisce le testimonianze manuali quando configurata) ---
+
+export interface GoogleReview {
+  authorName: string
+  authorPhotoUrl: string | null
+  profileUrl: string | null
+  rating: number
+  relativeTime: string
+  text: string
+  timestamp: number
+}
+
+export interface GoogleReviewsResponse {
+  configured: boolean
+  placeName: string | null
+  rating: number | null
+  totalReviews: number | null
+  mapsUrl: string | null
+  reviews: GoogleReview[]
+}
+
 export interface Milestone {
   id: number
   year: string

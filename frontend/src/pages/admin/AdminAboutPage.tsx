@@ -176,7 +176,7 @@ export default function AdminAboutPage() {
   return (
     <Box>
       <Typography variant="h5" sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600, mb: 0.5 }}>
-        Chi siamo
+        La mia storia
       </Typography>
       <Typography sx={{ color: '#5C5246', mb: 3 }}>
         Tappe del percorso e principi della cucina. I testi introduttivi e le statistiche si modificano in{' '}

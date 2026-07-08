@@ -49,8 +49,8 @@ export function useSiteContent() {
 }
 
 export const NAV_ITEMS = [
-  { label: 'Chi siamo', sectionId: 'chi-siamo', path: '/chi-siamo' },
-  { label: 'Servizi', sectionId: 'servizi', path: '/' },
+  { label: 'La mia storia', sectionId: 'chi-siamo', path: '/chi-siamo' },
+  { label: 'Servizi', sectionId: 'servizi', path: '/servizi' },
   { label: 'Ricettario', sectionId: 'ricettario', path: '/ricettario' },
   { label: 'Eventi', sectionId: 'eventi', path: '/eventi' },
   { label: 'Newsletter', sectionId: 'newsletter', path: '/' },

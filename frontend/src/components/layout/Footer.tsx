@@ -116,6 +116,7 @@ export default function Footer() {
                 { label: 'Chi siamo', to: '/chi-siamo' },
                 { label: 'Ricettario', to: '/ricettario' },
                 { label: 'Eventi', to: '/eventi' },
+                { label: 'Servizi', to: '/servizi' },
                 { label: 'Contatti', to: '/contatti' },
               ].map((link) => (
                 <MuiLink

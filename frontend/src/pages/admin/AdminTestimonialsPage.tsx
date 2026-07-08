@@ -111,9 +111,12 @@ export default function AdminTestimonialsPage() {
       <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
         <Box>
           <Typography variant="h5" sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600 }}>
-            Testimonianze
+            Testimonianze (fallback)
           </Typography>
-          <Typography sx={{ color: '#5C5246' }}>Le recensioni dei clienti mostrate sul sito.</Typography>
+          <Typography sx={{ color: '#5C5246' }}>
+            Mostrate sul sito solo se le recensioni Google non sono configurate o non disponibili. Per le recensioni
+            Google vere e proprie, imposta la chiave API in <strong>Impostazioni sito</strong>.
+          </Typography>
         </Box>
         <Button
           variant="contained"
