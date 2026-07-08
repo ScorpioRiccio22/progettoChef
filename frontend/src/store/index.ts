@@ -4,6 +4,7 @@ import contactReducer from './slices/contactSlice'
 import uiReducer from './slices/uiSlice'
 import authReducer from './slices/authSlice'
 import siteContentReducer from './slices/siteContentSlice'
+import googleReviewsReducer from './slices/googleReviewsSlice'
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     ui: uiReducer,
     auth: authReducer,
     siteContent: siteContentReducer,
+    googleReviews: googleReviewsReducer,
   },
 })
 

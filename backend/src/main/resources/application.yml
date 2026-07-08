@@ -59,6 +59,20 @@ app:
     upload-dir: ${UPLOAD_DIR:/app/uploads}
     # Prefisso URL pubblico con cui quei file vengono serviti dal backend stesso
     public-url-prefix: ${UPLOAD_PUBLIC_URL_PREFIX:/uploads}
+  google-places:
+    # Chiave API "Places API" di Google Cloud. NON va mai messa qui in chiaro:
+    # si imposta solo come variabile d'ambiente/secret (vedi backend/README.md),
+    # esattamente come app.jwt.secret. Non viene mai restituita da nessun
+    # endpoint: il backend la usa solo lato server per interrogare Google.
+    api-key: ${GOOGLE_PLACES_API_KEY:}
+    # Place ID della scheda Google Business del locale/attività (non è un segreto,
+    # si trova con https://developers.google.com/maps/documentation/places/web-service/place-id).
+    place-id: ${GOOGLE_PLACES_PLACE_ID:}
+    # Per quanti minuti tenere in cache le recensioni prima di richiamare Google di nuovo
+    # (le API Places sono a pagamento oltre una soglia: la cache evita di sforare inutilmente).
+    cache-minutes: ${GOOGLE_PLACES_CACHE_MINUTES:180}
+    # Numero massimo di recensioni da mostrare sul sito
+    max-reviews: ${GOOGLE_PLACES_MAX_REVIEWS:6}
 
 logging:
   level:

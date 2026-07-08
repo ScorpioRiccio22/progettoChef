@@ -55,6 +55,13 @@ services:
       # Limiti upload video: allineati al default dell'app (vedi backend/README.md).
       MULTIPART_MAX_FILE_SIZE: ${MULTIPART_MAX_FILE_SIZE:-210MB}
       MULTIPART_MAX_REQUEST_SIZE: ${MULTIPART_MAX_REQUEST_SIZE:-210MB}
+      # Recensioni Google (opzionali): se non impostate, il sito mostra le
+      # testimonianze manuali come fallback. Impostare come secret dell'hosting,
+      # mai in chiaro in questo file o nel repository.
+      GOOGLE_PLACES_API_KEY: ${GOOGLE_PLACES_API_KEY:-}
+      GOOGLE_PLACES_PLACE_ID: ${GOOGLE_PLACES_PLACE_ID:-}
+      GOOGLE_PLACES_CACHE_MINUTES: ${GOOGLE_PLACES_CACHE_MINUTES:-180}
+      GOOGLE_PLACES_MAX_REVIEWS: ${GOOGLE_PLACES_MAX_REVIEWS:-6}
     volumes:
       - andreamoiochef-uploads-staging:/app/uploads
     healthcheck:

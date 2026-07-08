@@ -3,7 +3,7 @@ import AboutSection from '@/components/sections/AboutSection'
 import ServicesSection from '@/components/sections/ServicesSection'
 import RecipesPreviewSection from '@/components/sections/RecipesPreviewSection'
 import EventsPreviewSection from '@/components/sections/EventsPreviewSection'
-import TestimonialsSection from '@/components/sections/TestimonialsSection'
+import GoogleReviewsSection from '@/components/sections/GoogleReviewsSection'
 import NewsletterSection from '@/components/sections/NewsletterSection'
 import ContactPreviewSection from '@/components/sections/ContactPreviewSection'
 
@@ -15,7 +15,7 @@ export default function HomePage() {
       <ServicesSection />
       <RecipesPreviewSection />
       <EventsPreviewSection />
-      <TestimonialsSection />
+      <GoogleReviewsSection />
       <NewsletterSection />
       <ContactPreviewSection />
     </>

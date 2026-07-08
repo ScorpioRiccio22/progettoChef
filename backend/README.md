@@ -65,6 +65,51 @@ ADMIN_SEED_PASSWORD=admin123
 ⚠️ Da cambiare assolutamente in produzione (e idealmente anche in sviluppo,
 se il backend è esposto fuori dalla rete locale).
 
+## Recensioni Google (homepage)
+
+La homepage sostituisce automaticamente le testimonianze manuali con le
+recensioni Google reali del locale, quando l'integrazione è configurata.
+L'endpoint pubblico `GET /api/public/google-reviews` interroga la Google
+Places API ("Place Details") **lato server** e restituisce al frontend solo
+i dati necessari (nome, valutazione, recensioni): **la chiave API non viene
+mai esposta al browser né restituita da nessuna risposta**.
+
+Per attivarla servono due variabili d'ambiente, da impostare **solo** come
+secret dell'hosting/CI (mai committate, mai in `application.yml`, mai nel
+pannello admin):
+
+```
+GOOGLE_PLACES_API_KEY=la-tua-chiave-api-google-cloud
+GOOGLE_PLACES_PLACE_ID=il-place-id-della-tua-scheda-google
+```
+
+Opzionali, con default sensati:
+
+```
+GOOGLE_PLACES_CACHE_MINUTES=180   # quante ore tenere in cache prima di richiamare Google
+GOOGLE_PLACES_MAX_REVIEWS=6       # quante recensioni mostrare sul sito
+```
+
+Note sulla sicurezza della chiave:
+
+- **Non è possibile "hashare" una chiave API** come si farebbe con una
+  password: il backend deve poterla leggere in chiaro per autenticare le
+  chiamate verso Google, quindi un hash (che è irreversibile) la renderebbe
+  inutilizzabile. La protezione reale è che la chiave vive **solo** come
+  variabile d'ambiente/secret sul server, non viene mai salvata a
+  database, non compare in nessun log applicativo, e nessun endpoint
+  (pubblico o admin) la restituisce mai nel corpo della risposta.
+- In produzione, imposta la variabile come *secret* della piattaforma di
+  hosting (es. secret di Docker/Kubernetes, "Environment Variables" del
+  provider, GitHub Actions secret per il deploy) e non in un file `.env`
+  committato nel repository.
+- Su Google Cloud Console, restringi la chiave API alla sola "Places API" e,
+  se possibile, alle IP del tuo server, per limitare i danni in caso di
+  fuga accidentale.
+- Se le variabili non sono impostate, l'endpoint risponde con
+  `{ "configured": false, ... }` e il sito mostra automaticamente le
+  testimonianze inserite a mano dal pannello admin.
+
 ## Avvio in locale (senza Docker)
 
 Richiede un PostgreSQL in esecuzione su `localhost:5432` con un database

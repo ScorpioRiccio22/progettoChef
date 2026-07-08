@@ -5,6 +5,7 @@ import { ThemeProvider, CssBaseline } from '@mui/material'
 import { store } from '@/store'
 import { useAppDispatch } from '@/hooks/redux'
 import { loadSiteContent } from '@/store/slices/siteContentSlice'
+import { loadGoogleReviews } from '@/store/slices/googleReviewsSlice'
 import { muiTheme } from '@/theme'
 import Layout from '@/components/layout/Layout'
 import ScrollToTop from '@/components/layout/ScrollToTop'
@@ -13,6 +14,7 @@ import AboutPage from '@/pages/AboutPage'
 import RecipesPage from '@/pages/RecipesPage'
 import EventsPage from '@/pages/EventsPage'
 import ContactPage from '@/pages/ContactPage'
+import ServicesPage from '@/pages/ServicesPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import AdminLoginPage from '@/pages/admin/AdminLoginPage'
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
@@ -32,6 +34,7 @@ function ContentLoader() {
   const dispatch = useAppDispatch()
   useEffect(() => {
     dispatch(loadSiteContent())
+    dispatch(loadGoogleReviews())
   }, [dispatch])
   return null
 }
@@ -51,6 +54,7 @@ export default function App() {
               <Route path="/chi-siamo" element={<AboutPage />} />
               <Route path="/ricettario" element={<RecipesPage />} />
               <Route path="/eventi" element={<EventsPage />} />
+              <Route path="/servizi" element={<ServicesPage />} />
               <Route path="/contatti" element={<ContactPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
