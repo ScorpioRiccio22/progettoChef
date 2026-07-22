@@ -10,6 +10,8 @@ import type {
   CoreValue,
   Dish,
   EventType,
+  Menu,
+  MenuItem,
   Milestone,
   ServiceOffering,
   SiteSettings,
@@ -29,14 +31,23 @@ export const adminUpdateSiteSettings = (payload: SiteSettings) =>
 
 export interface ServiceOfferingRequest {
   title: string
+  /** Se omesso o vuoto, il backend lo genera automaticamente dal titolo. */
+  slug?: string
   tagline?: string
   description?: string
+  bodyContent?: string
   icon?: string
   imageUrl?: string | null
+  videoUrl?: string | null
+  galleryImageUrls?: string[]
   published?: boolean
 }
 
 export const publicListServices = () => api.get<ServiceOffering[]>('/public/services').then((r) => r.data)
+
+/** Il servizio pubblicato corrispondente allo slug, per la pagina di dettaglio pubblica. */
+export const publicGetServiceBySlug = (slug: string) =>
+  api.get<ServiceOffering>(`/public/services/${slug}`).then((r) => r.data)
 
 export const adminListServices = () => api.get<ServiceOffering[]>('/admin/services').then((r) => r.data)
 
@@ -51,7 +62,7 @@ export const adminDeleteService = (id: number) => api.delete(`/admin/services/${
 export const adminReorderServices = (orderedIds: number[]) =>
   api.put('/admin/services/reorder', { orderedIds })
 
-// --- Piatti (ricettario) ----------------------------------------------------
+// --- Piatti (A Modo Mio) -----------------------------------------------------
 
 export interface DishRequest {
   name: string
@@ -75,19 +86,78 @@ export const adminDeleteDish = (id: number) => api.delete(`/admin/dishes/${id}`)
 
 export const adminReorderDishes = (orderedIds: number[]) => api.put('/admin/dishes/reorder', { orderedIds })
 
+// --- Menu "A Modo Mio" (liste di piatti con prezzo, anche per il negozio fisico) --------
+
+export interface MenuRequest {
+  name: string
+  /** 'SHOP' o 'EVENTS'. Se omesso, il backend usa 'SHOP' di default. */
+  type?: 'SHOP' | 'EVENTS'
+  description?: string
+  /** Se true, questo diventa l'unico menu attivo per il suo tipo. */
+  active?: boolean
+}
+
+export interface MenuItemRequest {
+  name: string
+  category?: string
+  description?: string
+  imageUrl?: string | null
+  price: number
+}
+
+/** Il menu attualmente "in vetrina" per il tipo indicato (SHOP di default, oppure EVENTS), o null se nessuno attivo. */
+export const publicGetActiveMenu = (type: 'SHOP' | 'EVENTS' = 'SHOP') =>
+  api.get<Menu>('/public/menus/active', { params: { type } }).then((r) => (r.status === 204 ? null : r.data))
+
+export const adminListMenus = (type: 'SHOP' | 'EVENTS' = 'SHOP') =>
+  api.get<Menu[]>('/admin/menus', { params: { type } }).then((r) => r.data)
+
+export const adminCreateMenu = (payload: MenuRequest) => api.post<Menu>('/admin/menus', payload).then((r) => r.data)
+
+export const adminUpdateMenu = (id: number, payload: MenuRequest) =>
+  api.put<Menu>(`/admin/menus/${id}`, payload).then((r) => r.data)
+
+export const adminActivateMenu = (id: number) => api.put<Menu>(`/admin/menus/${id}/activate`).then((r) => r.data)
+
+export const adminDeactivateMenu = (id: number) => api.put(`/admin/menus/${id}/deactivate`)
+
+export const adminDeleteMenu = (id: number) => api.delete(`/admin/menus/${id}`)
+
+export const adminReorderMenus = (orderedIds: number[]) => api.put('/admin/menus/reorder', { orderedIds })
+
+export const adminAddMenuItem = (menuId: number, payload: MenuItemRequest) =>
+  api.post<MenuItem>(`/admin/menus/${menuId}/items`, payload).then((r) => r.data)
+
+export const adminUpdateMenuItem = (menuId: number, itemId: number, payload: MenuItemRequest) =>
+  api.put<MenuItem>(`/admin/menus/${menuId}/items/${itemId}`, payload).then((r) => r.data)
+
+export const adminDeleteMenuItem = (menuId: number, itemId: number) =>
+  api.delete(`/admin/menus/${menuId}/items/${itemId}`)
+
+export const adminReorderMenuItems = (menuId: number, orderedIds: number[]) =>
+  api.put(`/admin/menus/${menuId}/items/reorder`, { orderedIds })
+
 // --- Tipologie di eventi ----------------------------------------------------
 
 export interface EventTypeRequest {
   title: string
+  /** Se omesso o vuoto, il backend lo genera automaticamente dal titolo. */
+  slug?: string
   description?: string
+  bodyContent?: string
   icon?: string
   imageUrl?: string | null
   videoUrl?: string | null
   details?: string[]
+  galleryImageUrls?: string[]
   published?: boolean
 }
 
 export const publicListEventTypes = () => api.get<EventType[]>('/public/event-types').then((r) => r.data)
+
+/** La tipologia di evento pubblicata corrispondente allo slug, per la sua landing page pubblica. */
+export const publicGetEventTypeBySlug = (slug: string) =>
+  api.get<EventType>(`/public/event-types/${slug}`).then((r) => r.data)
 
 export const adminListEventTypes = () => api.get<EventType[]>('/admin/event-types').then((r) => r.data)
 
@@ -126,7 +196,7 @@ export const adminDeleteTestimonial = (id: number) => api.delete(`/admin/testimo
 export const adminReorderTestimonials = (orderedIds: number[]) =>
   api.put('/admin/testimonials/reorder', { orderedIds })
 
-// --- Chi siamo: tappe del percorso (milestones) -----------------------------
+// --- La mia storia: tappe del percorso (milestones) -------------------------
 
 export interface MilestoneRequest {
   year: string
@@ -148,7 +218,7 @@ export const adminDeleteMilestone = (id: number) => api.delete(`/admin/milestone
 export const adminReorderMilestones = (orderedIds: number[]) =>
   api.put('/admin/milestones/reorder', { orderedIds })
 
-// --- Chi siamo: principi/valori della cucina --------------------------------
+// --- La mia storia: principi/valori della cucina ---------------------------
 
 export interface CoreValueRequest {
   title: string
@@ -200,3 +270,20 @@ export const adminUploadVideo = (file: File, onProgress?: (percent: number) => v
     })
     .then((r) => r.data.url)
 }
+
+// --- Testi configurabili del sito (titoli, descrizioni, testo dei pulsanti...) --------
+
+export interface SiteTextItem {
+  key: string
+  value: string
+  category: string
+  label: string
+}
+
+/** Tutti i testi del sito in un'unica mappa chiave -> valore, per popolare le pagine pubbliche. */
+export const publicGetSiteTexts = () => api.get<Record<string, string>>('/public/site-texts').then((r) => r.data)
+
+export const adminListSiteTexts = () => api.get<SiteTextItem[]>('/admin/site-texts').then((r) => r.data)
+
+export const adminUpdateSiteText = (key: string, value: string) =>
+  api.put<SiteTextItem>(`/admin/site-texts/${encodeURIComponent(key)}`, { value }).then((r) => r.data)

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Alert, Box, Button, CircularProgress, IconButton, Paper, Stack, Typography } from '@mui/material'
+import { Alert, Button, CircularProgress, IconButton } from '@mui/material'
 import DownloadIcon from '@mui/icons-material/Download'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
@@ -53,55 +53,51 @@ export default function AdminNewsletterPage() {
     new Date(iso).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 
   return (
-    <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
-        <Box>
-          <Typography variant="h5" sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600 }}>
-            Iscritti newsletter
-          </Typography>
-          <Typography sx={{ color: '#5C5246' }}>
+    <div>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-xl font-semibold">Iscritti newsletter</h1>
+          <p className="text-clay">
             {items.length} {items.length === 1 ? 'iscritto' : 'iscritti'} alla newsletter.
-          </Typography>
-        </Box>
+          </p>
+        </div>
         <Button
           variant="outlined"
           startIcon={<DownloadIcon />}
           onClick={handleExport}
           disabled={exporting || items.length === 0}
-          sx={{ borderColor: '#B8893E', color: '#1C1712' }}
+          className="whitespace-nowrap border-gold-500 text-ink normal-case"
         >
           {exporting ? 'Esportazione…' : 'Esporta CSV'}
         </Button>
-      </Stack>
+      </div>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+        <Alert severity="error" className="mb-6" onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+        <div className="flex justify-center py-12">
           <CircularProgress />
-        </Box>
+        </div>
       ) : items.length === 0 ? (
-        <Typography sx={{ color: '#5C5246' }}>Nessun iscritto ancora.</Typography>
+        <p className="text-clay">Nessun iscritto ancora.</p>
       ) : (
-        <Stack spacing={1.5}>
+        <div className="flex flex-col gap-3">
           {items.map((s) => (
-            <Paper key={s.id} variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Typography sx={{ flex: 1 }}>{s.email}</Typography>
-                <Typography sx={{ color: '#8A7F70', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
-                  iscritto il {formatDate(s.subscribedAt)}
-                </Typography>
+            <div key={s.id} className="rounded-xl border border-black/10 p-4">
+              <div className="flex items-center gap-4">
+                <p className="flex-1">{s.email}</p>
+                <p className="whitespace-nowrap text-[0.78rem] text-clay">iscritto il {formatDate(s.subscribedAt)}</p>
                 <IconButton onClick={() => setDeleteTarget(s)} aria-label="Elimina">
                   <DeleteIcon fontSize="small" />
                 </IconButton>
-              </Stack>
-            </Paper>
+              </div>
+            </div>
           ))}
-        </Stack>
+        </div>
       )}
 
       <ConfirmDeleteDialog
@@ -110,6 +106,6 @@ export default function AdminNewsletterPage() {
         onCancel={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
       />
-    </Box>
+    </div>
   )
 }

@@ -1,19 +1,5 @@
 import { useEffect, useState } from 'react'
-import {
-  Alert,
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material'
+import { Alert, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material'
 import DownloadIcon from '@mui/icons-material/Download'
 import DeleteIcon from '@mui/icons-material/Delete'
 import MailOpenIcon from '@mui/icons-material/DraftsOutlined'
@@ -83,65 +69,53 @@ export default function AdminMessagesPage() {
     new Date(iso).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 
   return (
-    <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
-        <Box>
-          <Typography variant="h5" sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600 }}>
-            Messaggi di contatto
-          </Typography>
-          <Typography sx={{ color: '#5C5246' }}>I messaggi inviati dal form pubblico di contatto.</Typography>
-        </Box>
+    <div>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-xl font-semibold">Messaggi di contatto</h1>
+          <p className="text-clay">I messaggi inviati dal form pubblico di contatto.</p>
+        </div>
         <Button
           variant="outlined"
           startIcon={<DownloadIcon />}
           onClick={handleExport}
           disabled={exporting || items.length === 0}
-          sx={{ borderColor: '#B8893E', color: '#1C1712' }}
+          className="whitespace-nowrap border-gold-500 text-ink normal-case"
         >
           {exporting ? 'Esportazione…' : 'Esporta CSV'}
         </Button>
-      </Stack>
+      </div>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+        <Alert severity="error" className="mb-6" onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+        <div className="flex justify-center py-12">
           <CircularProgress />
-        </Box>
+        </div>
       ) : items.length === 0 ? (
-        <Typography sx={{ color: '#5C5246' }}>Nessun messaggio ricevuto finora.</Typography>
+        <p className="text-clay">Nessun messaggio ricevuto finora.</p>
       ) : (
-        <Stack spacing={1.5}>
+        <div className="flex flex-col gap-3">
           {items.map((m) => (
-            <Paper
+            <div
               key={m.id}
-              variant="outlined"
-              sx={{
-                p: 2,
-                borderRadius: 2,
-                cursor: 'pointer',
-                backgroundColor: m.read ? 'transparent' : 'rgba(184,137,62,0.06)',
-              }}
+              className={`cursor-pointer rounded-xl border border-black/10 p-4 ${m.read ? 'bg-transparent' : 'bg-gold-500/[.06]'}`}
               onClick={() => openMessage(m)}
             >
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography sx={{ fontWeight: m.read ? 500 : 700 }}>{m.name}</Typography>
-                    <Typography sx={{ color: '#8A7F70', fontSize: '0.8rem' }}>· {m.email}</Typography>
+              <div className="flex items-center gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className={m.read ? 'font-medium' : 'font-bold'}>{m.name}</p>
+                    <p className="text-[0.8rem] text-clay">· {m.email}</p>
                     {!m.read && <Chip label="Nuovo" size="small" color="warning" />}
-                  </Stack>
-                  <Typography sx={{ color: '#5C5246', fontSize: '0.88rem' }} noWrap>
-                    {m.subject}
-                  </Typography>
-                </Box>
-                <Typography sx={{ color: '#8A7F70', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
-                  {formatDate(m.createdAt)}
-                </Typography>
+                  </div>
+                  <p className="truncate text-[0.88rem] text-clay">{m.subject}</p>
+                </div>
+                <p className="whitespace-nowrap text-[0.78rem] text-clay">{formatDate(m.createdAt)}</p>
                 <IconButton
                   onClick={(e) => {
                     e.stopPropagation()
@@ -151,31 +125,34 @@ export default function AdminMessagesPage() {
                 >
                   <DeleteIcon fontSize="small" />
                 </IconButton>
-              </Stack>
-            </Paper>
+              </div>
+            </div>
           ))}
-        </Stack>
+        </div>
       )}
 
       <Dialog open={!!selected} onClose={() => setSelected(null)} maxWidth="sm" fullWidth>
         {selected && (
           <>
-            <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <DialogTitle className="flex items-center gap-2">
               <MailOpenIcon fontSize="small" /> {selected.subject}
             </DialogTitle>
             <DialogContent>
-              <Stack spacing={1.5}>
-                <Typography sx={{ color: '#8A7F70', fontSize: '0.85rem' }}>
+              <div className="flex flex-col gap-3">
+                <p className="text-[0.85rem] text-clay">
                   Da <strong>{selected.name}</strong> ({selected.email})
                   {selected.phone ? ` · ${selected.phone}` : ''} — {formatDate(selected.createdAt)}
-                </Typography>
-                <Typography sx={{ whiteSpace: 'pre-wrap', color: '#332A21' }}>{selected.message}</Typography>
-              </Stack>
+                </p>
+                <p className="whitespace-pre-wrap text-ink-soft">{selected.message}</p>
+              </div>
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setSelected(null)}>Chiudi</Button>
+              <Button onClick={() => setSelected(null)} className="normal-case">
+                Chiudi
+              </Button>
               <Button
                 color="error"
+                className="normal-case"
                 onClick={() => {
                   setDeleteTarget(selected)
                 }}
@@ -193,6 +170,6 @@ export default function AdminMessagesPage() {
         onCancel={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
       />
-    </Box>
+    </div>
   )
 }

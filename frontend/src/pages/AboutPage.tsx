@@ -1,10 +1,10 @@
-import { Box, Container, Stack, Typography } from '@mui/material'
+import { Container } from '@mui/material'
 import PageHero from '@/components/ui/PageHero'
 import NewsletterSection from '@/components/sections/NewsletterSection'
 import { useSiteContent } from '@/hooks/useSiteContent'
 
 export default function AboutPage() {
-  const { brand, settings, about } = useSiteContent()
+  const { brand, settings, about, t } = useSiteContent()
 
   const paragraph1 =
     settings?.aboutParagraph1 ||
@@ -19,68 +19,55 @@ export default function AboutPage() {
   return (
     <>
       <PageHero
-        eyebrow="La mia storia"
+        eyebrow={t('about.page.eyebrow', 'La mia storia')}
         title={`La storia di ${brand.name}`}
-        description="Non un'azienda, ma un percorso: dalla cucina di famiglia alle cucine professionali di Napoli, fino a diventare il servizio su misura che porto oggi sulla tua tavola."
+        description={t(
+          'about.page.description',
+          "Non un'azienda, ma un percorso: dalla cucina di famiglia alle cucine professionali di Napoli, fino a diventare il servizio su misura che porto oggi sulla tua tavola.",
+        )}
       />
 
-      <Box sx={{ backgroundColor: '#FBF6EC', py: { xs: 8, md: 11 } }}>
+      <div className="bg-ivory py-16 md:py-[88px]">
         <Container maxWidth="md">
-          <Stack spacing={3} sx={{ mb: 8 }}>
-            <Typography sx={{ color: '#332A21', fontSize: '1.1rem', lineHeight: 1.85 }}>{paragraph1}</Typography>
-            <Typography sx={{ color: '#332A21', fontSize: '1.1rem', lineHeight: 1.85 }}>{paragraph2}</Typography>
-          </Stack>
+          <div className="mb-16 flex flex-col gap-6">
+            <p className="text-[1.1rem] leading-[1.85] text-ink-soft">{paragraph1}</p>
+            <p className="text-[1.1rem] leading-[1.85] text-ink-soft">{paragraph2}</p>
+          </div>
 
           {milestones.length > 0 && (
             <>
-              <Typography
-                sx={{ fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', fontSize: '0.78rem', color: '#8A6428', mb: 3 }}
-              >
-                Le tappe della mia storia
-              </Typography>
-              <Stack spacing={0} sx={{ mb: 8, borderLeft: '2px solid #E6C588', pl: 4 }}>
+              <p className="mb-6 text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-gold-600">
+                {t('about.milestones.heading', 'Le tappe della mia storia')}
+              </p>
+              <div className="mb-16 border-l-2 border-gold-200 pl-8">
                 {milestones.map((milestone) => (
-                  <Box key={milestone.id} sx={{ position: 'relative', pb: 4 }}>
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        left: -45,
-                        top: 2,
-                        width: 12,
-                        height: 12,
-                        borderRadius: '50%',
-                        backgroundColor: '#B8893E',
-                      }}
-                    />
-                    <Typography sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600, color: '#1C1712', mb: 0.5 }}>
-                      {milestone.year}
-                    </Typography>
-                    <Typography sx={{ color: '#332A21' }}>{milestone.text}</Typography>
-                  </Box>
+                  <div key={milestone.id} className="relative pb-8">
+                    <div className="absolute -left-[45px] top-0.5 h-3 w-3 rounded-full bg-gold-500" />
+                    <p className="mb-1 font-display font-semibold">{milestone.year}</p>
+                    <p className="text-ink-soft">{milestone.text}</p>
+                  </div>
                 ))}
-              </Stack>
+              </div>
             </>
           )}
 
           {values.length > 0 && (
             <>
-              <Typography
-                sx={{ fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', fontSize: '0.78rem', color: '#8A6428', mb: 3 }}
-              >
-                I principi della mia cucina
-              </Typography>
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3 }}>
+              <p className="mb-6 text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-gold-600">
+                {t('about.values.heading', 'I principi della mia cucina')}
+              </p>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 {values.map((value) => (
-                  <Box key={value.id} sx={{ backgroundColor: '#F3E9D6', borderRadius: 3, p: 3.5 }}>
-                    <Typography sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600, mb: 1 }}>{value.title}</Typography>
-                    <Typography sx={{ color: '#332A21', fontSize: '0.92rem', lineHeight: 1.7 }}>{value.text}</Typography>
-                  </Box>
+                  <div key={value.id} className="rounded-2xl bg-ivory-deep p-7">
+                    <p className="mb-2 font-display font-semibold">{value.title}</p>
+                    <p className="text-[0.92rem] leading-relaxed text-ink-soft">{value.text}</p>
+                  </div>
                 ))}
-              </Box>
+              </div>
             </>
           )}
         </Container>
-      </Box>
+      </div>
 
       <NewsletterSection />
     </>

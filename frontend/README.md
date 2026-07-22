@@ -86,9 +86,9 @@ src/
 
 | Path | Pagina | Contenuto |
 |------|--------|-----------|
-| `/` | Homepage | Scroll verticale fluido: Hero → Chi siamo → Servizi → Ricettario → Eventi → Testimonianze → Newsletter → Contatti |
+| `/` | Homepage | Scroll verticale fluido: Hero → Chi siamo → Servizi → A MoDo Mio → Eventi → Testimonianze → Newsletter → Contatti |
 | `/chi-siamo` | Chi siamo | Storia, percorso, principi della cucina |
-| `/ricettario` | Ricettario | Piatti con filtro per categoria (antipasti/primi/secondi/dolci) |
+| `/A MoDo Mio` | A MoDo Mio | Piatti con filtro per categoria (antipasti/primi/secondi/dolci) |
 | `/eventi` | Eventi | Tipologie di evento, come funziona il servizio |
 | `/contatti` | Contatti | Form + WhatsApp aziendale + email diretti |
 | `*` | 404 | Pagina non trovata |
@@ -97,7 +97,7 @@ src/
 
 La navbar, quando ci si trova sulla homepage, scrolla in modo fluido alle
 sezioni; quando ci si trova su un'altra pagina, naviga prima alla home e poi
-scrolla. I link "Chi siamo / Ricettario / Eventi / Contatti" portano sempre
+scrolla. I link "Chi siamo / A MoDo Mio / Eventi / Contatti" portano sempre
 alla pagina completa dedicata.
 
 ## Placeholder da sostituire

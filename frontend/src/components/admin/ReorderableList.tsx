@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Box, IconButton, Stack } from '@mui/material'
+import { IconButton } from '@mui/material'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 
@@ -29,10 +29,10 @@ export default function ReorderableList<T extends { id: number }>({
   }
 
   return (
-    <Stack spacing={1.5}>
+    <div className="flex flex-col gap-3">
       {items.map((item, index) => (
-        <Stack key={item.id} direction="row" spacing={1} alignItems="flex-start">
-          <Stack sx={{ pt: 0.5 }}>
+        <div key={item.id} className="flex items-start gap-1">
+          <div className="flex flex-col pt-0.5">
             <IconButton size="small" disabled={index === 0} onClick={() => move(index, -1)} aria-label="Sposta su">
               <ArrowUpwardIcon fontSize="small" />
             </IconButton>
@@ -44,10 +44,10 @@ export default function ReorderableList<T extends { id: number }>({
             >
               <ArrowDownwardIcon fontSize="small" />
             </IconButton>
-          </Stack>
-          <Box sx={{ flex: 1, minWidth: 0 }}>{renderItem(item, index)}</Box>
-        </Stack>
+          </div>
+          <div className="min-w-0 flex-1">{renderItem(item, index)}</div>
+        </div>
       ))}
-    </Stack>
+    </div>
   )
 }

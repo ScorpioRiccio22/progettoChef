@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
   Alert,
-  Box,
   Button,
   Chip,
   CircularProgress,
@@ -11,11 +10,8 @@ import {
   DialogTitle,
   FormControlLabel,
   IconButton,
-  Paper,
-  Stack,
   Switch,
   TextField,
-  Typography,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
@@ -107,63 +103,61 @@ export default function AdminTestimonialsPage() {
   }
 
   return (
-    <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
-        <Box>
-          <Typography variant="h5" sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600 }}>
-            Testimonianze (fallback)
-          </Typography>
-          <Typography sx={{ color: '#5C5246' }}>
+    <div>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-xl font-semibold">Testimonianze (fallback)</h1>
+          <p className="text-clay">
             Mostrate sul sito solo se le recensioni Google non sono configurate o non disponibili. Per le recensioni
             Google vere e proprie, imposta la chiave API in <strong>Impostazioni sito</strong>.
-          </Typography>
-        </Box>
+          </p>
+        </div>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={openCreate}
-          sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+          className="whitespace-nowrap bg-gold-500 text-ink normal-case hover:bg-gold-300"
         >
           Nuova testimonianza
         </Button>
-      </Stack>
+      </div>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+        <Alert severity="error" className="mb-6" onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+        <div className="flex justify-center py-12">
           <CircularProgress />
-        </Box>
+        </div>
       ) : items.length === 0 ? (
-        <Typography sx={{ color: '#5C5246' }}>Nessuna testimonianza ancora. Aggiungine una.</Typography>
+        <p className="text-clay">Nessuna testimonianza ancora. Aggiungine una.</p>
       ) : (
         <ReorderableList
           items={items}
           onReorder={handleReorder}
           renderItem={(item) => (
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-              <Stack direction="row" spacing={2} alignItems="flex-start">
-                <FormatQuoteIcon sx={{ color: '#B8893E', mt: 0.5 }} />
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography sx={{ fontWeight: 600 }}>{item.author}</Typography>
-                    <Typography sx={{ color: '#8A7F70', fontSize: '0.8rem' }}>· {item.role}</Typography>
+            <div className="rounded-xl border border-black/10 p-4">
+              <div className="flex items-start gap-4">
+                <FormatQuoteIcon className="mt-0.5 text-gold-500" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold">{item.author}</p>
+                    <p className="text-[0.8rem] text-clay">· {item.role}</p>
                     {!item.published && <Chip label="Non pubblicato" size="small" color="default" />}
-                  </Stack>
-                  <Typography sx={{ color: '#5C5246', fontSize: '0.88rem' }}>{item.quote}</Typography>
-                </Box>
+                  </div>
+                  <p className="text-[0.88rem] text-clay">{item.quote}</p>
+                </div>
                 <IconButton onClick={() => openEdit(item)} aria-label="Modifica">
                   <EditIcon fontSize="small" />
                 </IconButton>
                 <IconButton onClick={() => setDeleteTarget(item)} aria-label="Elimina">
                   <DeleteIcon fontSize="small" />
                 </IconButton>
-              </Stack>
-            </Paper>
+              </div>
+            </div>
           )}
         />
       )}
@@ -171,7 +165,7 @@ export default function AdminTestimonialsPage() {
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingId ? 'Modifica testimonianza' : 'Nuova testimonianza'}</DialogTitle>
         <DialogContent>
-          <Stack spacing={2.5} sx={{ mt: 1 }}>
+          <div className="mt-2 flex flex-col gap-5">
             <TextField
               label="Autore"
               fullWidth
@@ -203,17 +197,17 @@ export default function AdminTestimonialsPage() {
               }
               label="Pubblicata (visibile sul sito)"
             />
-          </Stack>
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)} disabled={saving}>
+          <Button onClick={() => setDialogOpen(false)} disabled={saving} className="normal-case">
             Annulla
           </Button>
           <Button
             onClick={handleSave}
             variant="contained"
             disabled={saving || !form.author || !form.quote}
-            sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+            className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
             {saving ? 'Salvataggio…' : 'Salva'}
           </Button>
@@ -227,6 +221,6 @@ export default function AdminTestimonialsPage() {
         onConfirm={handleDelete}
         loading={deleting}
       />
-    </Box>
+    </div>
   )
 }

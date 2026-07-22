@@ -1,21 +1,26 @@
 import { useMemo, useState } from 'react'
-import { Box, Button, Container, Stack, Typography } from '@mui/material'
+import { Button, Chip, Container } from '@mui/material'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
+import StorefrontIcon from '@mui/icons-material/Storefront'
 import PageHero from '@/components/ui/PageHero'
 import DishCard from '@/components/ui/DishCard'
 import { useSiteContent } from '@/hooks/useSiteContent'
 
-const CATEGORIES: { key: string; label: string }[] = [
-  { key: 'tutti', label: 'Tutti i piatti' },
-  { key: 'antipasti', label: 'Antipasti' },
-  { key: 'primi', label: 'Primi' },
-  { key: 'secondi', label: 'Secondi' },
-  { key: 'dolci', label: 'Dolci' },
-]
+function formatPrice(price: number) {
+  return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(price)
+}
 
 export default function RecipesPage() {
-  const { dishes, contact } = useSiteContent()
+  const { dishes, activeMenu, contact, t } = useSiteContent()
   const [activeCategory, setActiveCategory] = useState<string>('tutti')
+
+  const CATEGORIES: { key: string; label: string }[] = [
+    { key: 'tutti', label: t('recipes.category.tutti', 'Tutti i piatti') },
+    { key: 'antipasti', label: t('recipes.category.antipasti', 'Antipasti') },
+    { key: 'primi', label: t('recipes.category.primi', 'Primi') },
+    { key: 'secondi', label: t('recipes.category.secondi', 'Secondi') },
+    { key: 'dolci', label: t('recipes.category.dolci', 'Dolci') },
+  ]
 
   const filteredDishes = useMemo(
     () => (activeCategory === 'tutti' ? dishes : dishes.filter((dish) => dish.category === activeCategory)),
@@ -25,59 +30,89 @@ export default function RecipesPage() {
   return (
     <>
       <PageHero
-        eyebrow="Ricettario"
-        title="Cosa porto sulla tua tavola"
-        description="Una selezione del ricettario che uso per costruire i menu: ogni servizio viene poi personalizzato in base ai tuoi gusti, alle stagioni e all'occasione."
+        eyebrow={t('recipes.page.eyebrow', 'A Modo Mio')}
+        title={t('recipes.page.title', 'Cosa porto sulla tua tavola')}
+        description={t(
+          'recipes.page.description',
+          'Una selezione di "A MoDo mio" che uso per costruire i menu: ogni servizio viene poi personalizzato in base ai tuoi gusti, alle stagioni e all\'occasione.',
+        )}
       />
 
-      <Box sx={{ backgroundColor: '#FBF6EC', py: { xs: 7, md: 10 } }}>
+      {activeMenu && activeMenu.items.length > 0 && (
+        <div className="bg-ivory-deep py-12 md:py-16">
+          <Container maxWidth="lg">
+            <div className="mb-2 flex items-center gap-3">
+              <StorefrontIcon className="text-gold-600" />
+              <Chip
+                label={t('recipes.menuBanner.label', 'In vetrina ora nel negozio')}
+                size="small"
+                className="bg-gold-500/20 font-semibold text-gold-600"
+              />
+            </div>
+            <h2 className="mb-2 font-display text-2xl font-semibold md:text-[1.9rem]">{activeMenu.name}</h2>
+            {activeMenu.description && (
+              <p className="mb-6 max-w-[640px] text-ink-soft">{activeMenu.description}</p>
+            )}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+              {activeMenu.items.map((item) => (
+                <div key={item.id} className="flex items-baseline justify-between gap-4 rounded-xl bg-white p-4">
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold">{item.name}</p>
+                    {item.description && <p className="truncate text-[0.85rem] text-clay">{item.description}</p>}
+                  </div>
+                  <p className="whitespace-nowrap font-bold text-gold-600">{formatPrice(item.price)}</p>
+                </div>
+              ))}
+            </div>
+          </Container>
+        </div>
+      )}
+
+      <div className="bg-ivory py-14 md:py-20">
         <Container maxWidth="lg">
-          <Stack direction="row" spacing={1.2} flexWrap="wrap" sx={{ mb: 5, rowGap: 1.2 }}>
+          <div className="mb-10 flex flex-wrap gap-3">
             {CATEGORIES.map((category) => (
               <Button
                 key={category.key}
                 onClick={() => setActiveCategory(category.key)}
                 variant={activeCategory === category.key ? 'contained' : 'outlined'}
                 size="small"
-                sx={
+                className={
                   activeCategory === category.key
-                    ? { backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#8A6428' } }
-                    : { borderColor: 'rgba(28,23,18,0.2)', color: '#332A21', '&:hover': { borderColor: '#B8893E' } }
+                    ? 'bg-gold-500 text-ink normal-case hover:bg-gold-600'
+                    : 'border-ink/20 text-ink-soft normal-case hover:border-gold-500'
                 }
               >
                 {category.label}
               </Button>
             ))}
-          </Stack>
+          </div>
 
           {filteredDishes.length === 0 ? (
-            <Typography sx={{ color: '#5C5246', textAlign: 'center', py: 4 }}>
-              Nessun piatto disponibile in questa categoria al momento.
-            </Typography>
+            <p className="py-8 text-center text-clay">
+              {t('recipes.emptyCategory', 'Nessun piatto disponibile in questa categoria al momento.')}
+            </p>
           ) : (
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
-                gap: 3,
-              }}
-            >
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
               {filteredDishes.map((dish) => (
                 <DishCard key={dish.id} dish={dish} />
               ))}
-            </Box>
+            </div>
           )}
         </Container>
-      </Box>
+      </div>
 
-      <Box sx={{ backgroundColor: '#F3E9D6', py: { xs: 8, md: 10 } }}>
-        <Container maxWidth="sm" sx={{ textAlign: 'center' }}>
-          <Typography variant="h2" sx={{ fontSize: { xs: '1.6rem', md: '2rem' }, mb: 1.5 }}>
-            Vuoi un menu pensato per te?
-          </Typography>
-          <Typography sx={{ color: '#332A21', mb: 3 }}>
-            Raccontami l'occasione, il numero di invitati e le tue preferenze: costruiamo insieme il menu giusto.
-          </Typography>
+      <div className="bg-ivory-deep py-16 md:py-20">
+        <Container maxWidth="sm" className="text-center">
+          <h2 className="mb-3 font-display text-2xl font-semibold md:text-3xl">
+            {t('recipes.cta.title', 'Vuoi un menu pensato per te?')}
+          </h2>
+          <p className="mb-6 text-ink-soft">
+            {t(
+              'recipes.cta.description',
+              "Raccontami l'occasione, il numero di invitati e le tue preferenze: costruiamo insieme il menu giusto.",
+            )}
+          </p>
           <Button
             variant="contained"
             size="large"
@@ -85,12 +120,12 @@ export default function RecipesPage() {
             target="_blank"
             rel="noopener noreferrer"
             startIcon={<WhatsAppIcon />}
-            sx={{ backgroundColor: '#3A4430', color: '#FBF6EC', '&:hover': { backgroundColor: '#2C3424' } }}
+            className="bg-olive text-ivory normal-case hover:bg-[#2C3424]"
           >
-            Parliamone su WhatsApp
+            {t('recipes.cta.button', 'Parliamone su WhatsApp')}
           </Button>
         </Container>
-      </Box>
+      </div>
     </>
   )
 }

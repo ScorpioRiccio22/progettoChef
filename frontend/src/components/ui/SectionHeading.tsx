@@ -1,4 +1,3 @@
-import { Box, Typography } from '@mui/material'
 import VesuvioMark from './VesuvioMark'
 
 interface SectionHeadingProps {
@@ -18,62 +17,27 @@ export default function SectionHeading({
 }: SectionHeadingProps) {
   const isCenter = align === 'center'
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: isCenter ? 'center' : 'flex-start',
-        textAlign: isCenter ? 'center' : 'left',
-        maxWidth: isCenter ? 680 : 560,
-        mx: isCenter ? 'auto' : 0,
-        mb: { xs: 5, md: 7 },
-      }}
+    <div
+      className={`mb-10 flex flex-col md:mb-14 ${
+        isCenter ? 'mx-auto max-w-[680px] items-center text-center' : 'max-w-[560px] items-start text-left'
+      }`}
     >
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1.2,
-          mb: 2,
-          color: light ? '#D9B679' : '#B8893E',
-        }}
-      >
-        <VesuvioMark className="w-6 h-3" color="currentColor" />
-        <Typography
-          component="span"
-          sx={{
-            fontFamily: '"Inter", sans-serif',
-            fontWeight: 600,
-            letterSpacing: '0.18em',
-            textTransform: 'uppercase',
-            fontSize: '0.78rem',
-          }}
-        >
-          {eyebrow}
-        </Typography>
-      </Box>
-      <Typography
-        variant="h2"
-        sx={{
-          fontSize: { xs: '1.9rem', md: '2.6rem' },
-          color: light ? '#FBF6EC' : '#1C1712',
-          lineHeight: 1.15,
-        }}
+      <div className={`mb-4 flex items-center gap-2 ${light ? 'text-gold-300' : 'text-gold-500'}`}>
+        <VesuvioMark className="h-3 w-6" color="currentColor" />
+        <span className="font-sans text-[0.78rem] font-semibold uppercase tracking-[0.18em]">{eyebrow}</span>
+      </div>
+      <h2
+        className={`font-display text-[1.9rem] font-semibold leading-[1.15] md:text-[2.6rem] ${
+          light ? 'text-ivory' : 'text-ink'
+        }`}
       >
         {title}
-      </Typography>
+      </h2>
       {description && (
-        <Typography
-          sx={{
-            mt: 2,
-            fontSize: '1.05rem',
-            color: light ? 'rgba(251,246,236,0.78)' : '#332A21',
-            lineHeight: 1.7,
-          }}
-        >
+        <p className={`mt-4 text-[1.05rem] leading-relaxed ${light ? 'text-ivory/[.78]' : 'text-ink-soft'}`}>
           {description}
-        </Typography>
+        </p>
       )}
-    </Box>
+    </div>
   )
 }

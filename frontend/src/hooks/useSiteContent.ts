@@ -8,9 +8,18 @@ import { useAppSelector } from '@/hooks/redux'
 import type { SocialLink } from '@/types'
 
 export function useSiteContent() {
-  const { settings, services, dishes, eventTypes, testimonials, about, status } = useAppSelector(
-    (state) => state.siteContent,
-  )
+  const {
+    settings,
+    services,
+    dishes,
+    activeMenu,
+    activeEventsMenu,
+    eventTypes,
+    testimonials,
+    about,
+    texts,
+    status,
+  } = useAppSelector((state) => state.siteContent)
 
   const brand = useMemo(
     () => ({
@@ -30,6 +39,7 @@ export function useSiteContent() {
       whatsappNumber: settings?.whatsappNumber ?? '',
       whatsappLink: settings?.whatsappLink ?? '',
       area: settings?.contactArea ?? '',
+      mapAddress: settings?.mapAddress ?? '',
     }),
     [settings],
   )
@@ -45,14 +55,31 @@ export function useSiteContent() {
     return links
   }, [settings])
 
-  return { settings, brand, contact, socialLinks, services, dishes, eventTypes, testimonials, about, status }
+  /** Restituisce il testo configurabile per `key`, o `fallback` se non ancora caricato/impostato. */
+  const t = (key: string, fallback: string) => texts[key] ?? fallback
+
+  return {
+    settings,
+    brand,
+    contact,
+    socialLinks,
+    services,
+    dishes,
+    activeMenu,
+    activeEventsMenu,
+    eventTypes,
+    testimonials,
+    about,
+    texts,
+    t,
+    status,
+  }
 }
 
 export const NAV_ITEMS = [
-  { label: 'La mia storia', sectionId: 'chi-siamo', path: '/chi-siamo' },
+  { label: 'La mia storia', sectionId: 'la-mia-storia', path: '/la-mia-storia' },
   { label: 'Servizi', sectionId: 'servizi', path: '/servizi' },
-  { label: 'Ricettario', sectionId: 'ricettario', path: '/ricettario' },
+  { label: 'A MoDo mio', sectionId: 'a-modo-mio', path: '/a-modo-mio' },
   { label: 'Eventi', sectionId: 'eventi', path: '/eventi' },
-  { label: 'Newsletter', sectionId: 'newsletter', path: '/' },
   { label: 'Contatti', sectionId: 'contatti', path: '/contatti' },
 ]

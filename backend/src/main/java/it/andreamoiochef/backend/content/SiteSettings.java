@@ -58,6 +58,14 @@ public class SiteSettings {
     @Column(name = "contact_area", length = 255)
     private String contactArea;
 
+    /**
+     * Indirizzo fisico completo (via, civico, CAP, città), usato per
+     * geocodificarlo (Nominatim/OpenStreetMap) e mostrare la mini mappa
+     * nella pagina Contatti. Se vuoto, la mappa non viene mostrata.
+     */
+    @Column(name = "map_address", length = 500)
+    private String mapAddress;
+
     // --- Social ----------------------------------------------------------
     @Column(name = "instagram_url", length = 300)
     private String instagramUrl;

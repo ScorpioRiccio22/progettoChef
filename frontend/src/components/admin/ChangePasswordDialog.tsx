@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from '@mui/material'
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
 import { changeOwnPassword } from '@/services/accountsApi'
 
 interface ChangePasswordDialogProps {
@@ -58,7 +58,7 @@ export default function ChangePasswordDialog({ open, onClose }: ChangePasswordDi
     <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
       <DialogTitle>Cambia password</DialogTitle>
       <DialogContent>
-        <Stack spacing={2.5} sx={{ mt: 1 }}>
+        <div className="mt-2 flex flex-col gap-5">
           {success && <Alert severity="success">Password aggiornata con successo.</Alert>}
           {error && <Alert severity="error">{error}</Alert>}
           <TextField
@@ -86,17 +86,17 @@ export default function ChangePasswordDialog({ open, onClose }: ChangePasswordDi
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
-        </Stack>
+        </div>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} disabled={saving}>
+        <Button onClick={handleClose} disabled={saving} className="normal-case">
           Chiudi
         </Button>
         <Button
           onClick={handleSubmit}
           variant="contained"
           disabled={saving || !currentPassword || newPassword.length < 8}
-          sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+          className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
         >
           {saving ? 'Salvataggio…' : 'Aggiorna password'}
         </Button>

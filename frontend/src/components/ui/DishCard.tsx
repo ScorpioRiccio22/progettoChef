@@ -1,4 +1,4 @@
-import { Box, Chip, Stack, Typography } from '@mui/material'
+import { Chip } from '@mui/material'
 import type { Dish } from '@/types'
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -10,49 +10,26 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 export default function DishCard({ dish }: { dish: Dish }) {
   return (
-    <Box
-      sx={{
-        backgroundColor: '#FBF6EC',
-        borderRadius: 3,
-        p: 3.5,
-        height: '100%',
-        border: '1px solid rgba(28,23,18,0.06)',
-        transition: 'transform 0.25s ease, box-shadow 0.25s ease',
-        '&:hover': { transform: 'translateY(-4px)', boxShadow: '0 14px 28px rgba(28,23,18,0.1)' },
-      }}
-    >
+    <div className="h-full rounded-2xl border border-ink/[0.06] bg-ivory p-7 transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_14px_28px_rgba(28,23,18,0.1)]">
       {dish.imageUrl && (
-        <Box
-          component="img"
-          src={dish.imageUrl}
-          alt={dish.name}
-          sx={{ width: '100%', height: 160, borderRadius: 2, objectFit: 'cover', mb: 2 }}
-        />
+        <img src={dish.imageUrl} alt={dish.name} className="mb-4 h-40 w-full rounded-xl object-cover" />
       )}
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 1.5 }}>
+      <div className="mb-3 flex items-start justify-between">
         <Chip
           label={CATEGORY_LABELS[dish.category] ?? dish.category}
           size="small"
-          sx={{ backgroundColor: 'rgba(184,137,62,0.14)', color: '#8A6428', fontWeight: 600 }}
+          className="bg-gold-500/[.14] font-semibold text-gold-600"
         />
-      </Stack>
-      <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.2rem', fontWeight: 600, mb: 1 }}>
-        {dish.name}
-      </Typography>
-      <Typography sx={{ color: '#332A21', fontSize: '0.93rem', lineHeight: 1.7, mb: 2 }}>
-        {dish.description}
-      </Typography>
-      <Stack direction="row" spacing={0.8} flexWrap="wrap">
+      </div>
+      <p className="mb-2 font-display text-[1.2rem] font-semibold">{dish.name}</p>
+      <p className="mb-4 text-[0.93rem] leading-relaxed text-ink-soft">{dish.description}</p>
+      <div className="flex flex-wrap gap-2">
         {dish.tags.map((tag) => (
-          <Typography
-            key={tag}
-            component="span"
-            sx={{ fontSize: '0.75rem', color: '#6E4F20', backgroundColor: '#F3E9D6', px: 1, py: 0.3, borderRadius: 999 }}
-          >
+          <span key={tag} className="rounded-full bg-ivory-deep px-2.5 py-1 text-[0.75rem] text-gold-700">
             #{tag}
-          </Typography>
+          </span>
         ))}
-      </Stack>
-    </Box>
+      </div>
+    </div>
   )
 }
