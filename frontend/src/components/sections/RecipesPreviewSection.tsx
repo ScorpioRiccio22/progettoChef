@@ -1,4 +1,4 @@
-import { Box, Button, Container } from '@mui/material'
+import { Button, Container } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { Link as RouterLink } from 'react-router-dom'
 import SectionHeading from '@/components/ui/SectionHeading'
@@ -6,47 +6,39 @@ import DishCard from '@/components/ui/DishCard'
 import { useSiteContent } from '@/hooks/useSiteContent'
 
 export default function RecipesPreviewSection() {
-  const { dishes } = useSiteContent()
+  const { dishes, t } = useSiteContent()
   const featured = dishes.slice(0, 3)
 
   if (dishes.length === 0) return null
 
   return (
-    <Box id="ricettario" sx={{ backgroundColor: '#FBF6EC', py: { xs: 9, md: 13 } }}>
+    <div id="a-modo-mio" className="bg-ivory py-[72px] md:py-[104px]">
       <Container maxWidth="lg">
         <SectionHeading
-          eyebrow="Il ricettario"
-          title="Un assaggio di quello che cucino"
-          description="Ricette di famiglia e qualche idea più creativa: ogni menu nasce da questo ricettario, adattato ai tuoi gusti e all'occasione."
+          eyebrow={t('home.recipes.eyebrow', 'A MoDo mio')}
+          title={t('home.recipes.title', 'Un assaggio di quello che cucino')}
+          description={t(
+            'home.recipes.description',
+            'Ricette di famiglia e qualche idea più creativa: ogni menu nasce da "A MoDo mio", adattato ai tuoi gusti e all\'occasione.',
+          )}
         />
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
-            gap: 3,
-            mb: 5,
-          }}
-        >
+        <div className="mb-10 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
           {featured.map((dish) => (
             <DishCard key={dish.id} dish={dish} />
           ))}
-        </Box>
-        <Box sx={{ textAlign: 'center' }}>
+        </div>
+        <div className="text-center">
           <Button
             component={RouterLink}
-            to="/ricettario"
+            to="/a-modo-mio"
             variant="outlined"
             endIcon={<ArrowForwardIcon />}
-            sx={{
-              borderColor: '#B8893E',
-              color: '#8A6428',
-              '&:hover': { borderColor: '#8A6428', backgroundColor: 'rgba(184,137,62,0.08)' },
-            }}
+            className="border-gold-500 text-gold-600 normal-case hover:border-gold-600 hover:bg-gold-500/[.08]"
           >
-            Vedi tutto il ricettario
+            {t('home.recipes.ctaButton', 'Vedi tutto "A MoDo mio"')}
           </Button>
-        </Box>
+        </div>
       </Container>
-    </Box>
+    </div>
   )
 }

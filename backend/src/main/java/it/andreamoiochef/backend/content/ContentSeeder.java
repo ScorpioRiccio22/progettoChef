@@ -57,12 +57,27 @@ public class ContentSeeder {
     private ServiceOffering service(String title, String tagline, String description, String icon, int order) {
         ServiceOffering s = new ServiceOffering();
         s.setTitle(title);
+        s.setSlug(slugify(title));
         s.setTagline(tagline);
         s.setDescription(description);
         s.setIcon(icon);
         s.setSortOrder(order);
         s.setPublished(true);
         return s;
+    }
+
+    /**
+     * Genera uno slug URL-friendly a partire dal titolo (es. "Chef a domicilio"
+     * -> "chef-a-domicilio"). Usato sia per i servizi che per le tipologie di
+     * evento, che hanno entrambi il vincolo slug NOT NULL UNIQUE.
+     */
+    private String slugify(String input) {
+        return input.toLowerCase()
+                .replace("à", "a").replace("è", "e").replace("é", "e")
+                .replace("ì", "i").replace("ò", "o").replace("ù", "u")
+                .replaceAll("[^a-z0-9\\s-]", "")
+                .trim()
+                .replaceAll("\\s+", "-");
     }
 
     private void save(ServiceOffering s) {
@@ -91,7 +106,7 @@ public class ContentSeeder {
                 "Lievitazione lenta e bagna preparata in casa, per il dolce simbolo di Napoli servito nella sua versione più golosa.",
                 List.of("signature", "tradizione"), 5));
 
-        log.info("Seed iniziale: piatti del ricettario creati");
+        log.info("Seed iniziale: piatti del A MoDo Mio creati");
     }
 
     private Dish dish(String name, String category, String description, List<String> tags, int order) {
@@ -131,6 +146,7 @@ public class ContentSeeder {
     private EventType eventType(String title, String description, String icon, List<String> details, int order) {
         EventType e = new EventType();
         e.setTitle(title);
+        e.setSlug(slugify(title));
         e.setDescription(description);
         e.setIcon(icon);
         e.setDetails(new java.util.ArrayList<>(details));

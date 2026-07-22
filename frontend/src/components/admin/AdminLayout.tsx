@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
-import { AppBar, Toolbar, Box, Typography, Button, Container, Stack, Chip } from '@mui/material'
+import { AppBar, Toolbar, Button, Container, Chip } from '@mui/material'
 import LogoutIcon from '@mui/icons-material/Logout'
 import LockResetIcon from '@mui/icons-material/LockReset'
 import VesuvioMark from '@/components/ui/VesuvioMark'
@@ -28,58 +28,42 @@ export default function AdminLayout() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', backgroundColor: '#FBF6EC' }}>
-      <AppBar
-        position="sticky"
-        elevation={0}
-        sx={{ backgroundColor: '#1C1712', borderBottom: '1px solid #332A21' }}
-      >
-        <Toolbar sx={{ gap: 2 }}>
+    <div className="min-h-screen bg-ivory">
+      <AppBar position="sticky" elevation={0} className="!border-b !border-ink-soft !bg-ink">
+        <Toolbar className="gap-4">
           <VesuvioMark className="h-7 w-20" color="#D9B679" />
-          <Typography
-            sx={{ flexGrow: 1, fontFamily: '"Fraunces", serif', fontWeight: 600, letterSpacing: '0.02em' }}
-          >
+          <p className="flex-grow font-display font-semibold tracking-[0.02em] text-ivory">
             Area Admin — Andrea Moio Chef
-          </Typography>
+          </p>
           {user && (
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mr: 1 }}>
-              <Typography sx={{ color: 'rgba(251,246,236,0.75)', fontSize: '0.9rem' }}>
-                {user.fullName}
-              </Typography>
-              <Chip
-                label={ROLE_LABELS[user.role]}
-                size="small"
-                sx={{ backgroundColor: 'rgba(217,182,121,0.18)', color: '#D9B679', fontWeight: 600 }}
-              />
-            </Stack>
+            <div className="mr-2 flex items-center gap-2">
+              <span className="text-[0.9rem] text-ivory/75">{user.fullName}</span>
+              <Chip label={ROLE_LABELS[user.role]} size="small" className="bg-gold-300/[.18] font-semibold text-gold-300" />
+            </div>
           )}
           <Button
             onClick={() => setPasswordDialogOpen(true)}
             startIcon={<LockResetIcon />}
-            sx={{ color: '#FBF6EC', '&:hover': { backgroundColor: 'rgba(251,246,236,0.08)' } }}
+            className="text-ivory normal-case hover:bg-ivory/[.08]"
           >
             Password
           </Button>
-          <Button
-            onClick={handleLogout}
-            startIcon={<LogoutIcon />}
-            sx={{ color: '#FBF6EC', '&:hover': { backgroundColor: 'rgba(251,246,236,0.08)' } }}
-          >
+          <Button onClick={handleLogout} startIcon={<LogoutIcon />} className="text-ivory normal-case hover:bg-ivory/[.08]">
             Esci
           </Button>
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
-        <Stack direction={{ xs: 'column', md: 'row' }} spacing={3}>
+      <Container maxWidth="lg" className="py-8 md:py-12">
+        <div className="flex flex-col gap-6 md:flex-row">
           <AdminSidebar />
-          <Box sx={{ flex: 1, minWidth: 0 }}>
+          <div className="min-w-0 flex-1">
             <Outlet />
-          </Box>
-        </Stack>
+          </div>
+        </div>
       </Container>
 
       <ChangePasswordDialog open={passwordDialogOpen} onClose={() => setPasswordDialogOpen(false)} />
-    </Box>
+    </div>
   )
 }

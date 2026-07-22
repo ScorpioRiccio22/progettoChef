@@ -14,7 +14,7 @@ API REST in Java 21 + Spring Boot 3 per il sito vetrina di Andrea Moio.
 
 Implementata per prima la **componente di autenticazione per l'area admin**
 (`/api/auth/**`), pensata come base sulla quale aggiungere via via le API
-pubbliche (servizi, ricettario, eventi) e quelle protette di gestione
+pubbliche (servizi, A MoDo Mio, eventi) e quelle protette di gestione
 contenuti, contatti e newsletter.
 
 ```
@@ -46,7 +46,7 @@ src/main/java/it/andreamoiochef/backend/
 - `/api/auth/login` — **pubblico**, POST `{ email, password }` → JWT
 - `/api/auth/me` — richiede JWT valido, restituisce l'admin corrente
 - `/api/auth/logout` — no-op lato server (JWT stateless), per simmetria API
-- `/api/public/**` — pubblico (contenuti futuri: servizi, ricettario, eventi)
+- `/api/public/**` — pubblico (contenuti futuri: servizi, A MoDo Mio, eventi)
 - `/api/admin/**` — richiede JWT valido + ruolo `ADMIN` (CRUD contenuti futuri)
 - `/actuator/health` — pubblico, usato dal healthcheck Docker
 
@@ -194,7 +194,7 @@ in nginx), altrimenti il proxy taglia la richiesta prima che arrivi a Spring.
 
 ## Prossimi passi
 
-1. API pubbliche `/api/public/...` per servizi, ricettario, eventi e
+1. API pubbliche `/api/public/...` per servizi, A MoDo Mio, eventi e
    testimonianze (oggi mock in `frontend/src/lib/content.ts`).
 2. API `/api/admin/content/...` (CRUD, protette) per gestire quei contenuti
    dall'area admin del frontend.

@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from 'react'
-import { Alert, Box, Button, CircularProgress, Container, Stack, TextField, Typography } from '@mui/material'
+import { Alert, Button, CircularProgress, Container, TextField } from '@mui/material'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import EmailIcon from '@mui/icons-material/Email'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import PageHero from '@/components/ui/PageHero'
+import ContactMap from '@/components/ui/ContactMap'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { sendContactMessage, resetContactStatus } from '@/store/slices/contactSlice'
 import { useSiteContent } from '@/hooks/useSiteContent'
@@ -12,7 +13,7 @@ import type { ContactFormValues } from '@/types'
 const EMPTY_FORM: ContactFormValues = { name: '', email: '', phone: '', subject: '', message: '' }
 
 export default function ContactPage() {
-  const { contact, socialLinks } = useSiteContent()
+  const { contact, socialLinks, t } = useSiteContent()
   const [form, setForm] = useState<ContactFormValues>(EMPTY_FORM)
   const dispatch = useAppDispatch()
   const { status, error } = useAppSelector((state) => state.contact)
@@ -34,31 +35,27 @@ export default function ContactPage() {
   return (
     <>
       <PageHero
-        eyebrow="Contatti"
-        title="Parliamo del tuo progetto"
-        description="Scrivimi su WhatsApp per una risposta rapida, oppure compila il form: ti rispondo entro 24 ore."
+        eyebrow={t('contact.page.eyebrow', 'Contatti')}
+        title={t('contact.page.title', 'Parliamo del tuo progetto')}
+        description={t(
+          'contact.page.description',
+          'Scrivimi su WhatsApp per una risposta rapida, oppure compila il form: ti rispondo entro 24 ore.',
+        )}
       />
 
-      <Box sx={{ backgroundColor: '#FBF6EC', py: { xs: 8, md: 11 } }}>
+      <div className="bg-ivory py-16 md:py-[88px]">
         <Container maxWidth="lg">
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1.2fr' }, gap: { xs: 6, md: 8 } }}>
+          <div className="grid grid-cols-1 gap-12 md:grid-cols-[1fr_1.2fr] md:gap-16">
             {/* Contatti diretti */}
-            <Stack spacing={3}>
-              <Box
-                sx={{
-                  backgroundColor: '#3A4430',
-                  borderRadius: 3,
-                  p: 4,
-                  color: '#FBF6EC',
-                }}
-              >
-                <WhatsAppIcon sx={{ fontSize: '2rem', mb: 1.5, color: '#D9B679' }} />
-                <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.3rem', fontWeight: 600, mb: 1 }}>
-                  WhatsApp aziendale
-                </Typography>
-                <Typography sx={{ color: 'rgba(251,246,236,0.75)', mb: 2.5, fontSize: '0.95rem' }}>
-                  Il modo più veloce per ricevere disponibilità e prima proposta di menu.
-                </Typography>
+            <div className="flex flex-col gap-6">
+              <div className="rounded-2xl bg-olive p-8 text-ivory">
+                <WhatsAppIcon className="mb-3 text-3xl text-gold-300" />
+                <p className="mb-2 font-display text-[1.3rem] font-semibold">
+                  {t('contact.whatsappCard.title', 'WhatsApp aziendale')}
+                </p>
+                <p className="mb-6 text-[0.95rem] text-ivory/75">
+                  {t('contact.whatsappCard.description', 'Il modo più veloce per ricevere disponibilità e prima proposta di menu.')}
+                </p>
                 <Button
                   href={contact.whatsappLink}
                   target="_blank"
@@ -66,37 +63,42 @@ export default function ContactPage() {
                   variant="contained"
                   fullWidth
                   startIcon={<WhatsAppIcon />}
-                  sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+                  className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
                 >
                   {contact.whatsappNumber}
                 </Button>
-              </Box>
+              </div>
 
-              <Box sx={{ backgroundColor: '#F3E9D6', borderRadius: 3, p: 4 }}>
-                <EmailIcon sx={{ fontSize: '2rem', mb: 1.5, color: '#8A6428' }} />
-                <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.3rem', fontWeight: 600, mb: 1 }}>
-                  Email
-                </Typography>
-                <Typography sx={{ color: '#332A21', mb: 2.5, fontSize: '0.95rem' }}>
-                  Per richieste più strutturate o preventivi per eventi importanti.
-                </Typography>
+              <div className="rounded-2xl bg-ivory-deep p-8">
+                <EmailIcon className="mb-3 text-3xl text-gold-600" />
+                <p className="mb-2 font-display text-[1.3rem] font-semibold">{t('contact.emailCard.title', 'Email')}</p>
+                <p className="mb-6 text-[0.95rem] text-ink-soft">
+                  {t('contact.emailCard.description', 'Per richieste più strutturate o preventivi per eventi importanti.')}
+                </p>
                 <Button
                   href={`mailto:${contact.email}`}
                   variant="outlined"
                   fullWidth
                   startIcon={<EmailIcon />}
-                  sx={{ borderColor: '#B8893E', color: '#8A6428', '&:hover': { borderColor: '#8A6428' } }}
+                  className="border-gold-500 text-gold-600 normal-case hover:border-gold-600"
                 >
                   {contact.email}
                 </Button>
-              </Box>
+              </div>
 
-              <Stack direction="row" spacing={1.2} alignItems="center" sx={{ color: '#332A21' }}>
-                <LocationOnIcon sx={{ color: '#8A6428' }} />
-                <Typography>{contact.area}</Typography>
-              </Stack>
+              <div className="flex items-center gap-3 text-ink-soft">
+                <LocationOnIcon className="text-gold-600" />
+                <p>{contact.area}</p>
+              </div>
 
-              <Stack direction="row" spacing={1.2} sx={{ pt: 1 }}>
+              {contact.mapAddress && (
+                <div className="space-y-2">
+                  <p className="text-sm text-ink-soft">{contact.mapAddress}</p>
+                  <ContactMap address={contact.mapAddress} />
+                </div>
+              )}
+
+              <div className="flex gap-3 pt-2">
                 {socialLinks.map((social) => (
                   <Button
                     key={social.id}
@@ -104,28 +106,26 @@ export default function ContactPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     size="small"
-                    sx={{ color: '#8A6428', minWidth: 0, px: 1 }}
+                    className="min-w-0 px-2 normal-case text-gold-600"
                   >
                     {social.label}
                   </Button>
                 ))}
-              </Stack>
-            </Stack>
+              </div>
+            </div>
 
             {/* Form */}
-            <Box>
-              <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.5rem', fontWeight: 600, mb: 3 }}>
-                Oppure scrivimi qui
-              </Typography>
+            <div>
+              <p className="mb-6 font-display text-2xl font-semibold">{t('contact.form.title', 'Oppure scrivimi qui')}</p>
 
               {status === 'success' ? (
-                <Alert severity="success" sx={{ borderRadius: 2 }}>
-                  Messaggio inviato! Ti risponderò il prima possibile.
+                <Alert severity="success" className="rounded-xl">
+                  {t('contact.form.successMessage', 'Messaggio inviato! Ti risponderò il prima possibile.')}
                 </Alert>
               ) : (
-                <Box component="form" onSubmit={handleSubmit}>
-                  <Stack spacing={2.5}>
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2.5}>
+                <form onSubmit={handleSubmit}>
+                  <div className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-5 sm:flex-row">
                       <TextField
                         required
                         fullWidth
@@ -141,8 +141,8 @@ export default function ContactPage() {
                         value={form.email}
                         onChange={handleChange('email')}
                       />
-                    </Stack>
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2.5}>
+                    </div>
+                    <div className="flex flex-col gap-5 sm:flex-row">
                       <TextField fullWidth label="Telefono (opzionale)" value={form.phone} onChange={handleChange('phone')} />
                       <TextField
                         required
@@ -152,7 +152,7 @@ export default function ContactPage() {
                         value={form.subject}
                         onChange={handleChange('subject')}
                       />
-                    </Stack>
+                    </div>
                     <TextField
                       required
                       fullWidth
@@ -169,17 +169,21 @@ export default function ContactPage() {
                       variant="contained"
                       size="large"
                       disabled={status === 'submitting'}
-                      sx={{ backgroundColor: '#B8893E', color: '#1C1712', alignSelf: 'flex-start', '&:hover': { backgroundColor: '#8A6428' } }}
+                      className="self-start bg-gold-500 text-ink normal-case hover:bg-gold-600"
                     >
-                      {status === 'submitting' ? <CircularProgress size={22} sx={{ color: '#1C1712' }} /> : 'Invia messaggio'}
+                      {status === 'submitting' ? (
+                        <CircularProgress size={22} className="text-ink" />
+                      ) : (
+                        t('contact.form.submitButton', 'Invia messaggio')
+                      )}
                     </Button>
-                  </Stack>
-                </Box>
+                  </div>
+                </form>
               )}
-            </Box>
-          </Box>
+            </div>
+          </div>
         </Container>
-      </Box>
+      </div>
     </>
   )
 }

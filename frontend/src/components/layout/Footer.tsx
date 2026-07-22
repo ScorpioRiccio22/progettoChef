@@ -1,10 +1,12 @@
-import { Box, Container, IconButton, Stack, Typography, Link as MuiLink } from '@mui/material'
+import { Container, IconButton, Link as MuiLink } from '@mui/material'
 import InstagramIcon from '@mui/icons-material/Instagram'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import { Link as RouterLink } from 'react-router-dom'
 import VesuvioMark from '@/components/ui/VesuvioMark'
 import { useSiteContent } from '@/hooks/useSiteContent'
+
+const SOCIAL_ICON_CLASS = 'h-10 w-10 border border-ivory/25 text-ivory hover:border-gold-500 hover:bg-gold-500/25'
 
 // TikTok e Threads non hanno un'icona dedicata in @mui/icons-material:
 // li rappresentiamo con le iniziali in un badge circolare coerente con lo stile.
@@ -16,15 +18,7 @@ function BadgeIcon({ label, href }: { label: string; href: string }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      sx={{
-        width: 40,
-        height: 40,
-        border: '1px solid rgba(251,246,236,0.25)',
-        color: '#FBF6EC',
-        fontSize: '0.75rem',
-        fontWeight: 700,
-        '&:hover': { backgroundColor: 'rgba(184,137,62,0.25)', borderColor: '#B8893E' },
-      }}
+      className={`${SOCIAL_ICON_CLASS} text-[0.75rem] font-bold`}
     >
       {label.slice(0, 2).toUpperCase()}
     </IconButton>
@@ -37,50 +31,35 @@ const ICONS: Record<string, JSX.Element> = {
   whatsapp: <WhatsAppIcon />,
 }
 
+const FOOTER_LINK_CLASS = 'text-ivory/75 hover:text-gold-300'
+const FOOTER_HEADING_CLASS = 'mb-4 text-[0.78rem] font-semibold uppercase tracking-[0.1em] text-gold-300'
+
 export default function Footer() {
-  const { brand, contact, socialLinks } = useSiteContent()
+  const { brand, contact, socialLinks, t } = useSiteContent()
+  const tagline = t(
+    'footer.tagline',
+    'Chef a domicilio, eventi privati e consulenza per nuove attività a {city}.',
+  ).replace('{city}', brand.city)
 
   return (
-    <Box component="footer" sx={{ backgroundColor: '#1C1712', color: '#FBF6EC', pt: 8, pb: 4 }}>
+    <footer className="bg-ink pb-4 pt-16 text-ivory">
       <Container maxWidth="lg">
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', md: '1.3fr 1fr 1fr' },
-            gap: 5,
-            pb: 6,
-            borderBottom: '1px solid rgba(251,246,236,0.12)',
-          }}
-        >
-          <Box>
-            <Stack direction="row" alignItems="center" spacing={1.2} sx={{ mb: 2 }}>
-              <Box
-                sx={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: '50%',
-                  border: '1.5px solid #B8893E',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#D9B679',
-                  overflow: 'hidden',
-                }}
-              >
+        <div className="grid grid-cols-1 gap-10 border-b border-ivory/10 pb-12 md:grid-cols-[1.3fr_1fr_1fr]">
+          <div>
+            <div className="mb-4 flex items-center gap-2">
+              <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-[1.5px] border-gold-500 text-gold-300">
                 {brand.logoUrl ? (
-                  <Box component="img" src={brand.logoUrl} alt={brand.name} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img src={brand.logoUrl} alt={brand.name} className="h-full w-full object-cover" />
                 ) : (
-                  <VesuvioMark className="w-5 h-3" color="currentColor" />
+                  <VesuvioMark className="h-3 w-5" color="currentColor" />
                 )}
-              </Box>
-              <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.2rem', fontWeight: 600 }}>
-                {brand.name}
-              </Typography>
-            </Stack>
-            <Typography sx={{ color: 'rgba(251,246,236,0.7)', maxWidth: 320, lineHeight: 1.7 }}>
-              {brand.payoff}. Chef a domicilio, eventi privati e consulenza per nuove attività a {brand.city}.
-            </Typography>
-            <Stack direction="row" spacing={1.2} sx={{ mt: 3 }}>
+              </div>
+              <p className="font-display text-[1.2rem] font-semibold">{brand.name}</p>
+            </div>
+            <p className="max-w-[320px] leading-relaxed text-ivory/70">
+              {brand.payoff}. {tagline}
+            </p>
+            <div className="mt-6 flex gap-3">
               {socialLinks.map((social) =>
                 ICONS[social.icon] ? (
                   <IconButton
@@ -90,13 +69,7 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={social.label}
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      border: '1px solid rgba(251,246,236,0.25)',
-                      color: '#FBF6EC',
-                      '&:hover': { backgroundColor: 'rgba(184,137,62,0.25)', borderColor: '#B8893E' },
-                    }}
+                    className={SOCIAL_ICON_CLASS}
                   >
                     {ICONS[social.icon]}
                   </IconButton>
@@ -104,40 +77,30 @@ export default function Footer() {
                   <BadgeIcon key={social.id} label={social.label} href={social.href} />
                 ),
               )}
-            </Stack>
-          </Box>
+            </div>
+          </div>
 
-          <Box>
-            <Typography sx={{ fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: '0.78rem', mb: 2, color: '#D9B679' }}>
-              Mappa del sito
-            </Typography>
-            <Stack spacing={1.2}>
+          <div>
+            <p className={FOOTER_HEADING_CLASS}>{t('footer.sitemapHeading', 'Mappa del sito')}</p>
+            <div className="flex flex-col gap-3">
               {[
-                { label: 'Chi siamo', to: '/chi-siamo' },
-                { label: 'Ricettario', to: '/ricettario' },
+                { label: 'La mia storia', to: '/la-mia-storia' },
+                { label: 'A MoDo mio', to: '/a-modo-mio' },
                 { label: 'Eventi', to: '/eventi' },
                 { label: 'Servizi', to: '/servizi' },
                 { label: 'Contatti', to: '/contatti' },
               ].map((link) => (
-                <MuiLink
-                  key={link.to}
-                  component={RouterLink}
-                  to={link.to}
-                  underline="none"
-                  sx={{ color: 'rgba(251,246,236,0.75)', '&:hover': { color: '#D9B679' } }}
-                >
+                <MuiLink key={link.to} component={RouterLink} to={link.to} underline="none" className={FOOTER_LINK_CLASS}>
                   {link.label}
                 </MuiLink>
               ))}
-            </Stack>
-          </Box>
+            </div>
+          </div>
 
-          <Box>
-            <Typography sx={{ fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: '0.78rem', mb: 2, color: '#D9B679' }}>
-              Contatti
-            </Typography>
-            <Stack spacing={1.2}>
-              <MuiLink href={`mailto:${contact.email}`} underline="none" sx={{ color: 'rgba(251,246,236,0.75)', '&:hover': { color: '#D9B679' } }}>
+          <div>
+            <p className={FOOTER_HEADING_CLASS}>{t('footer.contactHeading', 'Contatti')}</p>
+            <div className="flex flex-col gap-3">
+              <MuiLink href={`mailto:${contact.email}`} underline="none" className={FOOTER_LINK_CLASS}>
                 {contact.email}
               </MuiLink>
               <MuiLink
@@ -145,19 +108,19 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 underline="none"
-                sx={{ color: 'rgba(251,246,236,0.75)', '&:hover': { color: '#D9B679' } }}
+                className={FOOTER_LINK_CLASS}
               >
                 {contact.whatsappNumber} (WhatsApp)
               </MuiLink>
-              <Typography sx={{ color: 'rgba(251,246,236,0.55)' }}>{contact.area}</Typography>
-            </Stack>
-          </Box>
-        </Box>
+              <p className="text-ivory/55">{contact.area}</p>
+            </div>
+          </div>
+        </div>
 
-        <Typography sx={{ pt: 3, fontSize: '0.82rem', color: 'rgba(251,246,236,0.45)', textAlign: 'center' }}>
+        <p className="pt-6 text-center text-[0.82rem] text-ivory/45">
           © {new Date().getFullYear()} {brand.name} — {brand.role}. Tutti i diritti riservati.
-        </Typography>
+        </p>
       </Container>
-    </Box>
+    </footer>
   )
 }

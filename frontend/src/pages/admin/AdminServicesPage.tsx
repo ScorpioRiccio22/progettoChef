@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
   Alert,
-  Box,
   Button,
   Chip,
   CircularProgress,
@@ -11,11 +10,8 @@ import {
   DialogTitle,
   FormControlLabel,
   IconButton,
-  Paper,
-  Stack,
   Switch,
   TextField,
-  Typography,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
@@ -29,16 +25,22 @@ import {
   type ServiceOfferingRequest,
 } from '@/services/contentApi'
 import ImageUploadField from '@/components/admin/ImageUploadField'
+import VideoUploadField from '@/components/admin/VideoUploadField'
+import GalleryMediaEditor from '@/components/admin/GalleryMediaEditor'
 import ReorderableList from '@/components/admin/ReorderableList'
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'
 import type { ServiceOffering } from '@/types'
 
 const EMPTY_FORM: ServiceOfferingRequest = {
   title: '',
+  slug: '',
   tagline: '',
   description: '',
+  bodyContent: '',
   icon: '',
   imageUrl: null,
+  videoUrl: null,
+  galleryImageUrls: [],
   published: true,
 }
 
@@ -75,10 +77,14 @@ export default function AdminServicesPage() {
     setEditingId(item.id)
     setForm({
       title: item.title,
+      slug: item.slug,
       tagline: item.tagline,
       description: item.description,
+      bodyContent: item.bodyContent,
       icon: item.icon,
       imageUrl: item.imageUrl,
+      videoUrl: item.videoUrl,
+      galleryImageUrls: item.galleryImageUrls,
       published: item.published,
     })
     setDialogOpen(true)
@@ -86,11 +92,15 @@ export default function AdminServicesPage() {
 
   const handleSave = async () => {
     setSaving(true)
+    const payload: ServiceOfferingRequest = {
+      ...form,
+      galleryImageUrls: (form.galleryImageUrls ?? []).filter(Boolean),
+    }
     try {
       if (editingId) {
-        await adminUpdateService(editingId, form)
+        await adminUpdateService(editingId, payload)
       } else {
-        await adminCreateService(form)
+        await adminCreateService(payload)
       }
       setDialogOpen(false)
       load()
@@ -121,65 +131,66 @@ export default function AdminServicesPage() {
   }
 
   return (
-    <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
-        <Box>
-          <Typography variant="h5" sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600 }}>
-            Servizi
-          </Typography>
-          <Typography sx={{ color: '#5C5246' }}>
-            I servizi mostrati nella sezione "Servizi" della home page.
-          </Typography>
-        </Box>
+    <div>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-xl font-semibold">Servizi</h1>
+          <p className="text-clay">
+            I servizi mostrati in home e nella pagina "Servizi". Ogni servizio ha anche una sua pagina di dettaglio
+            (testo esteso, video e galleria immagini), raggiungibile cliccando sulla card sul sito.
+          </p>
+        </div>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={openCreate}
-          sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+          className="whitespace-nowrap bg-gold-500 text-ink normal-case hover:bg-gold-300"
         >
           Nuovo servizio
         </Button>
-      </Stack>
+      </div>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+        <Alert severity="error" className="mb-6" onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+        <div className="flex justify-center py-12">
           <CircularProgress />
-        </Box>
+        </div>
       ) : items.length === 0 ? (
-        <Typography sx={{ color: '#5C5246' }}>Nessun servizio ancora. Aggiungine uno.</Typography>
+        <p className="text-clay">Nessun servizio ancora. Aggiungine uno.</p>
       ) : (
         <ReorderableList
           items={items}
           onReorder={handleReorder}
           renderItem={(item) => (
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                {item.imageUrl && (
-                  <Box component="img" src={item.imageUrl} alt="" sx={{ width: 56, height: 56, borderRadius: 1.5, objectFit: 'cover' }} />
-                )}
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography sx={{ fontWeight: 600 }}>{item.title}</Typography>
+            <div className="rounded-xl border border-black/10 p-4">
+              <div className="flex items-center gap-4">
+                {item.imageUrl && <img src={item.imageUrl} alt="" className="h-14 w-14 rounded-md object-cover" />}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold">{item.title}</p>
                     {!item.published && <Chip label="Non pubblicato" size="small" color="default" />}
-                  </Stack>
-                  <Typography sx={{ color: '#5C5246', fontSize: '0.85rem' }} noWrap>
-                    {item.tagline}
-                  </Typography>
-                </Box>
+                    {item.videoUrl && <Chip label="Video" size="small" className="bg-gold-300 text-ink" />}
+                    {item.galleryImageUrls.length > 0 && (
+                      <Chip label={`${item.galleryImageUrls.length} foto galleria`} size="small" />
+                    )}
+                  </div>
+                  <p className="truncate text-[0.85rem] text-clay">
+                    /servizi/{item.slug} · {item.tagline}
+                  </p>
+                </div>
                 <IconButton onClick={() => openEdit(item)} aria-label="Modifica">
                   <EditIcon fontSize="small" />
                 </IconButton>
                 <IconButton onClick={() => setDeleteTarget(item)} aria-label="Elimina">
                   <DeleteIcon fontSize="small" />
                 </IconButton>
-              </Stack>
-            </Paper>
+              </div>
+            </div>
           )}
         />
       )}
@@ -187,7 +198,7 @@ export default function AdminServicesPage() {
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingId ? 'Modifica servizio' : 'Nuovo servizio'}</DialogTitle>
         <DialogContent>
-          <Stack spacing={2.5} sx={{ mt: 1 }}>
+          <div className="mt-2 flex flex-col gap-5">
             <TextField
               label="Titolo"
               fullWidth
@@ -196,18 +207,35 @@ export default function AdminServicesPage() {
               required
             />
             <TextField
+              label="Slug URL (opzionale)"
+              fullWidth
+              value={form.slug}
+              onChange={(e) => setForm((p) => ({ ...p, slug: e.target.value }))}
+              helperText={`Lascia vuoto per generarlo dal titolo. Pagina pubblica: /servizi/${form.slug || '...'}`}
+            />
+            <TextField
               label="Tagline"
               fullWidth
               value={form.tagline}
               onChange={(e) => setForm((p) => ({ ...p, tagline: e.target.value }))}
             />
             <TextField
-              label="Descrizione"
+              label="Descrizione breve"
               fullWidth
               multiline
               minRows={3}
               value={form.description}
               onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+              helperText="Mostrata nelle card di anteprima (home e pagina Servizi)"
+            />
+            <TextField
+              label="Testo esteso (pagina di dettaglio)"
+              fullWidth
+              multiline
+              minRows={5}
+              value={form.bodyContent}
+              onChange={(e) => setForm((p) => ({ ...p, bodyContent: e.target.value }))}
+              helperText="Vai a capo due volte per separare i paragrafi. Se lasciato vuoto, viene usata la descrizione breve."
             />
             <TextField
               label="Icona (nome, es. home / event / business)"
@@ -217,9 +245,21 @@ export default function AdminServicesPage() {
               helperText="Usata dal frontend per scegliere l'icona da mostrare"
             />
             <ImageUploadField
-              label="Immagine"
+              label="Immagine di copertina"
               value={form.imageUrl ?? null}
               onChange={(url) => setForm((p) => ({ ...p, imageUrl: url }))}
+            />
+            <VideoUploadField
+              label="Video (mp4, opzionale, mostrato nella pagina di dettaglio)"
+              value={form.videoUrl ?? null}
+              onChange={(url) => setForm((p) => ({ ...p, videoUrl: url }))}
+            />
+
+            <GalleryMediaEditor
+              label="Galleria immagini/video (pagina di dettaglio)"
+              helperText="Mostrata sul sito come carosello con autoplay. Puoi aggiungere sia immagini che video."
+              value={form.galleryImageUrls ?? []}
+              onChange={(urls) => setForm((p) => ({ ...p, galleryImageUrls: urls }))}
             />
             <FormControlLabel
               control={
@@ -230,17 +270,17 @@ export default function AdminServicesPage() {
               }
               label="Pubblicato (visibile sul sito)"
             />
-          </Stack>
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)} disabled={saving}>
+          <Button onClick={() => setDialogOpen(false)} disabled={saving} className="normal-case">
             Annulla
           </Button>
           <Button
             onClick={handleSave}
             variant="contained"
             disabled={saving || !form.title}
-            sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+            className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
             {saving ? 'Salvataggio…' : 'Salva'}
           </Button>
@@ -254,6 +294,6 @@ export default function AdminServicesPage() {
         onConfirm={handleDelete}
         loading={deleting}
       />
-    </Box>
+    </div>
   )
 }

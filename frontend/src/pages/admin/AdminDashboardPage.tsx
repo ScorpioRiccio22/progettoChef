@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
-import { Box, Card, CardActionArea, CardContent, Chip, Grid, Stack, Typography } from '@mui/material'
+import { Card, CardActionArea, CardContent, Chip } from '@mui/material'
 import SettingsIcon from '@mui/icons-material/Settings'
+import TextFieldsIcon from '@mui/icons-material/TextFields'
 import RoomServiceIcon from '@mui/icons-material/RoomService'
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu'
+import StorefrontIcon from '@mui/icons-material/Storefront'
 import CelebrationIcon from '@mui/icons-material/Celebration'
+import MenuBookIcon from '@mui/icons-material/MenuBook'
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
 import InfoIcon from '@mui/icons-material/Info'
 import MailIcon from '@mui/icons-material/Mail'
@@ -36,8 +39,14 @@ export default function AdminDashboardPage() {
     {
       to: '/admin/impostazioni',
       title: 'Impostazioni sito',
-      description: 'Brand, logo, contatti, social, hero e testi della pagina Chi siamo.',
+      description: 'Brand, logo, contatti, social, hero e testi della pagina La mia storia.',
       icon: <SettingsIcon fontSize="large" />,
+    },
+    {
+      to: '/admin/testi',
+      title: 'Testi del sito',
+      description: 'Titoli, descrizioni e testo dei pulsanti di ogni pagina, tutti modificabili qui.',
+      icon: <TextFieldsIcon fontSize="large" />,
     },
     {
       to: '/admin/servizi',
@@ -46,10 +55,16 @@ export default function AdminDashboardPage() {
       icon: <RoomServiceIcon fontSize="large" />,
     },
     {
-      to: '/admin/ricettario',
-      title: 'Ricettario',
-      description: 'I piatti del ricettario, con categorie, tag e immagini.',
+      to: '/admin/a-modo-mio',
+      title: 'A MoDo mio',
+      description: 'I piatti di "A MoDo mio", con categorie, tag e immagini.',
       icon: <RestaurantMenuIcon fontSize="large" />,
+    },
+    {
+      to: '/admin/a-modo-mio/menu',
+      title: 'Menu del negozio',
+      description: 'Liste di piatti con prezzo; segna quale è attivo ora nel negozio fisico.',
+      icon: <StorefrontIcon fontSize="large" />,
     },
     {
       to: '/admin/eventi',
@@ -58,14 +73,20 @@ export default function AdminDashboardPage() {
       icon: <CelebrationIcon fontSize="large" />,
     },
     {
+      to: '/admin/eventi/menu',
+      title: 'Menu eventi',
+      description: 'Liste di piatti con prezzo dedicate agli eventi; segna quale è in evidenza.',
+      icon: <MenuBookIcon fontSize="large" />,
+    },
+    {
       to: '/admin/testimonianze',
       title: 'Testimonianze',
       description: 'Le recensioni dei clienti mostrate sul sito.',
       icon: <FormatQuoteIcon fontSize="large" />,
     },
     {
-      to: '/admin/chi-siamo',
-      title: 'Chi siamo',
+      to: '/admin/la-mia-storia',
+      title: 'La mia storia',
       description: 'Tappe del percorso e principi della cucina.',
       icon: <InfoIcon fontSize="large" />,
     },
@@ -86,38 +107,30 @@ export default function AdminDashboardPage() {
   ]
 
   return (
-    <Stack spacing={3}>
-      <Box>
-        <Typography variant="h4" sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600 }}>
-          Bentornato{user ? `, ${user.fullName}` : ''}
-        </Typography>
-        <Typography sx={{ color: '#332A21', mt: 0.5 }}>
+    <div className="flex flex-col gap-6">
+      <div>
+        <h1 className="font-display text-2xl font-semibold">Bentornato{user ? `, ${user.fullName}` : ''}</h1>
+        <p className="mt-1 text-ink-soft">
           Gestisci da qui ogni contenuto del sito: i cambiamenti sono visibili immediatamente sul sito pubblico.
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
-      <Grid container spacing={2.5}>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
         {cards.map((card) => (
-          <Grid item xs={12} sm={6} md={4} key={card.to}>
-            <Card variant="outlined" sx={{ borderRadius: 3, height: '100%' }}>
-              <CardActionArea component={RouterLink} to={card.to} sx={{ height: '100%' }}>
-                <CardContent>
-                  <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
-                    <Box sx={{ color: '#B8893E' }}>{card.icon}</Box>
-                    {card.badge !== undefined && card.badge > 0 && (
-                      <Chip label={card.badge} size="small" color="warning" />
-                    )}
-                  </Stack>
-                  <Typography sx={{ fontWeight: 700, mt: 1.5 }}>{card.title}</Typography>
-                  <Typography sx={{ color: '#5C5246', fontSize: '0.88rem', mt: 0.5 }}>
-                    {card.description}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
+          <Card key={card.to} variant="outlined" className="h-full rounded-2xl">
+            <CardActionArea component={RouterLink} to={card.to} className="h-full">
+              <CardContent>
+                <div className="flex items-start justify-between">
+                  <div className="text-gold-500">{card.icon}</div>
+                  {card.badge !== undefined && card.badge > 0 && <Chip label={card.badge} size="small" color="warning" />}
+                </div>
+                <p className="mt-3 font-bold">{card.title}</p>
+                <p className="mt-1 text-[0.88rem] text-clay">{card.description}</p>
+              </CardContent>
+            </CardActionArea>
+          </Card>
         ))}
-      </Grid>
-    </Stack>
+      </div>
+    </div>
   )
 }

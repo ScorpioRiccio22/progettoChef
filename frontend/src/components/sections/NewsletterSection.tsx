@@ -1,14 +1,16 @@
 import { useState, type FormEvent } from 'react'
-import { Alert, Box, Button, CircularProgress, Container, TextField, Typography } from '@mui/material'
+import { Alert, Button, CircularProgress, Container, TextField } from '@mui/material'
 import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { subscribeToNewsletter, resetNewsletterStatus } from '@/store/slices/newsletterSlice'
 import VesuvioMark from '@/components/ui/VesuvioMark'
+import { useSiteContent } from '@/hooks/useSiteContent'
 
 export default function NewsletterSection() {
   const [email, setEmail] = useState('')
   const dispatch = useAppDispatch()
   const { status, error } = useAppSelector((state) => state.newsletter)
+  const { t } = useSiteContent()
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -17,75 +19,70 @@ export default function NewsletterSection() {
   }
 
   return (
-    <Box id="newsletter" sx={{ backgroundColor: '#1C1712', py: { xs: 9, md: 11 }, position: 'relative', overflow: 'hidden' }}>
-      <Box sx={{ position: 'absolute', top: -40, right: -20, color: 'rgba(184,137,62,0.15)', width: 260 }}>
+    <div id="newsletter" className="relative overflow-hidden bg-ink py-[72px] md:py-[88px]">
+      <div className="absolute -right-5 -top-10 w-[260px] text-gold-500/[.15]">
         <VesuvioMark className="w-full" color="currentColor" />
-      </Box>
-      <Container maxWidth="sm" sx={{ position: 'relative', textAlign: 'center' }}>
-        <Box sx={{ color: '#D9B679', mb: 2 }}>
+      </div>
+      <Container maxWidth="sm" className="relative text-center">
+        <div className="mb-4 text-gold-300">
           <MailOutlineIcon fontSize="large" />
-        </Box>
-        <Typography variant="h2" sx={{ color: '#FBF6EC', fontSize: { xs: '1.8rem', md: '2.2rem' }, mb: 1.5 }}>
-          Ricette, eventi e novità via email
-        </Typography>
-        <Typography sx={{ color: 'rgba(251,246,236,0.7)', mb: 4 }}>
-          Una mail ogni tanto, niente spam: nuove ricette del ricettario, disponibilità per gli eventi e qualche
-          consiglio di cucina napoletana.
-        </Typography>
+        </div>
+        <h2 className="mb-3 font-display text-[1.8rem] font-semibold text-ivory md:text-[2.2rem]">
+          {t('home.newsletter.title', 'Ricette, eventi e novità via email')}
+        </h2>
+        <p className="mb-8 text-ivory/70">
+          {t(
+            'home.newsletter.description',
+            'Una mail ogni tanto, niente spam: nuove ricette di "A MoDo mio", disponibilità per gli eventi e qualche consiglio di cucina napoletana.',
+          )}
+        </p>
 
         {status === 'success' ? (
-          <Alert severity="success" sx={{ borderRadius: 2 }}>
-            Iscrizione completata! Controlla la tua casella email a breve.
+          <Alert severity="success" className="rounded-xl">
+            {t('home.newsletter.successMessage', 'Iscrizione completata! Controlla la tua casella email a breve.')}
           </Alert>
         ) : (
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5 }}
-          >
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row">
             <TextField
               required
               type="email"
-              placeholder="La tua email"
+              placeholder={t('home.newsletter.placeholder', 'La tua email')}
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               fullWidth
               size="medium"
               aria-label="Indirizzo email per la newsletter"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  backgroundColor: '#FBF6EC',
-                  borderRadius: 999,
-                },
-              }}
+              // Selettore verso lo slot interno di MUI: non esprimibile con className Tailwind.
+              sx={{ '& .MuiOutlinedInput-root': { backgroundColor: '#FBF6EC', borderRadius: 999 } }}
             />
             <Button
               type="submit"
               variant="contained"
               disabled={status === 'submitting'}
-              sx={{
-                backgroundColor: '#B8893E',
-                color: '#1C1712',
-                px: 4,
-                whiteSpace: 'nowrap',
-                '&:hover': { backgroundColor: '#D9B679' },
-              }}
+              className="whitespace-nowrap bg-gold-500 px-8 text-ink normal-case hover:bg-gold-300"
             >
-              {status === 'submitting' ? <CircularProgress size={20} sx={{ color: '#1C1712' }} /> : 'Iscrivimi'}
+              {status === 'submitting' ? (
+                <CircularProgress size={20} className="text-ink" />
+              ) : (
+                t('home.newsletter.submitButton', 'Iscrivimi')
+              )}
             </Button>
-          </Box>
+          </form>
         )}
 
         {status === 'error' && (
-          <Alert severity="error" sx={{ mt: 2, borderRadius: 2 }}>
+          <Alert severity="error" className="mt-4 rounded-xl">
             {error}
           </Alert>
         )}
 
-        <Typography sx={{ mt: 2.5, fontSize: '0.78rem', color: 'rgba(251,246,236,0.45)' }}>
-          Iscrivendoti accetti di ricevere comunicazioni periodiche. Puoi annullare l'iscrizione in qualsiasi momento.
-        </Typography>
+        <p className="mt-5 text-[0.78rem] text-ivory/45">
+          {t(
+            'home.newsletter.disclaimer',
+            "Iscrivendoti accetti di ricevere comunicazioni periodiche. Puoi annullare l'iscrizione in qualsiasi momento.",
+          )}
+        </p>
       </Container>
-    </Box>
+    </div>
   )
 }

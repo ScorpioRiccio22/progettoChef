@@ -1,10 +1,10 @@
-import { Box, Button, Container, Stack, Typography } from '@mui/material'
+import { Button, Container } from '@mui/material'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import { useSiteContent } from '@/hooks/useSiteContent'
 
 export default function HeroSection() {
-  const { brand, contact, settings } = useSiteContent()
+  const { brand, contact, settings, t } = useSiteContent()
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 
   const heroTitle = settings?.heroTitle || 'La cucina napoletana, portata a casa tua.'
@@ -13,31 +13,9 @@ export default function HeroSection() {
     `Sono ${brand.name}: chef a domicilio per cene private, eventi e nuove attività che vogliono partire con il piede giusto in cucina.`
 
   return (
-    <Box
-      id="home"
-      sx={{
-        position: 'relative',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        backgroundColor: '#1C1712',
-        overflow: 'hidden',
-      }}
-    >
+    <div id="home" className="relative flex min-h-screen items-center overflow-hidden bg-ink">
       {/* Silhouette del Vesuvio, elemento di firma del brand, in scala monumentale */}
-      <Box
-        component="svg"
-        viewBox="0 0 1000 320"
-        preserveAspectRatio="none"
-        sx={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-          height: { xs: '38%', md: '52%' },
-          opacity: 1,
-        }}
-      >
+      <svg viewBox="0 0 1000 320" preserveAspectRatio="none" className="absolute bottom-0 left-0 h-[38%] w-full md:h-[52%]">
         <path
           d="M0 320 L310 95 C330 80 352 80 368 98 L410 148 L460 70 C474 48 500 48 514 70 L568 152 L612 86 C628 64 654 64 670 88 L1000 320 Z"
           fill="#241D16"
@@ -47,49 +25,26 @@ export default function HeroSection() {
           fill="#2E2519"
         />
         <circle cx="460" cy="70" r="5" fill="#B8893E" opacity="0.85" />
-      </Box>
+      </svg>
 
-      <Box
-        sx={{
-          position: 'absolute',
-          inset: 0,
-          background: 'radial-gradient(ellipse at top right, rgba(184,137,62,0.18), transparent 55%)',
-        }}
-      />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(184,137,62,0.18),transparent_55%)]" />
 
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2, pt: { xs: 14, md: 10 } }}>
-        <Stack spacing={3} sx={{ maxWidth: 640 }}>
-          <Stack direction="row" spacing={1.2} alignItems="center">
-            <Box sx={{ width: 34, height: 1, backgroundColor: '#B8893E' }} />
-            <Typography
-              sx={{
-                color: '#D9B679',
-                letterSpacing: '0.22em',
-                textTransform: 'uppercase',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-              }}
-            >
+      <Container maxWidth="lg" className="relative z-[2] pt-28 md:pt-20">
+        <div className="flex max-w-[640px] flex-col gap-6">
+          <div className="flex items-center gap-3">
+            <div className="h-px w-[34px] bg-gold-500" />
+            <p className="text-[0.78rem] font-semibold uppercase tracking-[0.22em] text-gold-300">
               {brand.role} a {brand.city}
-            </Typography>
-          </Stack>
+            </p>
+          </div>
 
-          <Typography
-            variant="h1"
-            sx={{
-              color: '#FBF6EC',
-              fontSize: { xs: '2.6rem', sm: '3.4rem', md: '4.4rem' },
-              lineHeight: 1.05,
-            }}
-          >
+          <h1 className="font-display text-[2.6rem] font-semibold leading-[1.05] text-ivory sm:text-[3.4rem] md:text-[4.4rem]">
             {heroTitle}
-          </Typography>
+          </h1>
 
-          <Typography sx={{ color: 'rgba(251,246,236,0.78)', fontSize: '1.15rem', maxWidth: 480, lineHeight: 1.7 }}>
-            {heroSubtitle}
-          </Typography>
+          <p className="max-w-[480px] text-[1.15rem] leading-relaxed text-ivory/[.78]">{heroSubtitle}</p>
 
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ pt: 1 }}>
+          <div className="flex flex-col gap-4 pt-2 sm:flex-row">
             <Button
               size="large"
               variant="contained"
@@ -97,65 +52,30 @@ export default function HeroSection() {
               target="_blank"
               rel="noopener noreferrer"
               startIcon={<WhatsAppIcon />}
-              sx={{
-                backgroundColor: '#B8893E',
-                color: '#1C1712',
-                fontSize: '1rem',
-                '&:hover': { backgroundColor: '#D9B679' },
-              }}
+              className="bg-gold-500 text-base text-ink normal-case hover:bg-gold-300"
             >
-              Prenota una consulenza
+              {t('home.hero.ctaPrimary', 'Prenota una consulenza')}
             </Button>
             <Button
               size="large"
               variant="outlined"
               onClick={() => scrollTo('servizi')}
-              sx={{
-                color: '#FBF6EC',
-                borderColor: 'rgba(251,246,236,0.4)',
-                fontSize: '1rem',
-                '&:hover': { borderColor: '#FBF6EC', backgroundColor: 'rgba(251,246,236,0.08)' },
-              }}
+              className="border-ivory/40 text-base text-ivory normal-case hover:border-ivory hover:bg-ivory/[.08]"
             >
-              Scopri i servizi
+              {t('home.hero.ctaSecondary', 'Scopri i servizi')}
             </Button>
-          </Stack>
-        </Stack>
+          </div>
+        </div>
       </Container>
 
-      <Box
-        component="button"
-        onClick={() => scrollTo('chi-siamo')}
-        aria-label="Scorri verso la sezione Chi siamo"
-        sx={{
-          position: 'absolute',
-          bottom: 28,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 2,
-          background: 'none',
-          border: 'none',
-          color: 'rgba(251,246,236,0.7)',
-          cursor: 'pointer',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 0.5,
-          '&:hover': { color: '#FBF6EC' },
-        }}
+      <button
+        onClick={() => scrollTo('la-mia-storia')}
+        aria-label="Scorri verso la sezione La mia storia"
+        className="absolute bottom-7 left-1/2 z-[2] flex -translate-x-1/2 flex-col items-center gap-1 border-none bg-none text-ivory/70 hover:text-ivory"
       >
-        <Typography sx={{ fontSize: '0.7rem', letterSpacing: '0.18em', textTransform: 'uppercase' }}>
-          Scorri
-        </Typography>
-        <ArrowDownwardIcon fontSize="small" sx={{ animation: 'bounce 2s infinite' }} />
-      </Box>
-
-      <Box
-        component="style"
-        dangerouslySetInnerHTML={{
-          __html: `@keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }`,
-        }}
-      />
-    </Box>
+        <span className="text-[0.7rem] uppercase tracking-[0.18em]">{t('home.hero.scrollLabel', 'Scorri')}</span>
+        <ArrowDownwardIcon fontSize="small" className="animate-bounce-soft" />
+      </button>
+    </div>
   )
 }

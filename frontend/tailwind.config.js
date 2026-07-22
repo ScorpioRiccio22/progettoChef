@@ -28,10 +28,22 @@ export default {
         },
         tomato: '#7A2E2E',
         olive: '#3A4430',
+        // Testo secondario del pannello admin (descrizioni, helper text).
+        clay: '#6E3A22',
+        danger: '#B3261E',
       },
       fontFamily: {
         display: ['"Fraunces"', '"Cormorant Garamond"', 'serif'],
         body: ['"Inter"', '"Helvetica Neue"', 'sans-serif'],
+      },
+      keyframes: {
+        'bounce-soft': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(6px)' },
+        },
+      },
+      animation: {
+        'bounce-soft': 'bounce-soft 2s infinite',
       },
     },
   },

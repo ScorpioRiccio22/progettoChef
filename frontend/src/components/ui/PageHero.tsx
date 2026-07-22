@@ -1,4 +1,4 @@
-import { Box, Container, Typography } from '@mui/material'
+import { Container } from '@mui/material'
 import VesuvioMark from './VesuvioMark'
 
 interface PageHeroProps {
@@ -9,30 +9,20 @@ interface PageHeroProps {
 
 export default function PageHero({ eyebrow, title, description }: PageHeroProps) {
   return (
-    <Box sx={{ backgroundColor: '#1C1712', pt: { xs: 16, md: 18 }, pb: { xs: 8, md: 10 }, position: 'relative', overflow: 'hidden' }}>
-      <Box
-        sx={{
-          position: 'absolute',
-          inset: 0,
-          background: 'radial-gradient(ellipse at top right, rgba(184,137,62,0.16), transparent 55%)',
-        }}
-      />
-      <Container maxWidth="md" sx={{ position: 'relative', textAlign: 'center' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1.2, mb: 2, color: '#D9B679' }}>
-          <VesuvioMark className="w-7 h-4" color="currentColor" />
-          <Typography sx={{ fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', fontSize: '0.8rem' }}>
-            {eyebrow}
-          </Typography>
-        </Box>
-        <Typography variant="h1" sx={{ color: '#FBF6EC', fontSize: { xs: '2.2rem', md: '3rem' }, mb: description ? 2 : 0 }}>
+    <div className="relative overflow-hidden bg-ink pb-16 pt-32 md:pb-20 md:pt-36">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(184,137,62,0.16),transparent_55%)]" />
+      <Container maxWidth="md" className="relative text-center">
+        <div className="mb-4 flex items-center justify-center gap-2 text-gold-300">
+          <VesuvioMark className="h-4 w-7" color="currentColor" />
+          <span className="text-[0.8rem] font-semibold uppercase tracking-[0.18em]">{eyebrow}</span>
+        </div>
+        <h1 className={`font-display text-[2.2rem] font-semibold text-ivory md:text-[3rem] ${description ? 'mb-4' : ''}`}>
           {title}
-        </Typography>
+        </h1>
         {description && (
-          <Typography sx={{ color: 'rgba(251,246,236,0.75)', fontSize: '1.05rem', lineHeight: 1.7, maxWidth: 560, mx: 'auto' }}>
-            {description}
-          </Typography>
+          <p className="mx-auto max-w-[560px] text-[1.05rem] leading-relaxed text-ivory/75">{description}</p>
         )}
       </Container>
-    </Box>
+    </div>
   )
 }

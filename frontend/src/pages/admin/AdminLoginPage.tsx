@@ -1,7 +1,9 @@
 import { useState, type FormEvent } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { Alert, Box, Button, CircularProgress, Paper, Stack, TextField, Typography } from '@mui/material'
+import { Alert, Button, CircularProgress, IconButton, InputAdornment, TextField } from '@mui/material'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import VesuvioMark from '@/components/ui/VesuvioMark'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { clearAuthError, login } from '@/store/slices/authSlice'
@@ -11,6 +13,7 @@ const EMPTY_FORM: LoginFormValues = { email: '', password: '' }
 
 export default function AdminLoginPage() {
   const [form, setForm] = useState<LoginFormValues>(EMPTY_FORM)
+  const [showPassword, setShowPassword] = useState(false)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
@@ -39,47 +42,24 @@ export default function AdminLoginPage() {
   const isSubmitting = status === 'loading'
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#1C1712',
-        px: 2,
-      }}
-    >
-      <Paper
-        elevation={0}
-        sx={{
-          maxWidth: 420,
-          width: '100%',
-          p: { xs: 4, md: 5 },
-          borderRadius: 3,
-          backgroundColor: '#FBF6EC',
-        }}
-      >
-        <Stack spacing={1} alignItems="center" sx={{ mb: 3 }}>
+    <div className="flex min-h-screen items-center justify-center bg-ink px-4">
+      <div className="w-full max-w-[420px] rounded-3xl bg-ivory p-8 md:p-10">
+        <div className="mb-6 flex flex-col items-center gap-1">
           <VesuvioMark className="h-10 w-28" color="#B8893E" />
-          <Typography
-            variant="h5"
-            sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600, color: '#1C1712' }}
-          >
-            Area Admin
-          </Typography>
-          <Typography sx={{ color: '#332A21', fontSize: '0.9rem', textAlign: 'center' }}>
+          <h1 className="font-display text-xl font-semibold text-ink">Area Admin</h1>
+          <p className="text-center text-[0.9rem] text-ink-soft">
             Accedi per gestire i contenuti del sito di Andrea Moio Chef.
-          </Typography>
-        </Stack>
+          </p>
+        </div>
 
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert severity="error" className="mb-4">
             {error}
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit} noValidate>
-          <Stack spacing={2.5}>
+        <form onSubmit={handleSubmit} noValidate>
+          <div className="flex flex-col gap-5">
             <TextField
               label="Email"
               type="email"
@@ -92,12 +72,26 @@ export default function AdminLoginPage() {
             />
             <TextField
               label="Password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               value={form.password}
               onChange={handleChange('password')}
               required
               fullWidth
               autoComplete="current-password"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label={showPassword ? 'Nascondi password' : 'Mostra password'}
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      edge="end"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <Button
               type="submit"
@@ -106,13 +100,13 @@ export default function AdminLoginPage() {
               fullWidth
               disabled={isSubmitting}
               startIcon={isSubmitting ? <CircularProgress size={18} color="inherit" /> : <LockOutlinedIcon />}
-              sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+              className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
             >
               {isSubmitting ? 'Accesso in corso…' : 'Accedi'}
             </Button>
-          </Stack>
-        </Box>
-      </Paper>
-    </Box>
+          </div>
+        </form>
+      </div>
+    </div>
   )
 }

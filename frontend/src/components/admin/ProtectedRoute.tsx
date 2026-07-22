@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
-import { Box, CircularProgress } from '@mui/material'
+import { CircularProgress } from '@mui/material'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { fetchCurrentUser } from '@/store/slices/authSlice'
 import type { AdminRole } from '@/types'
@@ -31,9 +31,9 @@ export default function ProtectedRoute({ children, roles }: ProtectedRouteProps)
 
   if (isBootstrapping) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+      <div className="flex min-h-[60vh] items-center justify-center">
         <CircularProgress />
-      </Box>
+      </div>
     )
   }
 

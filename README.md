@@ -60,10 +60,10 @@ Per i dettagli su pagine, struttura interna e placeholder da sostituire
 
 ## 🗺️ Mappa del sito
 
-- **Homepage** (`/`) — one-page scroll: Hero, Chi siamo, Servizi, Ricettario,
+- **Homepage** (`/`) — one-page scroll: Hero, Chi siamo, Servizi, A MoDo Mio,
   Eventi, Testimonianze, Newsletter, Contatti
 - **Chi siamo** (`/chi-siamo`)
-- **Ricettario** (`/ricettario`) — piatti e cosa offre, filtrabili per categoria
+- **A MoDo Mio** (`/A MoDo Mio`) — piatti e cosa offre, filtrabili per categoria
 - **Eventi** (`/eventi`) — eventi privati, aziendali, catering, cooking class
 - **Contatti** (`/contatti`) — form, email diretta, WhatsApp aziendale, social
 

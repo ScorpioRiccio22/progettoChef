@@ -1,7 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import {
   publicGetAboutPage,
+  publicGetActiveMenu,
   publicGetSiteSettings,
+  publicGetSiteTexts,
   publicListDishes,
   publicListEventTypes,
   publicListServices,
@@ -11,6 +13,7 @@ import type {
   AboutPageContent,
   Dish,
   EventType,
+  Menu,
   ServiceOffering,
   SiteSettings,
   Testimonial,
@@ -20,9 +23,15 @@ interface SiteContentState {
   settings: SiteSettings | null
   services: ServiceOffering[]
   dishes: Dish[]
+  /** Il menu "A Modo Mio" attivo in questo momento per il negozio fisico (null se nessuno). */
+  activeMenu: Menu | null
+  /** Il menu attivo in questo momento per gli eventi (null se nessuno). */
+  activeEventsMenu: Menu | null
   eventTypes: EventType[]
   testimonials: Testimonial[]
   about: AboutPageContent | null
+  /** Testi configurabili del sito (titoli, descrizioni, testo dei pulsanti...), chiave -> valore. */
+  texts: Record<string, string>
   status: 'idle' | 'loading' | 'loaded' | 'error'
   error: string | null
 }
@@ -31,9 +40,12 @@ const initialState: SiteContentState = {
   settings: null,
   services: [],
   dishes: [],
+  activeMenu: null,
+  activeEventsMenu: null,
   eventTypes: [],
   testimonials: [],
   about: null,
+  texts: {},
   status: 'idle',
   error: null,
 }
@@ -45,15 +57,19 @@ const initialState: SiteContentState = {
  * vecchie costanti statiche in lib/content.ts.
  */
 export const loadSiteContent = createAsyncThunk('siteContent/load', async () => {
-  const [settings, services, dishes, eventTypes, testimonials, about] = await Promise.all([
-    publicGetSiteSettings(),
-    publicListServices(),
-    publicListDishes(),
-    publicListEventTypes(),
-    publicListTestimonials(),
-    publicGetAboutPage(),
-  ])
-  return { settings, services, dishes, eventTypes, testimonials, about }
+  const [settings, services, dishes, activeMenu, activeEventsMenu, eventTypes, testimonials, about, texts] =
+    await Promise.all([
+      publicGetSiteSettings(),
+      publicListServices(),
+      publicListDishes(),
+      publicGetActiveMenu('SHOP'),
+      publicGetActiveMenu('EVENTS'),
+      publicListEventTypes(),
+      publicListTestimonials(),
+      publicGetAboutPage(),
+      publicGetSiteTexts(),
+    ])
+  return { settings, services, dishes, activeMenu, activeEventsMenu, eventTypes, testimonials, about, texts }
 })
 
 const siteContentSlice = createSlice({
@@ -71,9 +87,12 @@ const siteContentSlice = createSlice({
         state.settings = action.payload.settings
         state.services = action.payload.services
         state.dishes = action.payload.dishes
+        state.activeMenu = action.payload.activeMenu
+        state.activeEventsMenu = action.payload.activeEventsMenu
         state.eventTypes = action.payload.eventTypes
         state.testimonials = action.payload.testimonials
         state.about = action.payload.about
+        state.texts = action.payload.texts
       })
       .addCase(loadSiteContent.rejected, (state, action) => {
         state.status = 'error'

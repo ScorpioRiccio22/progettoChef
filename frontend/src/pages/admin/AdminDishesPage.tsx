@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
   Alert,
-  Box,
   Button,
   Chip,
   CircularProgress,
@@ -12,11 +11,8 @@ import {
   FormControlLabel,
   IconButton,
   MenuItem,
-  Paper,
-  Stack,
   Switch,
   TextField,
-  Typography,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
@@ -68,7 +64,7 @@ export default function AdminDishesPage() {
     setLoading(true)
     adminListDishes()
       .then(setItems)
-      .catch(() => setError('Impossibile caricare il ricettario'))
+      .catch(() => setError('Impossibile caricare "A MoDo mio"'))
       .finally(() => setLoading(false))
   }
 
@@ -139,64 +135,58 @@ export default function AdminDishesPage() {
   }
 
   return (
-    <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
-        <Box>
-          <Typography variant="h5" sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600 }}>
-            Ricettario
-          </Typography>
-          <Typography sx={{ color: '#5C5246' }}>I piatti mostrati nella pagina "Ricettario".</Typography>
-        </Box>
+    <div>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-xl font-semibold">A MoDo mio</h1>
+          <p className="text-clay">I piatti mostrati nella pagina "A MoDo mio".</p>
+        </div>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={openCreate}
-          sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+          className="whitespace-nowrap bg-gold-500 text-ink normal-case hover:bg-gold-300"
         >
           Nuovo piatto
         </Button>
-      </Stack>
+      </div>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+        <Alert severity="error" className="mb-6" onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+        <div className="flex justify-center py-12">
           <CircularProgress />
-        </Box>
+        </div>
       ) : items.length === 0 ? (
-        <Typography sx={{ color: '#5C5246' }}>Nessun piatto ancora. Aggiungine uno.</Typography>
+        <p className="text-clay">Nessun piatto ancora. Aggiungine uno.</p>
       ) : (
         <ReorderableList
           items={items}
           onReorder={handleReorder}
           renderItem={(item) => (
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                {item.imageUrl && (
-                  <Box component="img" src={item.imageUrl} alt="" sx={{ width: 56, height: 56, borderRadius: 1.5, objectFit: 'cover' }} />
-                )}
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-                    <Typography sx={{ fontWeight: 600 }}>{item.name}</Typography>
+            <div className="rounded-xl border border-black/10 p-4">
+              <div className="flex items-center gap-4">
+                {item.imageUrl && <img src={item.imageUrl} alt="" className="h-14 w-14 rounded-md object-cover" />}
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-semibold">{item.name}</p>
                     <Chip label={CATEGORIES.find((c) => c.value === item.category)?.label ?? item.category} size="small" />
                     {!item.published && <Chip label="Non pubblicato" size="small" color="default" />}
-                  </Stack>
-                  <Typography sx={{ color: '#5C5246', fontSize: '0.85rem' }} noWrap>
-                    {item.tags.join(' · ')}
-                  </Typography>
-                </Box>
+                  </div>
+                  <p className="truncate text-[0.85rem] text-clay">{item.tags.join(' · ')}</p>
+                </div>
                 <IconButton onClick={() => openEdit(item)} aria-label="Modifica">
                   <EditIcon fontSize="small" />
                 </IconButton>
                 <IconButton onClick={() => setDeleteTarget(item)} aria-label="Elimina">
                   <DeleteIcon fontSize="small" />
                 </IconButton>
-              </Stack>
-            </Paper>
+              </div>
+            </div>
           )}
         />
       )}
@@ -204,7 +194,7 @@ export default function AdminDishesPage() {
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingId ? 'Modifica piatto' : 'Nuovo piatto'}</DialogTitle>
         <DialogContent>
-          <Stack spacing={2.5} sx={{ mt: 1 }}>
+          <div className="mt-2 flex flex-col gap-5">
             <TextField
               label="Nome"
               fullWidth
@@ -254,17 +244,17 @@ export default function AdminDishesPage() {
               }
               label="Pubblicato (visibile sul sito)"
             />
-          </Stack>
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)} disabled={saving}>
+          <Button onClick={() => setDialogOpen(false)} disabled={saving} className="normal-case">
             Annulla
           </Button>
           <Button
             onClick={handleSave}
             variant="contained"
             disabled={saving || !form.name}
-            sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+            className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
             {saving ? 'Salvataggio…' : 'Salva'}
           </Button>
@@ -278,6 +268,6 @@ export default function AdminDishesPage() {
         onConfirm={handleDelete}
         loading={deleting}
       />
-    </Box>
+    </div>
   )
 }

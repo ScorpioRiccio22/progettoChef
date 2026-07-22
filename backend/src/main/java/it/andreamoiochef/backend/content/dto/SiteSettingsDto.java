@@ -14,6 +14,7 @@ public record SiteSettingsDto(
         String whatsappNumber,
         String whatsappLink,
         String contactArea,
+        String mapAddress,
         String instagramUrl,
         String facebookUrl,
         String tiktokUrl,
@@ -36,7 +37,7 @@ public record SiteSettingsDto(
         return new SiteSettingsDto(
                 s.getBrandName(), s.getBrandHandle(), s.getBrandRole(), s.getBrandCity(), s.getBrandPayoff(),
                 s.getLogoUrl(), s.getFaviconUrl(),
-                s.getContactEmail(), s.getWhatsappNumber(), s.getWhatsappLink(), s.getContactArea(),
+                s.getContactEmail(), s.getWhatsappNumber(), s.getWhatsappLink(), s.getContactArea(), s.getMapAddress(),
                 s.getInstagramUrl(), s.getFacebookUrl(), s.getTiktokUrl(), s.getThreadsUrl(),
                 s.getHeroTitle(), s.getHeroSubtitle(), s.getHeroImageUrl(),
                 s.getAboutIntro(), s.getAboutParagraph1(), s.getAboutParagraph2(), s.getAboutImageUrl(),
@@ -59,6 +60,7 @@ public record SiteSettingsDto(
         s.setWhatsappNumber(whatsappNumber);
         s.setWhatsappLink(whatsappLink);
         s.setContactArea(contactArea);
+        s.setMapAddress(mapAddress);
         s.setInstagramUrl(instagramUrl);
         s.setFacebookUrl(facebookUrl);
         s.setTiktokUrl(tiktokUrl);
