@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
   Alert,
-  Box,
   Button,
   Chip,
   CircularProgress,
@@ -11,11 +10,8 @@ import {
   DialogTitle,
   FormControlLabel,
   IconButton,
-  Paper,
-  Stack,
   Switch,
   TextField,
-  Typography,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
@@ -30,17 +26,21 @@ import {
 } from '@/services/contentApi'
 import ImageUploadField from '@/components/admin/ImageUploadField'
 import VideoUploadField from '@/components/admin/VideoUploadField'
+import GalleryMediaEditor from '@/components/admin/GalleryMediaEditor'
 import ReorderableList from '@/components/admin/ReorderableList'
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'
 import type { EventType } from '@/types'
 
 const EMPTY_FORM: EventTypeRequest = {
   title: '',
+  slug: '',
   description: '',
+  bodyContent: '',
   icon: '',
   imageUrl: null,
   videoUrl: null,
   details: [],
+  galleryImageUrls: [],
   published: true,
 }
 
@@ -79,11 +79,14 @@ export default function AdminEventsPage() {
     setEditingId(item.id)
     setForm({
       title: item.title,
+      slug: item.slug,
       description: item.description,
+      bodyContent: item.bodyContent,
       icon: item.icon,
       imageUrl: item.imageUrl,
       videoUrl: item.videoUrl,
       details: item.details,
+      galleryImageUrls: item.galleryImageUrls,
       published: item.published,
     })
     setDetailsInput(item.details.join('\n'))
@@ -98,6 +101,7 @@ export default function AdminEventsPage() {
         .split('\n')
         .map((d) => d.trim())
         .filter(Boolean),
+      galleryImageUrls: (form.galleryImageUrls ?? []).filter(Boolean),
     }
     try {
       if (editingId) {
@@ -134,65 +138,68 @@ export default function AdminEventsPage() {
   }
 
   return (
-    <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
-        <Box>
-          <Typography variant="h5" sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600 }}>
-            Eventi
-          </Typography>
-          <Typography sx={{ color: '#5C5246' }}>Le tipologie di evento mostrate nella pagina "Eventi".</Typography>
-        </Box>
+    <div>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-xl font-semibold">Eventi</h1>
+          <p className="text-clay">
+            Le tipologie di evento mostrate nella pagina "Eventi". Ognuna ha anche una sua landing page dedicata,
+            raggiungibile da "Scopri di più" sul sito (per gli eventi "privati" resta volutamente minimale: solo
+            foto/video e descrizione breve).
+          </p>
+        </div>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={openCreate}
-          sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+          className="whitespace-nowrap bg-gold-500 text-ink normal-case hover:bg-gold-300"
         >
           Nuova tipologia
         </Button>
-      </Stack>
+      </div>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+        <Alert severity="error" className="mb-6" onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+        <div className="flex justify-center py-12">
           <CircularProgress />
-        </Box>
+        </div>
       ) : items.length === 0 ? (
-        <Typography sx={{ color: '#5C5246' }}>Nessuna tipologia di evento ancora. Aggiungine una.</Typography>
+        <p className="text-clay">Nessuna tipologia di evento ancora. Aggiungine una.</p>
       ) : (
         <ReorderableList
           items={items}
           onReorder={handleReorder}
           renderItem={(item) => (
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-              <Stack direction="row" spacing={2} alignItems="flex-start">
-                {item.imageUrl && (
-                  <Box component="img" src={item.imageUrl} alt="" sx={{ width: 56, height: 56, borderRadius: 1.5, objectFit: 'cover' }} />
-                )}
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography sx={{ fontWeight: 600 }}>{item.title}</Typography>
+            <div className="rounded-xl border border-black/10 p-4">
+              <div className="flex items-start gap-4">
+                {item.imageUrl && <img src={item.imageUrl} alt="" className="h-14 w-14 rounded-md object-cover" />}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold">{item.title}</p>
                     {!item.published && <Chip label="Non pubblicato" size="small" color="default" />}
-                    {item.videoUrl && <Chip label="Video" size="small" sx={{ backgroundColor: '#D9B679', color: '#1C1712' }} />}
-                  </Stack>
-                  <Typography sx={{ color: '#5C5246', fontSize: '0.85rem' }}>{item.description}</Typography>
-                  <Typography sx={{ color: '#8A7F70', fontSize: '0.78rem', mt: 0.5 }}>
-                    {item.details.length} dettagli elencati
-                  </Typography>
-                </Box>
+                    {item.videoUrl && <Chip label="Video" size="small" className="bg-gold-300 text-ink" />}
+                    {item.galleryImageUrls.length > 0 && (
+                      <Chip label={`${item.galleryImageUrls.length} foto galleria`} size="small" />
+                    )}
+                  </div>
+                  <p className="text-[0.85rem] text-clay">
+                    /eventi/{item.slug} · {item.description}
+                  </p>
+                  <p className="mt-1 text-[0.78rem] text-clay">{item.details.length} dettagli elencati</p>
+                </div>
                 <IconButton onClick={() => openEdit(item)} aria-label="Modifica">
                   <EditIcon fontSize="small" />
                 </IconButton>
                 <IconButton onClick={() => setDeleteTarget(item)} aria-label="Elimina">
                   <DeleteIcon fontSize="small" />
                 </IconButton>
-              </Stack>
-            </Paper>
+              </div>
+            </div>
           )}
         />
       )}
@@ -200,7 +207,7 @@ export default function AdminEventsPage() {
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingId ? 'Modifica tipologia evento' : 'Nuova tipologia evento'}</DialogTitle>
         <DialogContent>
-          <Stack spacing={2.5} sx={{ mt: 1 }}>
+          <div className="mt-2 flex flex-col gap-5">
             <TextField
               label="Titolo"
               fullWidth
@@ -209,12 +216,29 @@ export default function AdminEventsPage() {
               required
             />
             <TextField
-              label="Descrizione"
+              label="Slug URL (opzionale)"
+              fullWidth
+              value={form.slug}
+              onChange={(e) => setForm((p) => ({ ...p, slug: e.target.value }))}
+              helperText={`Lascia vuoto per generarlo dal titolo. Landing page: /eventi/${form.slug || '...'}`}
+            />
+            <TextField
+              label="Descrizione breve"
               fullWidth
               multiline
               minRows={2}
               value={form.description}
               onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+              helperText="Mostrata nella card e, per gli eventi 'privati', anche nella landing page"
+            />
+            <TextField
+              label="Testo esteso (landing page)"
+              fullWidth
+              multiline
+              minRows={4}
+              value={form.bodyContent}
+              onChange={(e) => setForm((p) => ({ ...p, bodyContent: e.target.value }))}
+              helperText="Ignorato per gli eventi 'privati' (restano volutamente minimali: solo foto/video e descrizione breve)"
             />
             <TextField
               label="Icona (nome, es. private / corporate / catering / cooking-class)"
@@ -241,6 +265,13 @@ export default function AdminEventsPage() {
               value={form.videoUrl ?? null}
               onChange={(url) => setForm((p) => ({ ...p, videoUrl: url }))}
             />
+
+            <GalleryMediaEditor
+              label="Galleria immagini/video (landing page)"
+              helperText="Mostrata sul sito come carosello con autoplay. Puoi aggiungere sia immagini che video."
+              value={form.galleryImageUrls ?? []}
+              onChange={(urls) => setForm((p) => ({ ...p, galleryImageUrls: urls }))}
+            />
             <FormControlLabel
               control={
                 <Switch
@@ -250,17 +281,17 @@ export default function AdminEventsPage() {
               }
               label="Pubblicato (visibile sul sito)"
             />
-          </Stack>
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)} disabled={saving}>
+          <Button onClick={() => setDialogOpen(false)} disabled={saving} className="normal-case">
             Annulla
           </Button>
           <Button
             onClick={handleSave}
             variant="contained"
             disabled={saving || !form.title}
-            sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+            className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
             {saving ? 'Salvataggio…' : 'Salva'}
           </Button>
@@ -274,6 +305,6 @@ export default function AdminEventsPage() {
         onConfirm={handleDelete}
         loading={deleting}
       />
-    </Box>
+    </div>
   )
 }

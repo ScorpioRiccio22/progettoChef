@@ -43,6 +43,10 @@ public class SiteSettingsService {
         settings.setWhatsappNumber("+39 000 000 0000");
         settings.setWhatsappLink("https://wa.me/390000000000");
         settings.setContactArea("Napoli e provincia");
+        // Placeholder: da sostituire con l'indirizzo reale dal pannello admin
+        // (Contatti -> Indirizzo fisico). Finché resta vuoto o non valido,
+        // la mini mappa nella pagina Contatti non viene mostrata.
+        settings.setMapAddress(null);
         settings.setInstagramUrl("https://instagram.com/chefandreamoio");
         settings.setFacebookUrl("https://facebook.com/Chefmoioandrea");
         settings.setTiktokUrl("https://tiktok.com/@chefandreamoio");

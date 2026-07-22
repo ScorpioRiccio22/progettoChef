@@ -13,17 +13,22 @@ import HomePage from '@/pages/HomePage'
 import AboutPage from '@/pages/AboutPage'
 import RecipesPage from '@/pages/RecipesPage'
 import EventsPage from '@/pages/EventsPage'
+import EventDetailPage from '@/pages/EventDetailPage'
 import ContactPage from '@/pages/ContactPage'
 import ServicesPage from '@/pages/ServicesPage'
+import ServiceDetailPage from '@/pages/ServiceDetailPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import AdminLoginPage from '@/pages/admin/AdminLoginPage'
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
 import AdminLayout from '@/components/admin/AdminLayout'
 import ProtectedRoute from '@/components/admin/ProtectedRoute'
 import AdminSiteSettingsPage from '@/pages/admin/AdminSiteSettingsPage'
+import AdminTextsPage from '@/pages/admin/AdminTextsPage'
 import AdminServicesPage from '@/pages/admin/AdminServicesPage'
 import AdminDishesPage from '@/pages/admin/AdminDishesPage'
+import AdminMenuPage from '@/pages/admin/AdminMenuPage'
 import AdminEventsPage from '@/pages/admin/AdminEventsPage'
+import AdminEventsMenuPage from '@/pages/admin/AdminEventsMenuPage'
 import AdminTestimonialsPage from '@/pages/admin/AdminTestimonialsPage'
 import AdminAboutPage from '@/pages/admin/AdminAboutPage'
 import AdminMessagesPage from '@/pages/admin/AdminMessagesPage'
@@ -51,10 +56,12 @@ export default function App() {
             {/* Sito pubblico, con navbar/footer */}
             <Route element={<Layout />}>
               <Route path="/" element={<HomePage />} />
-              <Route path="/chi-siamo" element={<AboutPage />} />
-              <Route path="/ricettario" element={<RecipesPage />} />
+              <Route path="/la-mia-storia" element={<AboutPage />} />
+              <Route path="/a-modo-mio" element={<RecipesPage />} />
               <Route path="/eventi" element={<EventsPage />} />
+              <Route path="/eventi/:slug" element={<EventDetailPage />} />
               <Route path="/servizi" element={<ServicesPage />} />
+              <Route path="/servizi/:slug" element={<ServiceDetailPage />} />
               <Route path="/contatti" element={<ContactPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
@@ -71,11 +78,14 @@ export default function App() {
             >
               <Route index element={<AdminDashboardPage />} />
               <Route path="impostazioni" element={<AdminSiteSettingsPage />} />
+              <Route path="testi" element={<AdminTextsPage />} />
               <Route path="servizi" element={<AdminServicesPage />} />
-              <Route path="ricettario" element={<AdminDishesPage />} />
+              <Route path="a-modo-mio" element={<AdminDishesPage />} />
+              <Route path="a-modo-mio/menu" element={<AdminMenuPage />} />
               <Route path="eventi" element={<AdminEventsPage />} />
+              <Route path="eventi/menu" element={<AdminEventsMenuPage />} />
               <Route path="testimonianze" element={<AdminTestimonialsPage />} />
-              <Route path="chi-siamo" element={<AdminAboutPage />} />
+              <Route path="la-mia-storia" element={<AdminAboutPage />} />
               <Route path="messaggi" element={<AdminMessagesPage />} />
               <Route path="newsletter" element={<AdminNewsletterPage />} />
               <Route

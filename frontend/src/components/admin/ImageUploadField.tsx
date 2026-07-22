@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Box, Button, CircularProgress, Stack, Typography, IconButton } from '@mui/material'
+import { Button, CircularProgress, IconButton } from '@mui/material'
 import UploadIcon from '@mui/icons-material/Upload'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { adminUploadImage } from '@/services/contentApi'
@@ -8,10 +8,17 @@ interface ImageUploadFieldProps {
   label: string
   value: string | null
   onChange: (url: string | null) => void
+  /**
+   * Nasconde il pulsante "Rimuovi immagine" interno: usato quando questo
+   * campo vive dentro un contenitore (es. GalleryMediaEditor) che offre già
+   * un proprio pulsante per rimuovere l'intero slot, per evitare due
+   * pulsanti di eliminazione affiancati con lo stesso significato.
+   */
+  hideRemove?: boolean
 }
 
 /** Campo per caricare un'immagine sul backend e salvarne l'URL pubblico restituito. */
-export default function ImageUploadField({ label, value, onChange }: ImageUploadFieldProps) {
+export default function ImageUploadField({ label, value, onChange, hideRemove = false }: ImageUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -37,43 +44,25 @@ export default function ImageUploadField({ label, value, onChange }: ImageUpload
   }
 
   return (
-    <Box>
-      <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#332A21', mb: 1 }}>{label}</Typography>
-      <Stack direction="row" spacing={2} alignItems="center">
+    <div>
+      <p className="mb-1 text-sm font-semibold text-ink-soft">{label}</p>
+      <div className="flex items-center gap-4">
         {value ? (
-          <Box
-            component="img"
-            src={value}
-            alt={label}
-            sx={{ width: 88, height: 88, borderRadius: 2, objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }}
-          />
+          <img src={value} alt={label} className="h-[88px] w-[88px] rounded-xl border border-black/10 object-cover" />
         ) : (
-          <Box
-            sx={{
-              width: 88,
-              height: 88,
-              borderRadius: 2,
-              border: '1px dashed rgba(0,0,0,0.2)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'rgba(0,0,0,0.35)',
-              fontSize: '0.7rem',
-              textAlign: 'center',
-            }}
-          >
+          <div className="flex h-[88px] w-[88px] items-center justify-center rounded-xl border border-dashed border-black/20 px-2 text-center text-[0.7rem] text-black/35">
             Nessuna immagine
-          </Box>
+          </div>
         )}
 
-        <Stack spacing={1}>
+        <div className="flex flex-col items-start gap-1">
           <Button
             variant="outlined"
             size="small"
             component="label"
             disabled={uploading}
             startIcon={uploading ? <CircularProgress size={16} /> : <UploadIcon />}
-            sx={{ borderColor: '#B8893E', color: '#1C1712' }}
+            className="border-gold-500 text-ink normal-case"
           >
             {uploading ? 'Caricamento…' : value ? 'Cambia immagine' : 'Carica immagine'}
             <input
@@ -84,16 +73,14 @@ export default function ImageUploadField({ label, value, onChange }: ImageUpload
               onChange={handleFileSelected}
             />
           </Button>
-          {value && (
-            <IconButton size="small" onClick={() => onChange(null)} sx={{ alignSelf: 'flex-start' }} aria-label="Rimuovi immagine">
+          {value && !hideRemove && (
+            <IconButton size="small" onClick={() => onChange(null)} aria-label="Rimuovi immagine">
               <DeleteIcon fontSize="small" />
             </IconButton>
           )}
-        </Stack>
-      </Stack>
-      {error && (
-        <Typography sx={{ color: '#B3261E', fontSize: '0.78rem', mt: 0.5 }}>{error}</Typography>
-      )}
-    </Box>
+        </div>
+      </div>
+      {error && <p className="mt-1 text-xs text-danger">{error}</p>}
+    </div>
   )
 }

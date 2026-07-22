@@ -1,4 +1,4 @@
-import { Box, Button, Container, Rating, Stack, Typography } from '@mui/material'
+import { Button, Container, Rating } from '@mui/material'
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
 import GoogleIcon from '@mui/icons-material/Google'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
@@ -16,7 +16,7 @@ function initials(name: string) {
 }
 
 export default function GoogleReviewsSection() {
-  const { testimonials } = useSiteContent()
+  const { testimonials, t } = useSiteContent()
   const { data: googleData, status } = useAppSelector((state) => state.googleReviews)
 
   const hasGoogleReviews = googleData?.configured && googleData.reviews.length > 0
@@ -30,34 +30,27 @@ export default function GoogleReviewsSection() {
   if (status === 'loading' && !hasFallback) return null
 
   return (
-    <Box sx={{ backgroundColor: '#F3E9D6', py: { xs: 9, md: 13 } }}>
+    <div className="bg-ivory-deep py-[72px] md:py-[104px]">
       <Container maxWidth="lg">
         {hasGoogleReviews ? (
           <>
-            <SectionHeading eyebrow="Recensioni Google" title="Cosa dicono i miei ospiti su Google" />
-            <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              spacing={1.5}
-              alignItems={{ xs: 'flex-start', sm: 'center' }}
-              justifyContent="center"
-              sx={{ mb: 6, textAlign: 'center' }}
-            >
-              <Stack direction="row" spacing={1} alignItems="center">
-                <GoogleIcon sx={{ color: '#B8893E' }} />
+            <SectionHeading
+              eyebrow={t('home.reviews.eyebrowGoogle', 'Recensioni Google')}
+              title={t('home.reviews.titleGoogle', 'Cosa dicono i miei ospiti su Google')}
+            />
+            <div className="mb-12 flex flex-col items-start justify-center gap-3 text-center sm:flex-row sm:items-center">
+              <div className="flex items-center gap-2">
+                <GoogleIcon className="text-gold-500" />
                 {googleData?.rating != null && (
                   <>
-                    <Typography sx={{ fontWeight: 700, color: '#1C1712', fontSize: '1.15rem' }}>
-                      {googleData.rating.toFixed(1)}
-                    </Typography>
+                    <span className="text-[1.15rem] font-bold text-ink">{googleData.rating.toFixed(1)}</span>
                     <Rating value={googleData.rating} precision={0.1} readOnly size="small" />
                   </>
                 )}
                 {googleData?.totalReviews != null && (
-                  <Typography sx={{ color: '#8A6428', fontSize: '0.9rem' }}>
-                    ({googleData.totalReviews} recensioni)
-                  </Typography>
+                  <span className="text-[0.9rem] text-gold-600">({googleData.totalReviews} recensioni)</span>
                 )}
-              </Stack>
+              </div>
               {googleData?.mapsUrl && (
                 <Button
                   href={googleData.mapsUrl}
@@ -65,101 +58,62 @@ export default function GoogleReviewsSection() {
                   rel="noopener noreferrer"
                   size="small"
                   endIcon={<OpenInNewIcon fontSize="small" />}
-                  sx={{ color: '#8A6428', fontWeight: 600, '&:hover': { backgroundColor: 'transparent', color: '#1C1712' } }}
+                  className="font-semibold normal-case text-gold-600 hover:bg-transparent hover:text-ink"
                 >
-                  Lascia una recensione
+                  {t('home.reviews.leaveReviewButton', 'Lascia una recensione')}
                 </Button>
               )}
-            </Stack>
+            </div>
 
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
-                gap: 3,
-              }}
-            >
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
               {googleData!.reviews.map((review) => (
-                <Box
+                <div
                   key={`${review.authorName}-${review.timestamp}`}
-                  sx={{
-                    backgroundColor: '#FBF6EC',
-                    borderRadius: 3,
-                    p: 4,
-                    border: '1px solid rgba(28,23,18,0.06)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
+                  className="flex flex-col rounded-2xl border border-ink/[0.06] bg-ivory p-8"
                 >
-                  <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
+                  <div className="mb-4 flex items-center gap-3">
                     {review.authorPhotoUrl ? (
-                      <Box
-                        component="img"
+                      <img
                         src={review.authorPhotoUrl}
                         alt={review.authorName}
                         referrerPolicy="no-referrer"
-                        sx={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover' }}
+                        className="h-11 w-11 rounded-full object-cover"
                       />
                     ) : (
-                      <Box
-                        sx={{
-                          width: 44,
-                          height: 44,
-                          borderRadius: '50%',
-                          backgroundColor: 'rgba(184,137,62,0.16)',
-                          color: '#8A6428',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontWeight: 700,
-                        }}
-                      >
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gold-500/[0.16] font-bold text-gold-600">
                         {initials(review.authorName)}
-                      </Box>
+                      </div>
                     )}
-                    <Box>
-                      <Typography sx={{ fontWeight: 600, color: '#1C1712' }}>{review.authorName}</Typography>
-                      <Typography sx={{ fontSize: '0.78rem', color: '#8A6428' }}>{review.relativeTime}</Typography>
-                    </Box>
-                  </Stack>
-                  <Rating value={review.rating} readOnly size="small" sx={{ mb: 1.5 }} />
-                  <Typography sx={{ color: '#332A21', lineHeight: 1.7, flexGrow: 1 }}>{review.text}</Typography>
-                </Box>
+                    <div>
+                      <p className="font-semibold text-ink">{review.authorName}</p>
+                      <p className="text-[0.78rem] text-gold-600">{review.relativeTime}</p>
+                    </div>
+                  </div>
+                  <Rating value={review.rating} readOnly size="small" className="mb-3" />
+                  <p className="flex-grow leading-relaxed text-ink-soft">{review.text}</p>
+                </div>
               ))}
-            </Box>
+            </div>
           </>
         ) : (
           <>
-            <SectionHeading eyebrow="Le voci di chi ha assaggiato" title="Cosa raccontano i miei ospiti" />
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
-                gap: 3,
-              }}
-            >
+            <SectionHeading
+              eyebrow={t('home.reviews.eyebrowFallback', 'Le voci di chi ha assaggiato')}
+              title={t('home.reviews.titleFallback', 'Cosa raccontano i miei ospiti')}
+            />
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
               {testimonials.map((testimonial) => (
-                <Box
-                  key={testimonial.id}
-                  sx={{
-                    backgroundColor: '#FBF6EC',
-                    borderRadius: 3,
-                    p: 4,
-                    border: '1px solid rgba(28,23,18,0.06)',
-                  }}
-                >
-                  <FormatQuoteIcon sx={{ color: '#D9B679', fontSize: '2.2rem', mb: 1 }} />
-                  <Typography sx={{ color: '#332A21', lineHeight: 1.75, mb: 3, fontStyle: 'italic' }}>
-                    {testimonial.quote}
-                  </Typography>
-                  <Typography sx={{ fontWeight: 600, color: '#1C1712' }}>{testimonial.author}</Typography>
-                  <Typography sx={{ fontSize: '0.85rem', color: '#8A6428' }}>{testimonial.role}</Typography>
-                </Box>
+                <div key={testimonial.id} className="rounded-2xl border border-ink/[0.06] bg-ivory p-8">
+                  <FormatQuoteIcon className="mb-2 text-[2.2rem] text-gold-300" />
+                  <p className="mb-6 italic leading-[1.75] text-ink-soft">{testimonial.quote}</p>
+                  <p className="font-semibold text-ink">{testimonial.author}</p>
+                  <p className="text-[0.85rem] text-gold-600">{testimonial.role}</p>
+                </div>
               ))}
-            </Box>
+            </div>
           </>
         )}
       </Container>
-    </Box>
+    </div>
   )
 }

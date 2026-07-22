@@ -1,4 +1,4 @@
-import { Box, Button, Container, Stack, Typography } from '@mui/material'
+import { Button, Container } from '@mui/material'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import EmailIcon from '@mui/icons-material/Email'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
@@ -7,17 +7,20 @@ import SectionHeading from '@/components/ui/SectionHeading'
 import { useSiteContent } from '@/hooks/useSiteContent'
 
 export default function ContactPreviewSection() {
-  const { contact } = useSiteContent()
+  const { contact, t } = useSiteContent()
 
   return (
-    <Box id="contatti" sx={{ backgroundColor: '#FBF6EC', py: { xs: 9, md: 13 } }}>
+    <div id="contatti" className="bg-ivory py-[72px] md:py-[104px]">
       <Container maxWidth="md">
         <SectionHeading
-          eyebrow="Contatti"
-          title="Parliamo del tuo evento"
-          description="Scrivimi su WhatsApp per una risposta rapida, oppure manda una email con i dettagli: data, numero di invitati e cosa hai in mente."
+          eyebrow={t('home.contact.eyebrow', 'Contatti')}
+          title={t('home.contact.title', 'Parliamo del tuo evento')}
+          description={t(
+            'home.contact.description',
+            'Scrivimi su WhatsApp per una risposta rapida, oppure manda una email con i dettagli: data, numero di invitati e cosa hai in mente.',
+          )}
         />
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" sx={{ mb: 3 }}>
+        <div className="mb-6 flex flex-col justify-center gap-4 sm:flex-row">
           <Button
             size="large"
             variant="contained"
@@ -25,34 +28,32 @@ export default function ContactPreviewSection() {
             target="_blank"
             rel="noopener noreferrer"
             startIcon={<WhatsAppIcon />}
-            sx={{ backgroundColor: '#3A4430', color: '#FBF6EC', '&:hover': { backgroundColor: '#2C3424' } }}
+            className="bg-olive text-ivory normal-case hover:bg-[#2C3424]"
           >
-            Scrivimi su WhatsApp
+            {t('home.contact.whatsappButton', 'Scrivimi su WhatsApp')}
           </Button>
           <Button
             size="large"
             variant="outlined"
             href={`mailto:${contact.email}`}
             startIcon={<EmailIcon />}
-            sx={{ borderColor: '#B8893E', color: '#8A6428', '&:hover': { borderColor: '#8A6428', backgroundColor: 'rgba(184,137,62,0.08)' } }}
+            className="border-gold-500 text-gold-600 normal-case hover:border-gold-600 hover:bg-gold-500/[.08]"
           >
-            Invia una email
+            {t('home.contact.emailButton', 'Invia una email')}
           </Button>
-        </Stack>
-        <Box sx={{ textAlign: 'center' }}>
+        </div>
+        <div className="text-center">
           <Button
             component={RouterLink}
             to="/contatti"
             endIcon={<ArrowForwardIcon />}
-            sx={{ color: '#332A21', '&:hover': { backgroundColor: 'transparent', color: '#8A6428' } }}
+            className="normal-case text-ink-soft hover:bg-transparent hover:text-gold-600"
           >
-            Vai alla pagina contatti completa
+            {t('home.contact.pageLinkButton', 'Vai alla pagina contatti completa')}
           </Button>
-        </Box>
-        <Typography sx={{ textAlign: 'center', mt: 2, color: '#8A6428', fontSize: '0.9rem' }}>
-          {contact.area}
-        </Typography>
+        </div>
+        <p className="mt-4 text-center text-[0.9rem] text-gold-600">{contact.area}</p>
       </Container>
-    </Box>
+    </div>
   )
 }

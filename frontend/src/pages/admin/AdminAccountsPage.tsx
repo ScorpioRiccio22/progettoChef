@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
   Alert,
-  Box,
   Button,
   Chip,
   CircularProgress,
@@ -12,8 +11,6 @@ import {
   DialogTitle,
   IconButton,
   MenuItem,
-  Paper,
-  Stack,
   Switch,
   Table,
   TableBody,
@@ -23,7 +20,6 @@ import {
   TableRow,
   TextField,
   Tooltip,
-  Typography,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -157,38 +153,34 @@ export default function AdminAccountsPage() {
   }
 
   return (
-    <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
-        <Box>
-          <Typography variant="h5" sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600 }}>
-            Gestione account
-          </Typography>
-          <Typography sx={{ color: '#5C5246' }}>
-            Crea e amministra gli accessi all'area admin. Riservato ai Superadmin.
-          </Typography>
-        </Box>
+    <div>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-xl font-semibold">Gestione account</h1>
+          <p className="text-clay">Crea e amministra gli accessi all'area admin. Riservato ai Superadmin.</p>
+        </div>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={openCreate}
-          sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+          className="whitespace-nowrap bg-gold-500 text-ink normal-case hover:bg-gold-300"
         >
           Nuovo account
         </Button>
-      </Stack>
+      </div>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+        <Alert severity="error" className="mb-6" onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+        <div className="flex justify-center py-12">
           <CircularProgress />
-        </Box>
+        </div>
       ) : (
-        <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
+        <TableContainer className="rounded-2xl border border-black/10">
           <Table size="small">
             <TableHead>
               <TableRow>
@@ -207,9 +199,7 @@ export default function AdminAccountsPage() {
                   <TableRow key={account.id} hover>
                     <TableCell>
                       {account.fullName}
-                      {isSelf && (
-                        <Chip label="Tu" size="small" sx={{ ml: 1 }} />
-                      )}
+                      {isSelf && <Chip label="Tu" size="small" className="ml-2" />}
                     </TableCell>
                     <TableCell>{account.email}</TableCell>
                     <TableCell>
@@ -218,16 +208,11 @@ export default function AdminAccountsPage() {
                         size="small"
                         value={account.role}
                         onChange={(e) => handleRoleChange(account, e.target.value as AdminRole)}
-                        sx={{ minWidth: 150 }}
+                        className="min-w-[150px]"
                       >
                         {(Object.keys(ROLE_LABELS) as AdminRole[]).map((role) => (
                           <MenuItem key={role} value={role}>
-                            <Chip
-                              label={ROLE_LABELS[role]}
-                              size="small"
-                              color={ROLE_COLORS[role]}
-                              sx={{ pointerEvents: 'none' }}
-                            />
+                            <Chip label={ROLE_LABELS[role]} size="small" color={ROLE_COLORS[role]} className="pointer-events-none" />
                           </MenuItem>
                         ))}
                       </TextField>
@@ -235,16 +220,10 @@ export default function AdminAccountsPage() {
                     <TableCell>
                       <Tooltip title={isSelf ? 'Non puoi disabilitare il tuo account' : ''}>
                         <span>
-                          <Switch
-                            checked={account.enabled}
-                            disabled={isSelf}
-                            onChange={() => handleToggleStatus(account)}
-                          />
+                          <Switch checked={account.enabled} disabled={isSelf} onChange={() => handleToggleStatus(account)} />
                         </span>
                       </Tooltip>
-                      <Typography component="span" sx={{ fontSize: '0.8rem', color: '#8A7F70' }}>
-                        {account.enabled ? 'Attivo' : 'Disabilitato'}
-                      </Typography>
+                      <span className="text-[0.8rem] text-clay">{account.enabled ? 'Attivo' : 'Disabilitato'}</span>
                     </TableCell>
                     <TableCell>{formatDate(account.lastLoginAt)}</TableCell>
                     <TableCell align="right">
@@ -255,11 +234,7 @@ export default function AdminAccountsPage() {
                       </Tooltip>
                       <Tooltip title={isSelf ? 'Non puoi eliminare il tuo account' : 'Elimina account'}>
                         <span>
-                          <IconButton
-                            onClick={() => setDeleteTarget(account)}
-                            aria-label="Elimina"
-                            disabled={isSelf}
-                          >
+                          <IconButton onClick={() => setDeleteTarget(account)} aria-label="Elimina" disabled={isSelf}>
                             <DeleteIcon fontSize="small" />
                           </IconButton>
                         </span>
@@ -277,7 +252,7 @@ export default function AdminAccountsPage() {
       <Dialog open={createOpen} onClose={() => setCreateOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Nuovo account admin</DialogTitle>
         <DialogContent>
-          <Stack spacing={2.5} sx={{ mt: 1 }}>
+          <div className="mt-2 flex flex-col gap-5">
             <TextField
               label="Nome completo"
               fullWidth
@@ -315,17 +290,17 @@ export default function AdminAccountsPage() {
                 </MenuItem>
               ))}
             </TextField>
-          </Stack>
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCreateOpen(false)} disabled={saving}>
+          <Button onClick={() => setCreateOpen(false)} disabled={saving} className="normal-case">
             Annulla
           </Button>
           <Button
             onClick={handleCreate}
             variant="contained"
             disabled={saving || !form.email || !form.fullName || form.password.length < 8}
-            sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+            className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
             {saving ? 'Creazione…' : 'Crea account'}
           </Button>
@@ -336,7 +311,7 @@ export default function AdminAccountsPage() {
       <Dialog open={!!resetTarget} onClose={() => setResetTarget(null)} maxWidth="xs" fullWidth>
         <DialogTitle>Reimposta password</DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ mb: 2 }}>
+          <DialogContentText className="mb-4">
             Stai per reimpostare la password di <strong>{resetTarget?.fullName}</strong>.
           </DialogContentText>
           <TextField
@@ -355,6 +330,7 @@ export default function AdminAccountsPage() {
               setNewPassword('')
             }}
             disabled={resetting}
+            className="normal-case"
           >
             Annulla
           </Button>
@@ -362,7 +338,7 @@ export default function AdminAccountsPage() {
             onClick={handleResetPassword}
             variant="contained"
             disabled={resetting || newPassword.length < 8}
-            sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+            className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
             {resetting ? 'Salvataggio…' : 'Reimposta'}
           </Button>
@@ -376,7 +352,7 @@ export default function AdminAccountsPage() {
         onConfirm={handleDelete}
         loading={deleting}
       />
-    </Box>
+    </div>
   )
 }
 

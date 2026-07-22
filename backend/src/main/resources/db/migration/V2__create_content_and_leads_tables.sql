@@ -48,7 +48,7 @@ CREATE TABLE service_offerings
     updated_at  TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
--- Piatti del ricettario
+-- Piatti del A MoDo Mio
 CREATE TABLE dishes
 (
     id          BIGSERIAL PRIMARY KEY,

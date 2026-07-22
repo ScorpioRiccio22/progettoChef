@@ -24,8 +24,20 @@ public class EventType {
     @Column(nullable = false, length = 180)
     private String title;
 
+    /** Usato per l'URL della landing page pubblica: /eventi/{slug} */
+    @Column(nullable = false, length = 180, unique = true)
+    private String slug;
+
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    /**
+     * Testo più esteso per la landing page dedicata. Per gli eventi "privati" si
+     * consiglia di lasciarlo breve: la landing di quel tipo mostra solo foto/video
+     * e una descrizione sintetica, senza il lungo elenco di dettagli.
+     */
+    @Column(name = "body_content", columnDefinition = "TEXT")
+    private String bodyContent;
 
     /** Nome icona MUI (es. "private", "corporate", "catering", "cooking-class"). */
     @Column(length = 60)
@@ -43,6 +55,12 @@ public class EventType {
     @Column(name = "detail", length = 255)
     @OrderColumn(name = "detail_order")
     private List<String> details = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "event_type_gallery_images", joinColumns = @JoinColumn(name = "event_type_id"))
+    @Column(name = "image_url", length = 500)
+    @OrderColumn(name = "image_order")
+    private List<String> galleryImageUrls = new ArrayList<>();
 
     @Column(name = "sort_order", nullable = false)
     private int sortOrder;

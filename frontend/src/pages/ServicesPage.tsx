@@ -1,5 +1,7 @@
-import { Box, Button, Container, Typography } from '@mui/material'
+import { Button, Container } from '@mui/material'
+import { Link as RouterLink } from 'react-router-dom'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import HomeIcon from '@mui/icons-material/Home'
 import CelebrationIcon from '@mui/icons-material/Celebration'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
@@ -16,82 +18,62 @@ const ICONS: Record<string, typeof HomeIcon> = {
 }
 
 export default function ServicesPage() {
-  const { services, contact } = useSiteContent()
+  const { services, contact, t } = useSiteContent()
 
   return (
     <>
       <PageHero
-        eyebrow="Servizi"
-        title="Tre modi per portare la mia cucina da te"
-        description="Dalla cena tra amici al lancio della tua attività: ogni servizio è pensato su misura, partendo da quello che ti serve davvero."
+        eyebrow={t('services.page.eyebrow', 'Servizi')}
+        title={t('services.page.title', 'Tre modi per portare la mia cucina da te')}
+        description={t(
+          'services.page.description',
+          "Dalla cena tra amici al lancio della tua attività: ogni servizio è pensato su misura, partendo da quello che ti serve davvero.",
+        )}
       />
 
-      <Box sx={{ backgroundColor: '#FBF6EC', py: { xs: 8, md: 11 } }}>
+      <div className="bg-ivory py-16 md:py-[88px]">
         <Container maxWidth="lg">
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3 }}>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {services.map((service) => {
               const Icon = ICONS[service.icon] ?? RestaurantIcon
               return (
-                <Box
+                <RouterLink
                   key={service.id}
-                  sx={{
-                    backgroundColor: '#F3E9D6',
-                    borderRadius: 3,
-                    p: 4,
-                    border: '1px solid rgba(28,23,18,0.06)',
-                    transition: 'transform 0.25s ease, box-shadow 0.25s ease',
-                    '&:hover': {
-                      transform: 'translateY(-6px)',
-                      boxShadow: '0 16px 32px rgba(28,23,18,0.1)',
-                    },
-                  }}
+                  to={`/servizi/${service.slug}`}
+                  className="block rounded-2xl border border-ink/[0.06] bg-ivory-deep p-8 no-underline transition duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_16px_32px_rgba(28,23,18,0.1)]"
                 >
                   {service.imageUrl ? (
-                    <Box
-                      component="img"
-                      src={service.imageUrl}
-                      alt={service.title}
-                      sx={{ width: '100%', height: 160, borderRadius: 2, objectFit: 'cover', mb: 2.5 }}
-                    />
+                    <img src={service.imageUrl} alt={service.title} className="mb-5 h-40 w-full rounded-xl object-cover" />
                   ) : (
-                    <Box
-                      sx={{
-                        width: 52,
-                        height: 52,
-                        borderRadius: '50%',
-                        backgroundColor: 'rgba(184,137,62,0.16)',
-                        color: '#8A6428',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        mb: 2.5,
-                      }}
-                    >
+                    <div className="mb-5 flex h-[52px] w-[52px] items-center justify-center rounded-full bg-gold-500/[0.16] text-gold-600">
                       <Icon />
-                    </Box>
+                    </div>
                   )}
-                  <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.3rem', fontWeight: 600, mb: 0.5 }}>
-                    {service.title}
-                  </Typography>
-                  <Typography sx={{ color: '#8A6428', fontSize: '0.88rem', fontWeight: 600, mb: 1.5 }}>
-                    {service.tagline}
-                  </Typography>
-                  <Typography sx={{ color: '#332A21', lineHeight: 1.7 }}>{service.description}</Typography>
-                </Box>
+                  <p className="mb-1 font-display text-[1.3rem] font-semibold">{service.title}</p>
+                  <p className="mb-3 text-[0.88rem] font-semibold text-gold-600">{service.tagline}</p>
+                  <p className="leading-relaxed text-ink-soft">{service.description}</p>
+                  <div className="mt-4 flex items-center gap-1.5 text-[0.88rem] font-semibold text-gold-600">
+                    <span>{t('common.discoverMore', 'Scopri di più')}</span>
+                    <ArrowForwardIcon className="text-base" />
+                  </div>
+                </RouterLink>
               )
             })}
-          </Box>
+          </div>
         </Container>
-      </Box>
+      </div>
 
-      <Box sx={{ backgroundColor: '#F3E9D6', py: { xs: 8, md: 10 } }}>
-        <Container maxWidth="sm" sx={{ textAlign: 'center' }}>
-          <Typography variant="h2" sx={{ fontSize: { xs: '1.6rem', md: '2rem' }, mb: 1.5 }}>
-            Non sai quale servizio fa per te?
-          </Typography>
-          <Typography sx={{ color: '#332A21', mb: 3 }}>
-            Scrivimi su WhatsApp raccontandomi cosa hai in mente: ti aiuto a capire la formula più adatta.
-          </Typography>
+      <div className="bg-ivory-deep py-16 md:py-20">
+        <Container maxWidth="sm" className="text-center">
+          <h2 className="mb-3 font-display text-2xl font-semibold md:text-3xl">
+            {t('services.cta.title', 'Non sai quale servizio fa per te?')}
+          </h2>
+          <p className="mb-6 text-ink-soft">
+            {t(
+              'services.cta.description',
+              'Scrivimi su WhatsApp raccontandomi cosa hai in mente: ti aiuto a capire la formula più adatta.',
+            )}
+          </p>
           <Button
             variant="contained"
             size="large"
@@ -99,12 +81,12 @@ export default function ServicesPage() {
             target="_blank"
             rel="noopener noreferrer"
             startIcon={<WhatsAppIcon />}
-            sx={{ backgroundColor: '#3A4430', color: '#FBF6EC', '&:hover': { backgroundColor: '#2C3424' } }}
+            className="bg-olive text-ivory normal-case hover:bg-[#2C3424]"
           >
-            Scrivimi su WhatsApp
+            {t('services.cta.button', 'Scrivimi su WhatsApp')}
           </Button>
         </Container>
-      </Box>
+      </div>
     </>
   )
 }

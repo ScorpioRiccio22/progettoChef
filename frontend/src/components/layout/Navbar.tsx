@@ -1,17 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import {
-  AppBar,
-  Box,
-  Button,
-  Drawer,
-  IconButton,
-  List,
-  ListItemButton,
-  ListItemText,
-  Toolbar,
-  Typography,
-} from '@mui/material'
+import { AppBar, Button, Drawer, IconButton, List, ListItemButton, ListItemText, Toolbar } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
@@ -54,88 +43,43 @@ export default function Navbar() {
       <AppBar
         position="fixed"
         elevation={0}
-        sx={{
-          backgroundColor: isTransparent ? 'transparent' : 'rgba(251,246,236,0.92)',
-          backdropFilter: isTransparent ? 'none' : 'blur(10px)',
-          borderBottom: isTransparent ? 'none' : '1px solid rgba(28,23,18,0.08)',
-          transition: 'all 0.35s ease',
-          boxShadow: 'none',
-        }}
+        className={`!shadow-none transition-all duration-300 ${
+          isTransparent ? '!bg-transparent' : '!border-b !border-ink/[.08] !bg-ivory/[.92] backdrop-blur-md'
+        }`}
       >
-        <Toolbar sx={{ justifyContent: 'space-between', py: 1, px: { xs: 2, md: 4 } }}>
-          <Box
-            component="button"
-            onClick={() => navigate('/')}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.2,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              p: 0,
-            }}
-            aria-label="Torna alla home"
-          >
-            <Box
-              sx={{
-                width: 38,
-                height: 38,
-                borderRadius: '50%',
-                border: `1.5px solid ${isTransparent ? '#FBF6EC' : '#B8893E'}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: isTransparent ? '#FBF6EC' : '#B8893E',
-                overflow: 'hidden',
-              }}
+        <Toolbar className="justify-between px-4 py-2 md:px-8">
+          <button onClick={() => navigate('/')} className="flex items-center gap-2 border-none bg-none p-0" aria-label="Torna alla home">
+            <div
+              className={`flex h-[38px] w-[38px] items-center justify-center overflow-hidden rounded-full border-[1.5px] ${
+                isTransparent ? 'border-ivory text-ivory' : 'border-gold-500 text-gold-500'
+              }`}
             >
               {brand.logoUrl ? (
-                <Box component="img" src={brand.logoUrl} alt={brand.name} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={brand.logoUrl} alt={brand.name} className="h-full w-full object-cover" />
               ) : (
-                <VesuvioMark className="w-5 h-3" color="currentColor" />
+                <VesuvioMark className="h-3 w-5" color="currentColor" />
               )}
-            </Box>
-            <Box sx={{ textAlign: 'left' }}>
-              <Typography
-                sx={{
-                  fontFamily: '"Fraunces", serif',
-                  fontWeight: 600,
-                  fontSize: '1.05rem',
-                  color: isTransparent ? '#FBF6EC' : '#1C1712',
-                  lineHeight: 1.1,
-                }}
-              >
+            </div>
+            <div className="text-left">
+              <p className={`font-display text-[1.05rem] font-semibold leading-tight ${isTransparent ? 'text-ivory' : 'text-ink'}`}>
                 {brand.name}
-              </Typography>
-              <Typography
-                sx={{
-                  fontSize: '0.68rem',
-                  letterSpacing: '0.16em',
-                  textTransform: 'uppercase',
-                  color: isTransparent ? 'rgba(251,246,236,0.75)' : '#8A6428',
-                }}
-              >
+              </p>
+              <p className={`text-[0.68rem] uppercase tracking-[0.16em] ${isTransparent ? 'text-ivory/75' : 'text-gold-600'}`}>
                 {brand.role} · {brand.city}
-              </Typography>
-            </Box>
-          </Box>
+              </p>
+            </div>
+          </button>
 
-          <Box sx={{ display: { xs: 'none', lg: 'flex' }, alignItems: 'center', gap: 0.5 }}>
+          <div className="hidden items-center gap-1 lg:flex">
             {NAV_ITEMS.map((item) => (
               <Button
                 key={item.label}
                 onClick={() => goToSection(item.sectionId, item.path)}
-                sx={{
-                  color: isTransparent ? '#FBF6EC' : '#1C1712',
-                  fontSize: '0.92rem',
-                  fontWeight: 500,
-                  borderRadius: 999,
-                  px: 1.8,
-                  '&:hover': {
-                    backgroundColor: isTransparent ? 'rgba(251,246,236,0.12)' : 'rgba(184,137,62,0.1)',
-                  },
-                }}
+                className={`rounded-full px-4 text-[0.92rem] font-medium normal-case ${
+                  isTransparent
+                    ? 'text-ivory hover:bg-ivory/[.12]'
+                    : 'text-ink hover:bg-gold-500/10'
+                }`}
               >
                 {item.label}
               </Button>
@@ -146,19 +90,14 @@ export default function Navbar() {
               rel="noopener noreferrer"
               startIcon={<WhatsAppIcon />}
               variant="contained"
-              sx={{
-                ml: 1.5,
-                backgroundColor: '#B8893E',
-                color: '#1C1712',
-                '&:hover': { backgroundColor: '#8A6428' },
-              }}
+              className="ml-3 bg-gold-500 text-ink normal-case hover:bg-gold-600"
             >
               Scrivimi
             </Button>
-          </Box>
+          </div>
 
           <IconButton
-            sx={{ display: { xs: 'flex', lg: 'none' }, color: isTransparent ? '#FBF6EC' : '#1C1712' }}
+            className={`flex lg:hidden ${isTransparent ? 'text-ivory' : 'text-ink'}`}
             onClick={() => setDrawerOpen(true)}
             aria-label="Apri il menu di navigazione"
           >
@@ -171,21 +110,21 @@ export default function Navbar() {
         anchor="right"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        PaperProps={{ sx: { width: 280, backgroundColor: '#1C1712', color: '#FBF6EC' } }}
+        PaperProps={{ className: 'w-[280px] bg-ink text-ivory' }}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
-          <IconButton onClick={() => setDrawerOpen(false)} sx={{ color: '#FBF6EC' }} aria-label="Chiudi il menu">
+        <div className="flex justify-end p-4">
+          <IconButton onClick={() => setDrawerOpen(false)} className="text-ivory" aria-label="Chiudi il menu">
             <CloseIcon />
           </IconButton>
-        </Box>
-        <List sx={{ px: 1 }}>
+        </div>
+        <List className="px-2">
           {NAV_ITEMS.map((item) => (
-            <ListItemButton key={item.label} onClick={() => goToSection(item.sectionId, item.path)} sx={{ borderRadius: 2 }}>
+            <ListItemButton key={item.label} onClick={() => goToSection(item.sectionId, item.path)} className="rounded-lg">
               <ListItemText primary={item.label} primaryTypographyProps={{ fontSize: '1.05rem' }} />
             </ListItemButton>
           ))}
         </List>
-        <Box sx={{ p: 2, mt: 'auto' }}>
+        <div className="mt-auto p-4">
           <Button
             href={contact.whatsappLink}
             target="_blank"
@@ -193,11 +132,11 @@ export default function Navbar() {
             fullWidth
             startIcon={<WhatsAppIcon />}
             variant="contained"
-            sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+            className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
             Scrivimi su WhatsApp
           </Button>
-        </Box>
+        </div>
       </Drawer>
     </>
   )

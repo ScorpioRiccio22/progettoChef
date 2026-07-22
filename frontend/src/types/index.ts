@@ -4,10 +4,16 @@
 export interface ServiceOffering {
   id: number
   title: string
+  /** Usato per l'URL della pagina di dettaglio pubblica: /servizi/{slug} */
+  slug: string
   tagline: string
   description: string
+  /** Testo più esteso mostrato nella pagina di dettaglio (paragrafi separati da riga vuota). */
+  bodyContent: string
   icon: 'home' | 'event' | 'business' | string
   imageUrl: string | null
+  videoUrl: string | null
+  galleryImageUrls: string[]
   sortOrder: number
   published: boolean
 }
@@ -23,14 +29,41 @@ export interface Dish {
   published: boolean
 }
 
+export interface MenuItem {
+  id: number
+  name: string
+  category: string
+  description: string
+  imageUrl: string | null
+  price: number
+  sortOrder: number
+}
+
+export interface Menu {
+  id: number
+  name: string
+  /** 'SHOP' = negozio fisico, 'EVENTS' = eventi. */
+  type: 'SHOP' | 'EVENTS' | string
+  description: string
+  /** Se true, è il menu mostrato in vetrina (per il negozio o per gli eventi) in questo momento. */
+  active: boolean
+  sortOrder: number
+  items: MenuItem[]
+}
+
 export interface EventType {
   id: number
   title: string
+  /** Usato per l'URL della landing page pubblica: /eventi/{slug} */
+  slug: string
   description: string
+  /** Testo più esteso per la landing page (per gli eventi "privati" consigliato breve). */
+  bodyContent: string
   icon: 'private' | 'corporate' | 'catering' | 'cooking-class' | string
   imageUrl: string | null
   videoUrl: string | null
   details: string[]
+  galleryImageUrls: string[]
   sortOrder: number
   published: boolean
 }
@@ -96,6 +129,7 @@ export interface SiteSettings {
   whatsappNumber: string
   whatsappLink: string
   contactArea: string
+  mapAddress: string
   instagramUrl: string
   facebookUrl: string
   tiktokUrl: string

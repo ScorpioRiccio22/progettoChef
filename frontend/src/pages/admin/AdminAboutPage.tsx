@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
   Alert,
-  Box,
   Button,
   Dialog,
   DialogActions,
@@ -9,10 +8,7 @@ import {
   DialogTitle,
   Divider,
   IconButton,
-  Paper,
-  Stack,
   TextField,
-  Typography,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
@@ -174,84 +170,78 @@ export default function AdminAboutPage() {
   }
 
   return (
-    <Box>
-      <Typography variant="h5" sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600, mb: 0.5 }}>
-        La mia storia
-      </Typography>
-      <Typography sx={{ color: '#5C5246', mb: 3 }}>
+    <div>
+      <h1 className="mb-1 font-display text-xl font-semibold">La mia storia</h1>
+      <p className="mb-6 text-clay">
         Tappe del percorso e principi della cucina. I testi introduttivi e le statistiche si modificano in{' '}
         <strong>Impostazioni sito</strong>.
-      </Typography>
+      </p>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+        <Alert severity="error" className="mb-6" onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
       {/* Milestones */}
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Typography sx={{ fontWeight: 700 }}>Tappe del percorso</Typography>
-        <Button size="small" startIcon={<AddIcon />} onClick={openCreateMilestone}>
+      <div className="mb-3 flex items-center justify-between">
+        <p className="font-bold">Tappe del percorso</p>
+        <Button size="small" startIcon={<AddIcon />} onClick={openCreateMilestone} className="normal-case">
           Aggiungi tappa
         </Button>
-      </Stack>
+      </div>
 
-      {!loadingMilestones && milestones.length === 0 && (
-        <Typography sx={{ color: '#5C5246', mb: 2 }}>Nessuna tappa ancora.</Typography>
-      )}
+      {!loadingMilestones && milestones.length === 0 && <p className="mb-3 text-clay">Nessuna tappa ancora.</p>}
 
       <ReorderableList
         items={milestones}
         onReorder={reorderMilestones}
         renderItem={(item) => (
-          <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Typography sx={{ fontWeight: 700, color: '#B8893E', minWidth: 56 }}>{item.year}</Typography>
-              <Typography sx={{ flex: 1, color: '#332A21' }}>{item.text}</Typography>
+          <div className="rounded-xl border border-black/10 p-4">
+            <div className="flex items-center gap-4">
+              <p className="min-w-[56px] font-bold text-gold-500">{item.year}</p>
+              <p className="flex-1 text-ink-soft">{item.text}</p>
               <IconButton onClick={() => openEditMilestone(item)} aria-label="Modifica">
                 <EditIcon fontSize="small" />
               </IconButton>
               <IconButton onClick={() => setDeleteMilestoneTarget(item)} aria-label="Elimina">
                 <DeleteIcon fontSize="small" />
               </IconButton>
-            </Stack>
-          </Paper>
+            </div>
+          </div>
         )}
       />
 
-      <Divider sx={{ my: 4 }} />
+      <Divider className="my-8" />
 
       {/* Core values */}
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Typography sx={{ fontWeight: 700 }}>Principi della cucina</Typography>
-        <Button size="small" startIcon={<AddIcon />} onClick={openCreateValue}>
+      <div className="mb-3 flex items-center justify-between">
+        <p className="font-bold">Principi della cucina</p>
+        <Button size="small" startIcon={<AddIcon />} onClick={openCreateValue} className="normal-case">
           Aggiungi principio
         </Button>
-      </Stack>
+      </div>
 
-      {!loadingValues && values.length === 0 && (
-        <Typography sx={{ color: '#5C5246', mb: 2 }}>Nessun principio ancora.</Typography>
-      )}
+      {!loadingValues && values.length === 0 && <p className="mb-3 text-clay">Nessun principio ancora.</p>}
 
       <ReorderableList
         items={values}
         onReorder={reorderValues}
         renderItem={(item) => (
-          <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-            <Stack direction="row" spacing={2} alignItems="flex-start">
-              <Box sx={{ flex: 1 }}>
-                <Typography sx={{ fontWeight: 600 }}>{item.title}</Typography>
-                <Typography sx={{ color: '#5C5246', fontSize: '0.88rem' }}>{item.text}</Typography>
-              </Box>
+          <div className="rounded-xl border border-black/10 p-4">
+            <div className="flex items-start gap-4">
+              <div className="flex-1">
+                <p className="font-semibold">{item.title}</p>
+                <p className="text-[0.88rem] text-clay">{item.text}</p>
+              </div>
               <IconButton onClick={() => openEditValue(item)} aria-label="Modifica">
                 <EditIcon fontSize="small" />
               </IconButton>
               <IconButton onClick={() => setDeleteValueTarget(item)} aria-label="Elimina">
                 <DeleteIcon fontSize="small" />
               </IconButton>
-            </Stack>
-          </Paper>
+            </div>
+          </div>
         )}
       />
 
@@ -259,7 +249,7 @@ export default function AdminAboutPage() {
       <Dialog open={milestoneDialogOpen} onClose={() => setMilestoneDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingMilestoneId ? 'Modifica tappa' : 'Nuova tappa'}</DialogTitle>
         <DialogContent>
-          <Stack spacing={2.5} sx={{ mt: 1 }}>
+          <div className="mt-2 flex flex-col gap-5">
             <TextField
               label="Anno (o 'Oggi')"
               fullWidth
@@ -276,17 +266,17 @@ export default function AdminAboutPage() {
               onChange={(e) => setMilestoneForm((p) => ({ ...p, text: e.target.value }))}
               required
             />
-          </Stack>
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setMilestoneDialogOpen(false)} disabled={saving}>
+          <Button onClick={() => setMilestoneDialogOpen(false)} disabled={saving} className="normal-case">
             Annulla
           </Button>
           <Button
             onClick={saveMilestone}
             variant="contained"
             disabled={saving || !milestoneForm.year || !milestoneForm.text}
-            sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+            className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
             {saving ? 'Salvataggio…' : 'Salva'}
           </Button>
@@ -297,7 +287,7 @@ export default function AdminAboutPage() {
       <Dialog open={valueDialogOpen} onClose={() => setValueDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingValueId ? 'Modifica principio' : 'Nuovo principio'}</DialogTitle>
         <DialogContent>
-          <Stack spacing={2.5} sx={{ mt: 1 }}>
+          <div className="mt-2 flex flex-col gap-5">
             <TextField
               label="Titolo"
               fullWidth
@@ -314,17 +304,17 @@ export default function AdminAboutPage() {
               onChange={(e) => setValueForm((p) => ({ ...p, text: e.target.value }))}
               required
             />
-          </Stack>
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setValueDialogOpen(false)} disabled={saving}>
+          <Button onClick={() => setValueDialogOpen(false)} disabled={saving} className="normal-case">
             Annulla
           </Button>
           <Button
             onClick={saveValue}
             variant="contained"
             disabled={saving || !valueForm.title || !valueForm.text}
-            sx={{ backgroundColor: '#B8893E', color: '#1C1712', '&:hover': { backgroundColor: '#D9B679' } }}
+            className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
             {saving ? 'Salvataggio…' : 'Salva'}
           </Button>
@@ -343,6 +333,6 @@ export default function AdminAboutPage() {
         onCancel={() => setDeleteValueTarget(null)}
         onConfirm={deleteValue}
       />
-    </Box>
+    </div>
   )
 }
