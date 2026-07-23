@@ -51,7 +51,7 @@ export default function Footer() {
                 {brand.logoUrl ? (
                   <img src={brand.logoUrl} alt={brand.name} className="h-full w-full object-cover" />
                 ) : (
-                  <VesuvioMark className="h-3 w-5" color="currentColor" />
+                      <VesuvioMark className="h-8 w-8" color="currentColor" />
                 )}
               </div>
               <p className="font-display text-[1.2rem] font-semibold">{brand.name}</p>

@@ -45,7 +45,7 @@ export default function AdminLoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-ink px-4">
       <div className="w-full max-w-[420px] rounded-3xl bg-ivory p-8 md:p-10">
         <div className="mb-6 flex flex-col items-center gap-1">
-          <VesuvioMark className="h-10 w-28" color="#B8893E" />
+          <VesuvioMark className="h-20 w-20" color="#B8893E" />
           <h1 className="font-display text-xl font-semibold text-ink">Area Admin</h1>
           <p className="text-center text-[0.9rem] text-ink-soft">
             Accedi per gestire i contenuti del sito di Andrea Moio Chef.
