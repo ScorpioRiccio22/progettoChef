@@ -1,24 +1,18 @@
-# ---- Build stage ----
-FROM maven:3.9-eclipse-temurin-21 AS build
+FROM python:3.12-slim
+
 WORKDIR /app
 
-# Copia solo il pom.xml prima per sfruttare la cache delle dipendenze Docker
-COPY pom.xml .
-RUN mvn -B dependency:go-offline
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY src ./src
-RUN mvn -B clean package -DskipTests
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# ---- Runtime stage ----
-FROM eclipse-temurin:21-jre-alpine AS runtime
-WORKDIR /app
+COPY *.py ./
 
-RUN addgroup -S spring && adduser -S spring -G spring
-RUN mkdir -p /app/uploads && chown -R spring:spring /app/uploads
-USER spring:spring
-
-COPY --from=build /app/target/backend.jar app.jar
+RUN mkdir -p /app/uploads
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
