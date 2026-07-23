@@ -8,7 +8,7 @@ export default function VesuvioMark({ className }: VesuvioMarkProps) {
   return (
     <Box
       component="img"
-      src="/logo.png"
+      src="/logo.svg"
       alt="Logo"
       className={className}
       draggable={false}

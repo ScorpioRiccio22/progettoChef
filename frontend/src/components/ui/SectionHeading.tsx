@@ -23,7 +23,7 @@ export default function SectionHeading({
       }`}
     >
       <div className={`mb-4 flex items-center gap-2 ${light ? 'text-gold-300' : 'text-gold-500'}`}>
-        <VesuvioMark className="h-3 w-6" color="currentColor" />
+        <VesuvioMark className="h-8 w-8" color="currentColor" />
         <span className="font-sans text-[0.78rem] font-semibold uppercase tracking-[0.18em]">{eyebrow}</span>
       </div>
       <h2
