@@ -1,5 +1,6 @@
 # Ambiente di STAGING (da mostrare al cliente), pensato per girare su un
-# singolo VPS (es. Hetzner, DigitalOcean, OVH — 4/5 € al mese bastano).
+# singolo VPS (es. Aruba Cloud VPS O2A4, Hetzner, DigitalOcean — pochi euro
+# al mese bastano).
 #
 # Differenze rispetto a docker-compose.yml (sviluppo locale):
 # - il frontend usa la build di produzione (Dockerfile.prod, nginx statico)
@@ -42,7 +43,9 @@ services:
       db:
         condition: service_healthy
     environment:
-      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-andreamoiochef}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-andreamoiochef}
       DB_USERNAME: ${DB_USERNAME:-andreamoiochef}
       DB_PASSWORD: ${DB_PASSWORD:?la password del DB è obbligatoria in staging}
       JWT_SECRET: ${JWT_SECRET:?un JWT secret lungo e casuale è obbligatorio in staging}
@@ -52,9 +55,6 @@ services:
       ADMIN_SEED_EMAIL: ${ADMIN_SEED_EMAIL:-admin@andreamoiochef.it}
       ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:?impostare una password admin dedicata per lo staging}
       ADMIN_SEED_FULL_NAME: ${ADMIN_SEED_FULL_NAME:-Andrea Moio}
-      # Limiti upload video: allineati al default dell'app (vedi backend/README.md).
-      MULTIPART_MAX_FILE_SIZE: ${MULTIPART_MAX_FILE_SIZE:-210MB}
-      MULTIPART_MAX_REQUEST_SIZE: ${MULTIPART_MAX_REQUEST_SIZE:-210MB}
       # Recensioni Google (opzionali): se non impostate, il sito mostra le
       # testimonianze manuali come fallback. Impostare come secret dell'hosting,
       # mai in chiaro in questo file o nel repository.
@@ -65,11 +65,11 @@ services:
     volumes:
       - andreamoiochef-uploads-staging:/app/uploads
     healthcheck:
-      test: ['CMD', 'wget', '-qO-', 'http://localhost:8080/actuator/health']
+      test: ['CMD', 'python', '-c', "import urllib.request; urllib.request.urlopen('http://localhost:8180/api/public/ping')"]
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 30s
+      start_period: 15s
 
   frontend:
     build:
@@ -84,7 +84,7 @@ services:
       # nome di servizio sulla rete Docker interna. Su piattaforme senza rete
       # privata condivisa tra servizi (es. Render), impostare qui l'URL
       # pubblico del backend, es. https://andreamoiochef-backend.onrender.com
-      BACKEND_ORIGIN: ${BACKEND_ORIGIN:-http://backend:8080}
+      BACKEND_ORIGIN: ${BACKEND_ORIGIN:-http://backend:8180}
 
   caddy:
     image: caddy:2-alpine

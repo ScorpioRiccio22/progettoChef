@@ -4,6 +4,7 @@ backend/.mvn/
 backend/*.jar
 backend/*.war
 backend/.env
+backend/.venv/
 
 # ===== FRONTEND =====
 frontend/node_modules/

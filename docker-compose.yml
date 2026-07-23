@@ -5,13 +5,13 @@
 #   docker compose up --build
 #
 # - Frontend (Vite, hot-reload):  http://localhost:5173
-# - Backend (Spring Boot API):    http://localhost:8080
+# - Backend (FastAPI):            http://localhost:8180
 # - Postgres:                     localhost:5432 (utile per un client SQL esterno)
 #
 # Le modifiche ai file in frontend/src si riflettono subito nel browser
 # (il codice è montato come volume nel container). Per il backend, invece,
 # va rilanciato `docker compose up --build backend` dopo una modifica
-# (oppure si lancia il backend in locale con `mvn spring-boot:run`,
+# (oppure si lancia il backend in locale con `uvicorn main:app --reload`,
 # tenendo solo `db` su Docker — vedi sezione in fondo).
 
 services:
@@ -43,7 +43,9 @@ services:
       db:
         condition: service_healthy
     environment:
-      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-andreamoiochef}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-andreamoiochef}
       DB_USERNAME: ${DB_USERNAME:-andreamoiochef}
       DB_PASSWORD: ${DB_PASSWORD:-andreamoiochef}
       JWT_SECRET: ${JWT_SECRET:-change-this-to-a-long-random-string-min-32-chars}
@@ -60,15 +62,15 @@ services:
       GOOGLE_PLACES_CACHE_MINUTES: ${GOOGLE_PLACES_CACHE_MINUTES:-180}
       GOOGLE_PLACES_MAX_REVIEWS: ${GOOGLE_PLACES_MAX_REVIEWS:-6}
     ports:
-      - '8080:8080'
+      - '8180:8180'
     volumes:
       - andreamoiochef-uploads:/app/uploads
     healthcheck:
-      test: ['CMD', 'wget', '-qO-', 'http://localhost:8080/actuator/health']
+      test: ['CMD', 'python', '-c', "import urllib.request; urllib.request.urlopen('http://localhost:8180/api/public/ping')"]
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 30s
+      start_period: 15s
 
   frontend:
     build:
@@ -80,7 +82,7 @@ services:
       - backend
     environment:
       # Dentro la rete Docker il backend si chiama 'backend', non 'localhost'.
-      VITE_PROXY_TARGET: http://backend:8080
+      VITE_PROXY_TARGET: http://backend:8180
     ports:
       - '5173:5173'
     volumes:
@@ -97,6 +99,9 @@ volumes:
 # per il debug passo-passo in IDE):
 #
 #   docker compose up db
-#   cd backend && mvn spring-boot:run
+#   cd backend && uvicorn main:app --reload --port 8180
 #   cd frontend && npm run dev
+#
+# In questo caso, nel file .env del backend usa DB_HOST=localhost invece di
+# DB_HOST=db (il nome 'db' esiste solo dentro la rete Docker).
 # ---------------------------------------------------------------------------
