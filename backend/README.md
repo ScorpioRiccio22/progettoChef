@@ -44,7 +44,7 @@ pip install -r requirements.txt
 cp .env.example .env
 # modifica .env con le tue credenziali Postgres locali
 
-uvicorn main:app --reload --port 8080
+uvicorn main:app --reload --port 8180
 ```
 
 Al primo avvio: crea le tabelle, l'utente SUPERADMIN di default e i
@@ -52,14 +52,14 @@ contenuti demo (stesso comportamento della versione precedente).
 
 ## Avvio con Docker
 
-Stessa porta (8080), stessa cartella upload (`/app/uploads`), stesse
+Stessa porta (8180), stessa cartella upload (`/app/uploads`), stesse
 variabili d'ambiente della versione precedente — sostituibile 1:1 nello
 stesso `docker-compose.yml`.
 
 ## Documentazione interattiva
 
-- Swagger UI: `http://localhost:8080/docs`
-- ReDoc: `http://localhost:8080/redoc`
+- Swagger UI: `http://localhost:8180/docs`
+- ReDoc: `http://localhost:8180/redoc`
 
 ## Nota su un dettaglio tecnico del merge
 

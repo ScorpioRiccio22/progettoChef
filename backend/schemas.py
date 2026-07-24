@@ -75,6 +75,15 @@ class AdminResetPasswordRequest(BaseModel):
     newPassword: str = Field(..., min_length=8, max_length=72)
 
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str = Field(..., min_length=1)
+    newPassword: str = Field(..., min_length=8, max_length=72)
+
+
 # --- Reorder (drag-and-drop) ------------------------------------------------
 
 class ReorderRequest(BaseModel):

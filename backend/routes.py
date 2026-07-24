@@ -4,17 +4,25 @@ commenti di sezione. Equivalente di tutti i *Controller.java del progetto
 originale, qui riuniti invece che sparsi in package/file separati.
 """
 import csv
+import hashlib
 import io
+import secrets
 import threading
 from datetime import datetime, timedelta, timezone
 
 import httpx
-from fastapi import APIRouter, Depends, File, Query, Response, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Query, Response, UploadFile, status
 from sqlalchemy.orm import Session
 
 from config import settings
 from database import get_db
+from email_service import (
+    generate_unsubscribe_token,
+    notify_newsletter_subscribers,
+    send_password_reset_email,
+)
 from exceptions import BadRequestException, ConflictException, InvalidCredentialsException, NotFoundException
+from logger import AuditEvent, write_audit_event
 from models import (
     AdminRole,
     AdminUser,
@@ -26,6 +34,7 @@ from models import (
     MenuItem,
     Milestone,
     NewsletterSubscriber,
+    PasswordResetToken,
     ServiceOffering,
     SiteSettings,
     SiteText,
@@ -45,6 +54,7 @@ from schemas import (
     DishRequest,
     EventTypeDto,
     EventTypeRequest,
+    ForgotPasswordRequest,
     GoogleReviewDto,
     GoogleReviewsResponseDto,
     LoginRequest,
@@ -58,6 +68,7 @@ from schemas import (
     NewsletterSubscribeRequest,
     NewsletterSubscriberDto,
     ReorderRequest,
+    ResetPasswordRequest,
     ServiceOfferingDto,
     ServiceOfferingRequest,
     SiteSettingsDto,
@@ -82,6 +93,17 @@ from security import (
 from utils import apply_reorder, delete_if_managed, slugify, store_image, store_video
 
 
+def _queue_newsletter_notification(
+    db: Session, background_tasks: BackgroundTasks, resource_label: str, title: str, description: str | None
+) -> None:
+    """Accoda (in background, non blocca la risposta) una notifica a tutti
+    gli iscritti quando un contenuto passa a pubblicato per la prima volta."""
+    subscribers = db.query(NewsletterSubscriber).all()
+    subscriber_data = [(s.email, s.unsubscribe_token) for s in subscribers]
+    if subscriber_data:
+        background_tasks.add_task(notify_newsletter_subscribers, subscriber_data, resource_label, title, description)
+
+
 # ============================================================================
 # auth.py
 # ============================================================================
@@ -93,13 +115,19 @@ def login(request: LoginRequest, db: Session = Depends(get_db)) -> LoginResponse
     """Login per l'area admin. Pubblico (non richiede token)."""
     user = db.query(AdminUser).filter(AdminUser.email.ilike(request.email)).first()
     if user is None or not verify_password(request.password, user.password_hash):
+        write_audit_event(AuditEvent(action="LOGIN_FAILED", scope="auth", resource_type="login", actor_email=request.email))
         raise InvalidCredentialsException("Email o password non corretti")
     if not user.enabled:
+        write_audit_event(AuditEvent(action="LOGIN_FAILED", scope="auth", resource_type="login", actor_email=request.email))
         raise InvalidCredentialsException("Email o password non corretti")
 
     user.last_login_at = datetime.now(timezone.utc)
     db.add(user)
     db.flush()
+
+    write_audit_event(AuditEvent(
+        action="LOGIN", scope="auth", resource_type="login", actor_email=user.email, actor_role=user.role.value,
+    ))
 
     token = create_access_token(user.email, user.role)
     return LoginResponse(
@@ -133,6 +161,89 @@ def change_own_password(
 def logout() -> None:
     """Con JWT stateless non c'è nulla da invalidare lato server: il
     frontend scarta semplicemente il token."""
+    return None
+
+
+# Tempo minimo tra due richieste di reset per lo stesso account, per
+# limitare l'abuso dell'endpoint (rate-limiting leggero, senza dipendenze
+# esterne: basato su un controllo nel DB invece che su Redis/slowapi).
+_PASSWORD_RESET_COOLDOWN_MINUTES = 5
+
+
+@auth_router.post("/forgot-password", status_code=status.HTTP_204_NO_CONTENT)
+def forgot_password(
+    request: ForgotPasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+) -> None:
+    """Richiede un link di reset password. Risponde SEMPRE allo stesso modo
+    (204, nessun corpo) sia che l'email esista o meno tra gli admin, per non
+    rivelare quali indirizzi sono registrati (enumeration)."""
+    user = db.query(AdminUser).filter(AdminUser.email.ilike(request.email)).first()
+    if user is None or not user.enabled:
+        # Nessun audit event qui: non è un vero tentativo su un account
+        # esistente, solo rumore (email sbagliata / account inesistente).
+        return None
+
+    cooldown_cutoff = datetime.now(timezone.utc) - timedelta(minutes=_PASSWORD_RESET_COOLDOWN_MINUTES)
+    recent_token = (
+        db.query(PasswordResetToken)
+        .filter(PasswordResetToken.admin_user_id == user.id, PasswordResetToken.created_at > cooldown_cutoff)
+        .first()
+    )
+    if recent_token is not None:
+        # Già stata inviata una email di recente: non ne mandiamo un'altra,
+        # ma la risposta resta identica per non far capire il motivo.
+        write_audit_event(AuditEvent(
+            action="PASSWORD_RESET_REQUESTED", scope="auth", resource_type="password-reset",
+            actor_email=user.email, actor_role=user.role.value,
+        ))
+        return None
+
+    raw_token = secrets.token_urlsafe(32)
+    token_hash = hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=settings.password_reset_token_expiration_minutes)
+
+    db.add(PasswordResetToken(admin_user_id=user.id, token_hash=token_hash, expires_at=expires_at))
+    db.flush()
+
+    write_audit_event(AuditEvent(
+        action="PASSWORD_RESET_REQUESTED", resource_type="auth",
+        actor_email=user.email, actor_role=user.role.value,
+    ))
+    background_tasks.add_task(send_password_reset_email, user.email, raw_token)
+    return None
+
+
+@auth_router.post("/reset-password", status_code=status.HTTP_204_NO_CONTENT)
+def reset_password_with_token(request: ResetPasswordRequest, db: Session = Depends(get_db)) -> None:
+    """Completa il reset usando il token ricevuto via email."""
+    token_hash = hashlib.sha256(request.token.encode("utf-8")).hexdigest()
+    reset_token = db.query(PasswordResetToken).filter(PasswordResetToken.token_hash == token_hash).first()
+
+    now = datetime.now(timezone.utc)
+    is_valid = (
+        reset_token is not None
+        and reset_token.used_at is None
+        and reset_token.expires_at.replace(tzinfo=timezone.utc) > now
+    )
+    if not is_valid:
+        write_audit_event(AuditEvent(action="PASSWORD_RESET_FAILED", scope="auth", resource_type="password-reset"))
+        raise BadRequestException("Il link di reset non è valido o è scaduto: richiedine uno nuovo")
+
+    user = db.get(AdminUser, reset_token.admin_user_id)
+    if user is None:
+        write_audit_event(AuditEvent(action="PASSWORD_RESET_FAILED", scope="auth", resource_type="password-reset"))
+        raise BadRequestException("Il link di reset non è valido o è scaduto: richiedine uno nuovo")
+
+    user.password_hash = hash_password(request.newPassword)
+    reset_token.used_at = now
+    db.add(user)
+    db.add(reset_token)
+    db.flush()
+
+    write_audit_event(AuditEvent(
+        action="PASSWORD_RESET_COMPLETED", scope="auth", resource_type="password-reset",
+        actor_email=user.email, actor_role=user.role.value,
+    ))
     return None
 
 
@@ -291,21 +402,26 @@ def list_all(db: Session = Depends(get_db)) -> list[DishDto]:
 
 
 @dishes_admin_router.post("", response_model=DishDto)
-def create(request: DishRequest, db: Session = Depends(get_db)) -> DishDto:
+def create(request: DishRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)) -> DishDto:
     entity = Dish()
     _dish_apply_request(entity, request)
     entity.sort_order = _dish_next_sort_order(db)
     db.add(entity)
     db.flush()
+    if entity.published:
+        _queue_newsletter_notification(db, background_tasks, "Nuovo piatto", entity.name, entity.description)
     return DishDto.from_entity(entity)
 
 
 @dishes_admin_router.put("/{dish_id}", response_model=DishDto)
-def update(dish_id: int, request: DishRequest, db: Session = Depends(get_db)) -> DishDto:
+def update(dish_id: int, request: DishRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)) -> DishDto:
     entity = _dish_find_or_404(db, dish_id)
+    was_published = entity.published
     _dish_apply_request(entity, request)
     db.add(entity)
     db.flush()
+    if not was_published and entity.published:
+        _queue_newsletter_notification(db, background_tasks, "Nuovo piatto", entity.name, entity.description)
     return DishDto.from_entity(entity)
 
 
@@ -384,19 +500,22 @@ def list_all(db: Session = Depends(get_db)) -> list[EventTypeDto]:
 
 
 @event_types_admin_router.post("", response_model=EventTypeDto)
-def create(request: EventTypeRequest, db: Session = Depends(get_db)) -> EventTypeDto:
+def create(request: EventTypeRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)) -> EventTypeDto:
     entity = EventType()
     _event_type_apply_request(db, entity, request, None)
     entity.sort_order = db.query(EventType).count()
     db.add(entity)
     db.flush()
+    if entity.published:
+        _queue_newsletter_notification(db, background_tasks, "Nuovo evento", entity.title, entity.description)
     return EventTypeDto.from_entity(entity)
 
 
 @event_types_admin_router.put("/{entity_id}", response_model=EventTypeDto)
-def update(entity_id: int, request: EventTypeRequest, db: Session = Depends(get_db)) -> EventTypeDto:
+def update(entity_id: int, request: EventTypeRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)) -> EventTypeDto:
     entity = _event_type_find_or_404(db, entity_id)
     previous_video_url = entity.video_url
+    was_published = entity.published
     _event_type_apply_request(db, entity, request, entity_id)
     db.add(entity)
     db.flush()
@@ -405,6 +524,8 @@ def update(entity_id: int, request: EventTypeRequest, db: Session = Depends(get_
     # Il video è pesante: se è stato sostituito o rimosso, ripuliamo il file precedente.
     if previous_video_url and previous_video_url != entity.video_url:
         delete_if_managed(previous_video_url)
+    if not was_published and entity.published:
+        _queue_newsletter_notification(db, background_tasks, "Nuovo evento", entity.title, entity.description)
     return dto
 
 
@@ -499,23 +620,28 @@ def list_all(db: Session = Depends(get_db)) -> list[ServiceOfferingDto]:
 
 
 @services_admin_router.post("", response_model=ServiceOfferingDto)
-def create(request: ServiceOfferingRequest, db: Session = Depends(get_db)) -> ServiceOfferingDto:
+def create(request: ServiceOfferingRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)) -> ServiceOfferingDto:
     entity = ServiceOffering()
     _service_apply_request(db, entity, request, None)
     entity.sort_order = db.query(ServiceOffering).count()
     db.add(entity)
     db.flush()
+    if entity.published:
+        _queue_newsletter_notification(db, background_tasks, "Nuovo servizio", entity.title, entity.description)
     return ServiceOfferingDto.from_entity(entity)
 
 
 @services_admin_router.put("/{entity_id}", response_model=ServiceOfferingDto)
-def update(entity_id: int, request: ServiceOfferingRequest, db: Session = Depends(get_db)) -> ServiceOfferingDto:
+def update(entity_id: int, request: ServiceOfferingRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)) -> ServiceOfferingDto:
     entity = _service_find_or_404(db, entity_id)
     previous_video_url = entity.video_url
+    was_published = entity.published
     _service_apply_request(db, entity, request, entity_id)
     db.add(entity)
     db.flush()
     dto = ServiceOfferingDto.from_entity(entity)
+    if not was_published and entity.published:
+        _queue_newsletter_notification(db, background_tasks, "Nuovo servizio", entity.title, entity.description)
 
     if previous_video_url and previous_video_url != entity.video_url:
         delete_if_managed(previous_video_url)
@@ -920,11 +1046,12 @@ def reorder_items(menu_id: int, request: ReorderRequest, db: Session = Depends(g
 
 @menus_public_router.get("/active", response_model=MenuDto | None)
 def active(type: str = Query(default="SHOP"), db: Session = Depends(get_db)):
-    """Il menu attualmente "in vetrina" per il tipo indicato (SHOP o EVENTS)."""
+    """Il menu attualmente "in vetrina" per il tipo indicato (SHOP o EVENTS).
+    Nessun corpo (204) se non c'è alcun menu attivo per quel tipo."""
     menu_type = _menu_normalize_type(type)
     menu = db.query(Menu).filter(Menu.type == menu_type, Menu.active.is_(True)).first()
     if menu is None:
-        return None
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
     return _menu_to_dto(db, menu)
 
 
@@ -1184,7 +1311,18 @@ def subscribe(request: NewsletterSubscribeRequest, db: Session = Depends(get_db)
     exists = db.query(NewsletterSubscriber).filter(NewsletterSubscriber.email.ilike(request.email)).first()
     if exists is not None:
         return None
-    db.add(NewsletterSubscriber(email=request.email))
+    db.add(NewsletterSubscriber(email=request.email, unsubscribe_token=generate_unsubscribe_token()))
+
+
+@newsletter_public_router.get("/unsubscribe", status_code=status.HTTP_204_NO_CONTENT)
+def unsubscribe(token: str, db: Session = Depends(get_db)) -> None:
+    """Annulla l'iscrizione tramite il token presente nel link dell'email.
+    Nessuna autenticazione richiesta (per legge dev'essere un click diretto,
+    non un'operazione che richiede login). Idempotente: un token già usato
+    o inesistente non genera errore, per non rivelare nulla su chi è iscritto."""
+    subscriber = db.query(NewsletterSubscriber).filter(NewsletterSubscriber.unsubscribe_token == token).first()
+    if subscriber is not None:
+        db.delete(subscriber)
 
 
 

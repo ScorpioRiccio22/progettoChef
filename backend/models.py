@@ -245,5 +245,22 @@ class NewsletterSubscriber(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(String(180), nullable=False, unique=True)
     subscribed_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
+    # Token univoco per il link "annulla iscrizione" nelle email — obbligatorio
+    # per le comunicazioni di marketing (GDPR/ePrivacy), non deve richiedere login.
+    unsubscribe_token: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+
+
+class PasswordResetToken(Base):
+    """Token monouso per il recupero password admin. Il token in chiaro non
+    viene MAI salvato: solo il suo hash, così un accesso in lettura al DB
+    non basta da solo a impersonare un reset già inviato via email."""
+    __tablename__ = "password_reset_tokens"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    admin_user_id: Mapped[int] = mapped_column(ForeignKey("admin_users.id", ondelete="CASCADE"), nullable=False)
+    token_hash: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    used_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
 
 

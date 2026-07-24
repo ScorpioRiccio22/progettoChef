@@ -4,7 +4,7 @@ ApplicationReadyEvent in AdminUserSeeder.java e ContentSeeder.java):
 - crea l'admin SUPERADMIN di default se la tabella admin_users è vuota
 - popola i contenuti demo se le rispettive tabelle sono vuote
 """
-import logging
+from logger import app_logger as logger
 
 from sqlalchemy.orm import Session
 
@@ -14,7 +14,6 @@ from utils import slugify
 from models import AdminUser, AdminRole
 from models import ServiceOffering, Dish, EventType, Testimonial, Milestone, CoreValue, SiteText
 
-logger = logging.getLogger(__name__)
 
 # Valori di partenza per i testi configurabili del sito (equivalente della
 # migration Flyway V9__seed_site_texts.sql): replicano i testi già presenti
