@@ -64,6 +64,7 @@ services:
       GOOGLE_PLACES_MAX_REVIEWS: ${GOOGLE_PLACES_MAX_REVIEWS:-6}
     volumes:
       - andreamoiochef-uploads-staging:/app/uploads
+      - ./backend/logs:/app/logs
     healthcheck:
       test: ['CMD', 'python', '-c', "import urllib.request; urllib.request.urlopen('http://localhost:8180/api/public/ping')"]
       interval: 10s

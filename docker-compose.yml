@@ -65,6 +65,7 @@ services:
       - '8180:8180'
     volumes:
       - andreamoiochef-uploads:/app/uploads
+      - ./backend/logs:/app/logs
     healthcheck:
       test: ['CMD', 'python', '-c', "import urllib.request; urllib.request.urlopen('http://localhost:8180/api/public/ping')"]
       interval: 10s
