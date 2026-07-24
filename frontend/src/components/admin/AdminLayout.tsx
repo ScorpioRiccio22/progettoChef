@@ -31,7 +31,7 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-ivory">
       <AppBar position="sticky" elevation={0} className="!border-b !border-ink-soft !bg-ink">
         <Toolbar className="gap-4">
-          <VesuvioMark className="h-7 w-20" color="#D9B679" />
+          <VesuvioMark className="h-7 w-20"/>
           <p className="flex-grow font-display font-semibold tracking-[0.02em] text-ivory">
             Area Admin — Andrea Moio Chef
           </p>

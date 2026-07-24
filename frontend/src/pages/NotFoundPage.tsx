@@ -10,7 +10,7 @@ export default function NotFoundPage() {
     <div className="flex min-h-[70vh] items-center bg-ink">
       <Container maxWidth="sm" className="py-20 text-center">
         <div className="mb-6 flex justify-center text-gold-300">
-          <VesuvioMark className="h-12 w-24" color="currentColor" />
+          <VesuvioMark className="h-12 w-24" />
         </div>
         <h1 className="mb-3 font-display text-[2.4rem] font-semibold text-ivory">
           {t('common.notFound.title', 'Pagina non trovata')}

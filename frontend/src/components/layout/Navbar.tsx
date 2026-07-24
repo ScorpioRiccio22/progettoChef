@@ -57,7 +57,7 @@ export default function Navbar() {
               {brand.logoUrl ? (
                 <img src={brand.logoUrl} alt={brand.name} className="h-full w-full object-cover" />
               ) : (
-                <VesuvioMark className="h-10 w-10" color="currentColor" />
+                <VesuvioMark className="h-10 w-10" />
               )}
             </div>
             <div className="text-left">

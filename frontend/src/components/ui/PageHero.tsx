@@ -31,7 +31,7 @@ export default function PageHero({
 
       <Container maxWidth="md" className="relative z-[2] text-center">
         <div className="mb-4 flex items-center justify-center gap-2 text-gold-300">
-          <VesuvioMark className="h-4 w-7" color="currentColor" />
+          <VesuvioMark className="h-4 w-7" />
           <span className="text-[0.8rem] font-semibold uppercase tracking-[0.18em]">
             {eyebrow}
           </span>
