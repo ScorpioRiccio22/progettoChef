@@ -447,17 +447,34 @@ class ContactMessageDto(BaseModel):
 
 
 class NewsletterSubscribeRequest(BaseModel):
+    firstName: str = Field(..., min_length=1)
+    lastName: str = Field(..., min_length=1)
     email: EmailStr
+
+
+class NewsletterErasureRequest(BaseModel):
+    firstName: str = Field(..., min_length=1)
+    lastName: str = Field(..., min_length=1)
+    email: EmailStr
+
+
+class NewsletterErasureConfirmRequest(BaseModel):
+    firstName: str = Field(..., min_length=1)
+    lastName: str = Field(..., min_length=1)
+    email: EmailStr
+    otp: str = Field(..., min_length=1)
 
 
 class NewsletterSubscriberDto(BaseModel):
     id: int
+    firstName: str
+    lastName: str
     email: str
     subscribedAt: datetime
 
     @classmethod
     def from_entity(cls, s) -> "NewsletterSubscriberDto":
-        return cls(id=s.id, email=s.email, subscribedAt=s.subscribed_at)
+        return cls(id=s.id, firstName=s.first_name, lastName=s.last_name, email=s.email, subscribedAt=s.subscribed_at)
 
 
 class GoogleReviewDto(BaseModel):
@@ -485,4 +502,3 @@ class GoogleReviewsResponseDto(BaseModel):
 
 class UploadResponse(BaseModel):
     url: str
-

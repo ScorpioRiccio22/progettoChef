@@ -6,7 +6,6 @@ Se le variabili SMTP_* non sono configurate, le funzioni non falliscono:
 loggano un avviso e restituiscono False, per non bloccare lo sviluppo
 locale senza un vero account email.
 """
-import secrets
 from email.message import EmailMessage
 
 import aiosmtplib
@@ -46,10 +45,6 @@ async def send_email(to_email: str, subject: str, html_body: str, text_body: str
         return False
 
 
-def generate_unsubscribe_token() -> str:
-    return secrets.token_urlsafe(32)
-
-
 async def send_password_reset_email(to_email: str, raw_token: str) -> bool:
     reset_link = f"{settings.frontend_base_url}/admin/reset-password?token={raw_token}"
     subject = "Reimposta la tua password — Andrea Moio Chef"
@@ -70,19 +65,39 @@ async def send_password_reset_email(to_email: str, raw_token: str) -> bool:
     return await send_email(to_email, subject, html_body)
 
 
+async def send_newsletter_erasure_otp_email(to_email: str, otp: str) -> bool:
+    """Invia il codice OTP per confermare l'esercizio del diritto all'oblio
+    (cancellazione dati newsletter)."""
+    subject = "Codice di verifica — cancellazione dati newsletter"
+    html_body = f"""
+    <p>Hai richiesto la cancellazione dei tuoi dati dalla newsletter di Andrea Moio Chef.</p>
+    <p>Il codice di verifica è: <strong style="font-size: 1.3em; letter-spacing: 2px;">{otp}</strong></p>
+    <p>Inseriscilo nella pagina da cui hai fatto la richiesta per confermare la cancellazione.
+    Il codice è valido per {settings.newsletter_erasure_otp_expiration_minutes} minuti.</p>
+    <p>Se non hai richiesto tu questa cancellazione, ignora semplicemente questa email:
+    i tuoi dati restano invariati.</p>
+    """
+    if not settings.smtp_configured:
+        app_logger.warning(f"[DEV] SMTP non configurato — OTP cancellazione per {to_email}: {otp}")
+        return False
+    return await send_email(to_email, subject, html_body)
+
+
 async def notify_newsletter_subscribers(
-    subscribers: list[tuple[str, str]],
+    emails: list[str],
     resource_label: str,
     title: str,
     description: str | None,
 ) -> int:
     """Invia una notifica agli iscritti quando un nuovo contenuto viene
-    pubblicato. `subscribers` è una lista di tuple (email, unsubscribe_token).
-    Restituisce il numero di email inviate con successo."""
+    pubblicato. Restituisce il numero di email inviate con successo."""
     subject = f"Novità: {title}"
+    # Il link "annulla iscrizione" punta alla pagina pubblica /privacy (già
+    # esistente sul frontend), che guida l'utente nel flusso di verifica OTP
+    # per l'esercizio del diritto all'oblio — non un link diretto monouso.
+    privacy_link = f"{settings.frontend_base_url}/privacy"
     sent = 0
-    for email, unsubscribe_token in subscribers:
-        unsubscribe_link = f"{settings.frontend_base_url}/newsletter/unsubscribe?token={unsubscribe_token}"
+    for email in emails:
         html_body = f"""
         <p>C'è una novità su Andrea Moio Chef: <strong>{resource_label}</strong></p>
         <h2>{title}</h2>
@@ -91,7 +106,8 @@ async def notify_newsletter_subscribers(
         <hr>
         <p style="font-size: 12px; color: #888;">
             Ricevi questa email perché ti sei iscritto alla newsletter.
-            <a href="{unsubscribe_link}">Annulla iscrizione</a>
+            Per cancellare i tuoi dati, vai alla pagina
+            <a href="{privacy_link}">Privacy e diritto all'oblio</a>.
         </p>
         """
         if await send_email(email, subject, html_body):

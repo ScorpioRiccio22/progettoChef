@@ -1,7 +1,10 @@
 """
 Funzioni di utilità varie: generazione slug, riordino drag-and-drop,
-upload/eliminazione file (equivalenti di SlugUtil.java e FileStorageService.java).
+upload/eliminazione file (equivalenti di SlugUtil.java e FileStorageService.java),
+calcolo HMAC per la pseudonimizzazione dei dati newsletter cancellati.
 """
+import hashlib
+import hmac as hmac_lib
 import re
 import unicodedata
 import uuid
@@ -12,6 +15,20 @@ from sqlalchemy.orm import Session
 
 from config import settings
 from exceptions import BadRequestException
+
+
+def compute_hmac(value: str) -> str:
+    """Calcola l'HMAC-SHA256 (esadecimale) di un valore, usando il seed di
+    configurazione. Usato per pseudonimizzare i dati degli iscritti alla
+    newsletter dopo l'esercizio del diritto all'oblio: lo stesso valore in
+    chiaro produce sempre lo stesso HMAC, così un futuro tentativo di
+    re-iscrizione con la stessa email può "ritrovare" la riga cancellata
+    senza dover conservare il dato originale in chiaro."""
+    return hmac_lib.new(
+        settings.newsletter_hmac_seed.encode("utf-8"),
+        value.encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
 
 
 _NON_ALPHANUMERIC = re.compile(r"[^a-z0-9\s-]")
@@ -143,4 +160,3 @@ def delete_if_managed(public_url: str | None) -> None:
         target.unlink(missing_ok=True)
     except OSError:
         pass  # best-effort: un file orfano non blocca l'operazione principale
-

@@ -12,13 +12,14 @@ from datetime import datetime, timedelta, timezone
 
 import httpx
 from fastapi import APIRouter, BackgroundTasks, Depends, File, Query, Response, UploadFile, status
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from config import settings
 from database import get_db
 from email_service import (
-    generate_unsubscribe_token,
     notify_newsletter_subscribers,
+    send_newsletter_erasure_otp_email,
     send_password_reset_email,
 )
 from exceptions import BadRequestException, ConflictException, InvalidCredentialsException, NotFoundException
@@ -65,6 +66,8 @@ from schemas import (
     MenuRequest,
     MilestoneDto,
     MilestoneRequest,
+    NewsletterErasureConfirmRequest,
+    NewsletterErasureRequest,
     NewsletterSubscribeRequest,
     NewsletterSubscriberDto,
     ReorderRequest,
@@ -90,18 +93,23 @@ from security import (
     require_superadmin,
     verify_password,
 )
-from utils import apply_reorder, delete_if_managed, slugify, store_image, store_video
+from utils import apply_reorder, compute_hmac, delete_if_managed, slugify, store_image, store_video
 
 
 def _queue_newsletter_notification(
     db: Session, background_tasks: BackgroundTasks, resource_label: str, title: str, description: str | None
 ) -> None:
     """Accoda (in background, non blocca la risposta) una notifica a tutti
-    gli iscritti quando un contenuto passa a pubblicato per la prima volta."""
-    subscribers = db.query(NewsletterSubscriber).all()
-    subscriber_data = [(s.email, s.unsubscribe_token) for s in subscribers]
-    if subscriber_data:
-        background_tasks.add_task(notify_newsletter_subscribers, subscriber_data, resource_label, title, description)
+    gli iscritti ATTIVI (esclude chi ha esercitato il diritto all'oblio)
+    quando un contenuto passa a pubblicato per la prima volta."""
+    subscribers = (
+        db.query(NewsletterSubscriber)
+        .filter(NewsletterSubscriber.attivo.is_(True), NewsletterSubscriber.privacy_status == "accettata")
+        .all()
+    )
+    emails = [s.email for s in subscribers]
+    if emails:
+        background_tasks.add_task(notify_newsletter_subscribers, emails, resource_label, title, description)
 
 
 # ============================================================================
@@ -1273,10 +1281,27 @@ newsletter_admin_router = APIRouter(
 )
 newsletter_public_router = APIRouter(prefix="/api/public/newsletter", tags=["public-newsletter"])
 
+# Tempo minimo tra due richieste di cancellazione OTP per la stessa email,
+# per limitare l'abuso dell'endpoint (stesso approccio già usato per il
+# recupero password admin).
+_NEWSLETTER_ERASURE_OTP_COOLDOWN_MINUTES = 2
+
+
+def _active_newsletter_filter():
+    """Condizione SQLAlchemy riusabile: solo iscritti attivi con privacy
+    accettata (esclude le righe mascherate di chi ha esercitato il diritto
+    all'oblio)."""
+    return (NewsletterSubscriber.attivo.is_(True), NewsletterSubscriber.privacy_status == "accettata")
+
 
 @newsletter_admin_router.get("", response_model=list[NewsletterSubscriberDto])
 def list_all(db: Session = Depends(get_db)) -> list[NewsletterSubscriberDto]:
-    rows = db.query(NewsletterSubscriber).order_by(NewsletterSubscriber.subscribed_at.desc()).all()
+    rows = (
+        db.query(NewsletterSubscriber)
+        .filter(*_active_newsletter_filter())
+        .order_by(NewsletterSubscriber.subscribed_at.desc())
+        .all()
+    )
     return [NewsletterSubscriberDto.from_entity(s) for s in rows]
 
 
@@ -1290,13 +1315,18 @@ def delete(subscriber_id: int, db: Session = Depends(get_db)) -> None:
 
 @newsletter_admin_router.get("/export")
 def export(db: Session = Depends(get_db)) -> Response:
-    rows = db.query(NewsletterSubscriber).order_by(NewsletterSubscriber.subscribed_at.desc()).all()
+    rows = (
+        db.query(NewsletterSubscriber)
+        .filter(*_active_newsletter_filter())
+        .order_by(NewsletterSubscriber.subscribed_at.desc())
+        .all()
+    )
 
     buffer = io.StringIO()
     writer = csv.writer(buffer, quoting=csv.QUOTE_ALL)
-    writer.writerow(["Email", "Iscritto il"])
+    writer.writerow(["Nome", "Cognome", "Email", "Iscritto il"])
     for s in rows:
-        writer.writerow([s.email, s.subscribed_at.strftime("%d/%m/%Y %H:%M")])
+        writer.writerow([s.first_name, s.last_name, s.email, s.subscribed_at.strftime("%d/%m/%Y %H:%M")])
 
     return Response(
         content=buffer.getvalue(),
@@ -1307,22 +1337,101 @@ def export(db: Session = Depends(get_db)) -> Response:
 
 @newsletter_public_router.post("", status_code=status.HTTP_204_NO_CONTENT)
 def subscribe(request: NewsletterSubscribeRequest, db: Session = Depends(get_db)) -> None:
-    """Iscrive un'email alla newsletter. Idempotente: se già iscritta, non fallisce e non duplica."""
-    exists = db.query(NewsletterSubscriber).filter(NewsletterSubscriber.email.ilike(request.email)).first()
-    if exists is not None:
+    """Iscrive alla newsletter. La ricerca copre sia gli iscritti attivi
+    (email in chiaro) sia chi ha già esercitato il diritto all'oblio in
+    passato (email sostituita dal suo HMAC): in quel caso la riga viene
+    "resuscitata" con i nuovi dati invece di crearne una duplicata."""
+    email_hmac = compute_hmac(request.email)
+    existing = (
+        db.query(NewsletterSubscriber)
+        .filter(or_(NewsletterSubscriber.email == request.email, NewsletterSubscriber.email == email_hmac))
+        .first()
+    )
+
+    if existing is not None and existing.attivo and existing.privacy_status == "accettata":
+        # Già iscritto e attivo: nessuna modifica, nessun errore (idempotente).
         return None
-    db.add(NewsletterSubscriber(email=request.email, unsubscribe_token=generate_unsubscribe_token()))
+
+    if existing is not None:
+        # Riga trovata ma non attiva (cancellata in passato): la resuscita
+        # con i dati nuovi invece di creare un duplicato.
+        existing.first_name = request.firstName
+        existing.last_name = request.lastName
+        existing.email = request.email
+        existing.attivo = True
+        existing.privacy_status = "accettata"
+        existing.otp = None
+        existing.otp_expires_at = None
+        db.add(existing)
+        return None
+
+    db.add(NewsletterSubscriber(
+        first_name=request.firstName,
+        last_name=request.lastName,
+        email=request.email,
+        attivo=True,
+        privacy_status="accettata",
+    ))
 
 
-@newsletter_public_router.get("/unsubscribe", status_code=status.HTTP_204_NO_CONTENT)
-def unsubscribe(token: str, db: Session = Depends(get_db)) -> None:
-    """Annulla l'iscrizione tramite il token presente nel link dell'email.
-    Nessuna autenticazione richiesta (per legge dev'essere un click diretto,
-    non un'operazione che richiede login). Idempotente: un token già usato
-    o inesistente non genera errore, per non rivelare nulla su chi è iscritto."""
-    subscriber = db.query(NewsletterSubscriber).filter(NewsletterSubscriber.unsubscribe_token == token).first()
-    if subscriber is not None:
-        db.delete(subscriber)
+@newsletter_public_router.post("/erasure-request", status_code=status.HTTP_204_NO_CONTENT)
+def request_erasure(
+    request: NewsletterErasureRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+) -> None:
+    """Step 1 del diritto all'oblio: genera un OTP e lo invia via email.
+    Risponde SEMPRE allo stesso modo (204) sia che l'email sia iscritta o
+    meno, per non rivelare a chi chiama quali indirizzi sono in tabella."""
+    subscriber = (
+        db.query(NewsletterSubscriber)
+        .filter(NewsletterSubscriber.email == request.email, *_active_newsletter_filter())
+        .first()
+    )
+    if subscriber is None:
+        return None
+
+    now = datetime.now(timezone.utc)
+    cooldown_cutoff = now - timedelta(minutes=_NEWSLETTER_ERASURE_OTP_COOLDOWN_MINUTES)
+    if subscriber.otp is not None and subscriber.updated_at.replace(tzinfo=timezone.utc) > cooldown_cutoff:
+        # OTP già inviato di recente: non ne mandiamo un altro, stessa risposta.
+        return None
+
+    otp = f"{secrets.randbelow(1_000_000):06d}"
+    subscriber.otp = otp
+    subscriber.otp_expires_at = now + timedelta(minutes=settings.newsletter_erasure_otp_expiration_minutes)
+    db.add(subscriber)
+    db.flush()
+
+    background_tasks.add_task(send_newsletter_erasure_otp_email, subscriber.email, otp)
+    return None
+
+
+@newsletter_public_router.post("/erasure-request/confirm", status_code=status.HTTP_204_NO_CONTENT)
+def confirm_erasure(request: NewsletterErasureConfirmRequest, db: Session = Depends(get_db)) -> None:
+    """Step 2 del diritto all'oblio: verifica l'OTP e, se valido, cancella
+    (pseudonimizza con HMAC) i dati dell'iscritto."""
+    subscriber = (
+        db.query(NewsletterSubscriber)
+        .filter(NewsletterSubscriber.email == request.email, NewsletterSubscriber.otp == request.otp)
+        .first()
+    )
+
+    now = datetime.now(timezone.utc)
+    is_valid = (
+        subscriber is not None
+        and subscriber.otp_expires_at is not None
+        and subscriber.otp_expires_at.replace(tzinfo=timezone.utc) > now
+    )
+    if not is_valid:
+        raise BadRequestException("Codice non valido o scaduto: richiedi un nuovo codice")
+
+    subscriber.first_name = compute_hmac(subscriber.first_name)
+    subscriber.last_name = compute_hmac(subscriber.last_name)
+    subscriber.email = compute_hmac(subscriber.email)
+    subscriber.attivo = False
+    subscriber.privacy_status = "revocata"
+    subscriber.otp = None
+    subscriber.otp_expires_at = None
+    db.add(subscriber)
 
 
 

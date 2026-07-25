@@ -24,6 +24,22 @@ _KNOWN_PLACEHOLDER_SECRETS = {
     "password",
 }
 
+# Parole che, se presenti in un segreto, indicano quasi sicuramente che
+# qualcuno ha lasciato un valore segnaposto invece di generarne uno vero
+# (in italiano e inglese, per coprire entrambi i casi visti finora).
+_PLACEHOLDER_KEYWORDS = (
+    "cambia", "change", "changeme", "placeholder", "todo", "xxx",
+    "esempio", "example", "segnaposto", "yourpassword", "yoursecret",
+    "insert-", "your-", "sostituis",
+)
+
+
+def _looks_like_placeholder(value: str) -> bool:
+    lowered = value.lower()
+    if lowered in _KNOWN_PLACEHOLDER_SECRETS:
+        return True
+    return any(keyword in lowered for keyword in _PLACEHOLDER_KEYWORDS)
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
@@ -96,28 +112,34 @@ class Settings(BaseSettings):
     # --- Recupero password ------------------------------------------------
     password_reset_token_expiration_minutes: int = 30
 
-    @field_validator("jwt_secret")
+    # --- Diritto all'oblio newsletter (HMAC + OTP) --------------------------
+    newsletter_hmac_seed: str  # OBBLIGATORIO, nessun default (vedi validator)
+    newsletter_erasure_otp_expiration_minutes: int = 15
+
+    @field_validator("jwt_secret", "newsletter_hmac_seed")
     @classmethod
     def _jwt_secret_must_be_strong(cls, v: str) -> str:
         if len(v) < 32:
             raise ValueError(
-                "JWT_SECRET deve essere lungo almeno 32 caratteri. "
+                "Questo segreto deve essere lungo almeno 32 caratteri. "
                 "Generane uno con: openssl rand -base64 48"
             )
-        if v in _KNOWN_PLACEHOLDER_SECRETS:
+        if _looks_like_placeholder(v):
             raise ValueError(
-                "JWT_SECRET è ancora il valore segnaposto di esempio: cambialo "
-                "con un valore casuale, es: openssl rand -base64 48"
+                "Questo segreto sembra ancora un valore segnaposto (contiene parole "
+                "come 'cambia'/'change'/'placeholder'...): sostituiscilo con un "
+                "valore casuale, es: openssl rand -base64 48"
             )
         return v
 
     @field_validator("admin_seed_password", "db_password")
     @classmethod
     def _password_must_not_be_placeholder(cls, v: str) -> str:
-        if not v or v in _KNOWN_PLACEHOLDER_SECRETS:
+        if not v or _looks_like_placeholder(v):
             raise ValueError(
-                "Questa password è vuota o è ancora un valore segnaposto di "
-                "esempio: impostane una robusta, es: openssl rand -base64 24"
+                "Questa password è vuota o sembra ancora un valore segnaposto "
+                "(contiene parole come 'cambia'/'change'/'placeholder'...): "
+                "impostane una robusta, es: openssl rand -base64 24"
             )
         return v
 
@@ -138,4 +160,3 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
-

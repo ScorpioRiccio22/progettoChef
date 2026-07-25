@@ -240,14 +240,32 @@ class ContactMessage(Base):
 
 
 class NewsletterSubscriber(Base):
+    """
+    Nota di design importante: la colonna `email` (così come `first_name` e
+    `last_name`) ha un doppio uso a seconda dello stato:
+    - iscritto attivo (attivo=True, privacy_status="accettata"): contiene il
+      dato vero in chiaro
+    - dopo l'esercizio del diritto all'oblio (attivo=False,
+      privacy_status="revocata"): contiene l'HMAC del dato originale, non il
+      dato in chiaro — i dati personali reali non sono più recuperabili dal DB
+
+    Questo permette una singola query per capire se un'email è "già nota"
+    (sia da attiva che da precedentemente cancellata): si cerca sia il
+    valore in chiaro sia il suo HMAC nello stesso campo.
+    """
     __tablename__ = "newsletter_subscribers"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    email: Mapped[str] = mapped_column(String(180), nullable=False, unique=True)
+    first_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    last_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    attivo: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    # Valori: "accettata" | "revocata"
+    privacy_status: Mapped[str] = mapped_column(String(20), nullable=False, default="accettata")
+    otp: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    otp_expires_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     subscribed_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
-    # Token univoco per il link "annulla iscrizione" nelle email — obbligatorio
-    # per le comunicazioni di marketing (GDPR/ePrivacy), non deve richiedere login.
-    unsubscribe_token: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
 
 
 class PasswordResetToken(Base):
@@ -262,5 +280,3 @@ class PasswordResetToken(Base):
     expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     used_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
-
-
