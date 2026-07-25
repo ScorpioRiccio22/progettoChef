@@ -7,8 +7,8 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  IconButton,
   TextField,
+  Stack
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
@@ -29,6 +29,7 @@ import {
 } from '@/services/contentApi'
 import ReorderableList from '@/components/admin/ReorderableList'
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'
+import AdminRowActions from '@/components/admin/AdminRowActions'
 import type { CoreValue, Milestone } from '@/types'
 
 const EMPTY_MILESTONE: MilestoneRequest = { year: '', text: '' }
@@ -201,12 +202,18 @@ export default function AdminAboutPage() {
             <div className="flex items-center gap-4">
               <p className="min-w-[56px] font-bold text-gold-500">{item.year}</p>
               <p className="flex-1 text-ink-soft">{item.text}</p>
-              <IconButton onClick={() => openEditMilestone(item)} aria-label="Modifica">
-                <EditIcon fontSize="small" />
-              </IconButton>
-              <IconButton onClick={() => setDeleteMilestoneTarget(item)} aria-label="Elimina">
-                <DeleteIcon fontSize="small" />
-              </IconButton>
+              <AdminRowActions
+                actions={[
+                  { key: 'edit', label: 'Modifica', icon: <EditIcon fontSize="small" />, onClick: () => openEditMilestone(item) },
+                  {
+                    key: 'delete',
+                    label: 'Elimina',
+                    icon: <DeleteIcon fontSize="small" />,
+                    onClick: () => setDeleteMilestoneTarget(item),
+                    danger: true,
+                  },
+                ]}
+              />
             </div>
           </div>
         )}
@@ -234,12 +241,18 @@ export default function AdminAboutPage() {
                 <p className="font-semibold">{item.title}</p>
                 <p className="text-[0.88rem] text-clay">{item.text}</p>
               </div>
-              <IconButton onClick={() => openEditValue(item)} aria-label="Modifica">
-                <EditIcon fontSize="small" />
-              </IconButton>
-              <IconButton onClick={() => setDeleteValueTarget(item)} aria-label="Elimina">
-                <DeleteIcon fontSize="small" />
-              </IconButton>
+              <AdminRowActions
+                actions={[
+                  { key: 'edit', label: 'Modifica', icon: <EditIcon fontSize="small" />, onClick: () => openEditValue(item) },
+                  {
+                    key: 'delete',
+                    label: 'Elimina',
+                    icon: <DeleteIcon fontSize="small" />,
+                    onClick: () => setDeleteValueTarget(item),
+                    danger: true,
+                  },
+                ]}
+              />
             </div>
           </div>
         )}
@@ -249,6 +262,7 @@ export default function AdminAboutPage() {
       <Dialog open={milestoneDialogOpen} onClose={() => setMilestoneDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingMilestoneId ? 'Modifica tappa' : 'Nuova tappa'}</DialogTitle>
         <DialogContent>
+           <Stack spacing={2.5} className="mt-2">
           <div className="mt-2 flex flex-col gap-5">
             <TextField
               label="Anno (o 'Oggi')"
@@ -267,6 +281,7 @@ export default function AdminAboutPage() {
               required
             />
           </div>
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setMilestoneDialogOpen(false)} disabled={saving} className="normal-case">
@@ -287,7 +302,7 @@ export default function AdminAboutPage() {
       <Dialog open={valueDialogOpen} onClose={() => setValueDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingValueId ? 'Modifica principio' : 'Nuovo principio'}</DialogTitle>
         <DialogContent>
-          <div className="mt-2 flex flex-col gap-5">
+           <Stack spacing={2.5} className="mt-2">
             <TextField
               label="Titolo"
               fullWidth
@@ -304,7 +319,7 @@ export default function AdminAboutPage() {
               onChange={(e) => setValueForm((p) => ({ ...p, text: e.target.value }))}
               required
             />
-          </div>
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setValueDialogOpen(false)} disabled={saving} className="normal-case">

@@ -1,42 +1,56 @@
 import { useState, type FormEvent } from 'react'
+import { Link as RouterLink } from 'react-router-dom'
 import { Alert, Button, CircularProgress, Container, TextField, FormControlLabel, Checkbox } from '@mui/material'
 import MailOutlineIcon from '@mui/icons-material/MailOutline'
-import { Link as RouterLink } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { subscribeToNewsletter, resetNewsletterStatus } from '@/store/slices/newsletterSlice'
 import { useSiteContent } from '@/hooks/useSiteContent'
+import IubendaPrivacyLink from '@/components/ui/IubendaPrivacyLink'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+const FIELD_SX = {
+  '& .MuiOutlinedInput-root': { backgroundColor: '#FBF6EC', borderRadius: 999 },
+  '& .MuiFormHelperText-root': { color: '#F2B8B8', textAlign: 'left', marginLeft: '14px' },
+}
+
 export default function NewsletterSection() {
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
-    const [emailTouched, setEmailTouched] = useState(false)
+  const [emailTouched, setEmailTouched] = useState(false)
   const dispatch = useAppDispatch()
   const { status, error } = useAppSelector((state) => state.newsletter)
   const { t } = useSiteContent()
-    const [privacyAccepted, setPrivacyAccepted] = useState(false)
+  const [privacyAccepted, setPrivacyAccepted] = useState(false)
   const [privacyTouched, setPrivacyTouched] = useState(false)
+
+  const isEmailValid = EMAIL_REGEX.test(email)
+  const showEmailError = emailTouched && !isEmailValid
+  const showPrivacyError = privacyTouched && !privacyAccepted
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
-        setEmailTouched(true)
+    setEmailTouched(true)
     setPrivacyTouched(true)
 
     if (!isEmailValid || !privacyAccepted) return
     dispatch(resetNewsletterStatus())
-    dispatch(subscribeToNewsletter(email))
+    dispatch(
+      subscribeToNewsletter({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email,
+      }),
+    )
   }
 
-    const isEmailValid = EMAIL_REGEX.test(email)
-  const showEmailError = emailTouched && !isEmailValid
-  const showPrivacyError = privacyTouched && !privacyAccepted
-
- return (
+  return (
     <div id="newsletter" className="relative overflow-hidden bg-ink py-[72px] md:py-[88px]">
       <Container maxWidth="sm" className="relative text-center">
-<div className="mb-4 text-gold-300">
-  <MailOutlineIcon sx={{ fontSize: '8rem' }} />
-</div>
+        <div className="mb-4 text-gold-300">
+          <MailOutlineIcon sx={{ fontSize: '8rem' }} />
+        </div>
         <h2 className="mb-3 font-display text-[1.8rem] font-semibold text-ivory md:text-[2.2rem]">
           {t('home.newsletter.title', 'Ricette, eventi e novità via email')}
         </h2>
@@ -53,38 +67,59 @@ export default function NewsletterSection() {
           </Alert>
         ) : (
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">
-           <div className="flex items-start gap-3 flex-row sm:items-stretch">
-  <TextField
-    required
-    type="email"
-    placeholder={t('home.newsletter.placeholder', 'La tua email')}
-    value={email}
-    onChange={(event) => setEmail(event.target.value)}
-    onBlur={() => setEmailTouched(true)}
-    error={showEmailError}
-    helperText={showEmailError ? t('home.newsletter.emailError', 'Inserisci un indirizzo email valido.') : ' '}
-    fullWidth
-    size="medium"
-    aria-label="Indirizzo email per la newsletter"
-    sx={{
-      '& .MuiOutlinedInput-root': { backgroundColor: '#FBF6EC', borderRadius: 999, height: '56px' },
-      '& .MuiFormHelperText-root': { color: '#F2B8B8', textAlign: 'left', marginLeft: '14px' },
-    }}
-  />
-  <Button
-    type="submit"
-    variant="contained"
-    disabled={status === 'submitting'}
-    className="whitespace-nowrap bg-gold-500 px-8 text-ink normal-case hover:bg-gold-300"
-    sx={{ height: '56px', borderRadius: 999 }}
-  >
-    {status === 'submitting' ? (
-      <CircularProgress size={20} className="text-ink" />
-    ) : (
-      t('home.newsletter.submitButton', 'Iscriviti')
-    )}
-  </Button>
-</div>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <TextField
+                placeholder={t('home.newsletter.firstNamePlaceholder', 'Nome')}
+                value={firstName}
+                onChange={(event) => setFirstName(event.target.value)}
+                fullWidth
+                size="medium"
+                aria-label="Nome"
+                sx={FIELD_SX}
+              />
+              <TextField
+                placeholder={t('home.newsletter.lastNamePlaceholder', 'Cognome')}
+                value={lastName}
+                onChange={(event) => setLastName(event.target.value)}
+                fullWidth
+                size="medium"
+                aria-label="Cognome"
+                sx={FIELD_SX}
+              />
+            </div>
+
+            <div className="flex items-start gap-3 flex-row sm:items-stretch">
+              <TextField
+                required
+                type="email"
+                placeholder={t('home.newsletter.placeholder', 'La tua email')}
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                onBlur={() => setEmailTouched(true)}
+                error={showEmailError}
+                helperText={showEmailError ? t('home.newsletter.emailError', 'Inserisci un indirizzo email valido.') : ' '}
+                fullWidth
+                size="medium"
+                aria-label="Indirizzo email per la newsletter"
+                sx={{
+                  ...FIELD_SX,
+                  '& .MuiOutlinedInput-root': { ...FIELD_SX['& .MuiOutlinedInput-root'], height: '56px' },
+                }}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={status === 'submitting'}
+                className="whitespace-nowrap bg-gold-500 px-8 text-ink normal-case hover:bg-gold-300"
+                sx={{ height: '56px', borderRadius: 999 }}
+              >
+                {status === 'submitting' ? (
+                  <CircularProgress size={20} className="text-ink" />
+                ) : (
+                  t('home.newsletter.submitButton', 'Iscriviti')
+                )}
+              </Button>
+            </div>
 
             <FormControlLabel
               className="mx-0 items-start text-left"
@@ -103,10 +138,7 @@ export default function NewsletterSection() {
               label={
                 <span className="text-[0.8rem] leading-snug text-ivory/70">
                   Accettando acconsenti al trattamento dei tuoi dati secondo le regole della{' '}
-                  <RouterLink to="/privacy-policy" className="text-gold-300 underline hover:text-gold-500">
-                    privacy policy
-                  </RouterLink>
-                  .
+                  <IubendaPrivacyLink linkClassName="text-gold-300 underline hover:text-gold-500" />.
                 </span>
               }
             />
@@ -128,7 +160,11 @@ export default function NewsletterSection() {
           {t(
             'home.newsletter.disclaimer',
             "Iscrivendoti accetti di ricevere comunicazioni periodiche. Puoi annullare l'iscrizione in qualsiasi momento.",
-          )}
+          )}{' '}
+          <RouterLink to="/privacy" className="underline hover:text-gold-300">
+            Richiedi la cancellazione dei tuoi dati
+          </RouterLink>
+          .
         </p>
       </Container>
     </div>

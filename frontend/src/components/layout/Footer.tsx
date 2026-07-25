@@ -9,7 +9,28 @@ import { useSiteContent } from '@/hooks/useSiteContent'
 const SOCIAL_ICON_CLASS = 'h-10 w-10 border border-ivory/25 text-ivory hover:border-gold-500 hover:bg-gold-500/25'
 
 // TikTok e Threads non hanno un'icona dedicata in @mui/icons-material:
-// li rappresentiamo con le iniziali in un badge circolare coerente con lo stile.
+// usiamo gli SVG in /public, mantenuti coerenti con lo stile degli altri badge.
+const SVG_ICONS: Record<string, string> = {
+  tiktok: '/tiktok.svg',
+  threads: '/threads.svg',
+}
+
+function SvgIcon({ label, href, src }: { label: string; href: string; src: string }) {
+  return (
+    <IconButton
+      component="a"
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      className={SOCIAL_ICON_CLASS}
+    >
+      <img src={src} alt={label} className="h-5 w-5" />
+    </IconButton>
+  )
+}
+
+// Fallback generico per eventuali social futuri privi di icona dedicata.
 function BadgeIcon({ label, href }: { label: string; href: string }) {
   return (
     <IconButton
@@ -60,23 +81,34 @@ export default function Footer() {
               {brand.payoff}. {tagline}
             </p>
             <div className="mt-6 flex gap-3">
-              {socialLinks.map((social) =>
-                ICONS[social.icon] ? (
-                  <IconButton
-                    key={social.id}
-                    component="a"
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={social.label}
-                    className={SOCIAL_ICON_CLASS}
-                  >
-                    {ICONS[social.icon]}
-                  </IconButton>
-                ) : (
-                  <BadgeIcon key={social.id} label={social.label} href={social.href} />
-                ),
-              )}
+              {socialLinks.map((social) => {
+                if (ICONS[social.icon]) {
+                  return (
+                    <IconButton
+                      key={social.id}
+                      component="a"
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={social.label}
+                      className={SOCIAL_ICON_CLASS}
+                    >
+                      {ICONS[social.icon]}
+                    </IconButton>
+                  )
+                }
+                if (SVG_ICONS[social.icon]) {
+                  return (
+                    <SvgIcon
+                      key={social.id}
+                      label={social.label}
+                      href={social.href}
+                      src={SVG_ICONS[social.icon]}
+                    />
+                  )
+                }
+                return <BadgeIcon key={social.id} label={social.label} href={social.href} />
+              })}
             </div>
           </div>
 
@@ -89,6 +121,7 @@ export default function Footer() {
                 { label: 'Eventi', to: '/eventi' },
                 { label: 'Servizi', to: '/servizi' },
                 { label: 'Contatti', to: '/contatti' },
+                {label: 'Privacy Policy', to:'/privacy'}
               ].map((link) => (
                 <MuiLink key={link.to} component={RouterLink} to={link.to} underline="none" className={FOOTER_LINK_CLASS}>
                   {link.label}
@@ -121,7 +154,12 @@ export default function Footer() {
           <span>
             © {new Date().getFullYear()} {brand.name} — {brand.role}. Tutti i diritti riservati.
           </span>
-          <MuiLink component={RouterLink} to="/privacy-policy" underline="none" className="text-ivory/45 hover:text-gold-300">
+          <MuiLink
+            component={RouterLink}
+            to="/privacy"
+            underline="none"
+            className="text-ivory/45 hover:text-gold-300"
+          >
             {t('footer.privacyLink', 'Privacy Policy')}
           </MuiLink>
         </p>

@@ -9,10 +9,10 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  IconButton,
   InputAdornment,
   MenuItem as SelectMenuItem,
   TextField,
+  Stack
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
@@ -37,6 +37,7 @@ import {
 } from '@/services/contentApi'
 import ReorderableList from '@/components/admin/ReorderableList'
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'
+import AdminRowActions from '@/components/admin/AdminRowActions'
 import ImageUploadField from '@/components/admin/ImageUploadField'
 import type { Dish, Menu, MenuItem } from '@/types'
 
@@ -275,9 +276,8 @@ export default function AdminMenuPage({ type = 'SHOP' }: AdminMenuPageProps) {
         </div>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
           onClick={openCreateMenu}
-          className="whitespace-nowrap bg-gold-500 text-ink normal-case hover:bg-gold-300"
+          className="text-sm bg-gold-500 text-ink normal-case hover:bg-gold-300"
         >
           Nuovo menu
         </Button>
@@ -335,12 +335,18 @@ export default function AdminMenuPage({ type = 'SHOP' }: AdminMenuPageProps) {
                 <Button size="small" startIcon={<RestaurantMenuIcon />} onClick={() => openItemsDialog(menu)} className="normal-case">
                   Gestisci piatti
                 </Button>
-                <IconButton onClick={() => openEditMenu(menu)} aria-label="Modifica menu">
-                  <EditIcon fontSize="small" />
-                </IconButton>
-                <IconButton onClick={() => setDeleteMenuTarget(menu)} aria-label="Elimina menu">
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
+                <AdminRowActions
+                  actions={[
+                    { key: 'edit', label: 'Modifica menu', icon: <EditIcon fontSize="small" />, onClick: () => openEditMenu(menu) },
+                    {
+                      key: 'delete',
+                      label: 'Elimina menu',
+                      icon: <DeleteIcon fontSize="small" />,
+                      onClick: () => setDeleteMenuTarget(menu),
+                      danger: true,
+                    },
+                  ]}
+                />
               </div>
             </div>
           )}
@@ -351,7 +357,7 @@ export default function AdminMenuPage({ type = 'SHOP' }: AdminMenuPageProps) {
       <Dialog open={menuDialogOpen} onClose={() => setMenuDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingMenuId ? 'Modifica menu' : 'Nuovo menu'}</DialogTitle>
         <DialogContent>
-          <div className="mt-2 flex flex-col gap-5">
+           <Stack spacing={2.5} className="mt-2">
             <TextField
               label="Nome del menu"
               placeholder='Es. "Menu del giorno", "Menu estivo 2026"'
@@ -368,7 +374,7 @@ export default function AdminMenuPage({ type = 'SHOP' }: AdminMenuPageProps) {
               value={menuForm.description}
               onChange={(e) => setMenuForm((p) => ({ ...p, description: e.target.value }))}
             />
-          </div>
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setMenuDialogOpen(false)} disabled={savingMenu} className="normal-case">
@@ -426,12 +432,18 @@ export default function AdminMenuPage({ type = 'SHOP' }: AdminMenuPageProps) {
                         </div>
                         <p className="text-[0.85rem] font-semibold text-gold-600">{formatPrice(item.price)}</p>
                       </div>
-                      <IconButton size="small" onClick={() => openEditItem(item)} aria-label="Modifica piatto">
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton size="small" onClick={() => setDeleteItemTarget(item)} aria-label="Elimina piatto">
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
+                      <AdminRowActions
+                        actions={[
+                          { key: 'edit', label: 'Modifica piatto', icon: <EditIcon fontSize="small" />, onClick: () => openEditItem(item) },
+                          {
+                            key: 'delete',
+                            label: 'Elimina piatto',
+                            icon: <DeleteIcon fontSize="small" />,
+                            onClick: () => setDeleteItemTarget(item),
+                            danger: true,
+                          },
+                        ]}
+                      />
                     </div>
                   </div>
                 )}
@@ -450,7 +462,7 @@ export default function AdminMenuPage({ type = 'SHOP' }: AdminMenuPageProps) {
       <Dialog open={itemDialogOpen} onClose={() => setItemDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingItemId ? 'Modifica piatto' : 'Nuovo piatto nel menu'}</DialogTitle>
         <DialogContent>
-          <div className="mt-2 flex flex-col gap-5">
+           <Stack spacing={2.5} className="mt-2">
             {!editingItemId && dishes.length > 0 && (
               <>
                 <TextField
@@ -514,7 +526,7 @@ export default function AdminMenuPage({ type = 'SHOP' }: AdminMenuPageProps) {
               inputProps={{ min: 0, step: 0.5 }}
               required
             />
-          </div>
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setItemDialogOpen(false)} disabled={savingItem} className="normal-case">

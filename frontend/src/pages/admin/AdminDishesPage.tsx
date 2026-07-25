@@ -9,12 +9,11 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
-  IconButton,
   MenuItem,
   Switch,
   TextField,
+  Stack
 } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
@@ -28,6 +27,7 @@ import {
 import ImageUploadField from '@/components/admin/ImageUploadField'
 import ReorderableList from '@/components/admin/ReorderableList'
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'
+import AdminRowActions from '@/components/admin/AdminRowActions'
 import type { Dish } from '@/types'
 
 const CATEGORIES = [
@@ -143,9 +143,8 @@ export default function AdminDishesPage() {
         </div>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
           onClick={openCreate}
-          className="whitespace-nowrap bg-gold-500 text-ink normal-case hover:bg-gold-300"
+          className="text-sm bg-gold-500 text-ink normal-case hover:bg-gold-300"
         >
           Nuovo piatto
         </Button>
@@ -179,12 +178,18 @@ export default function AdminDishesPage() {
                   </div>
                   <p className="truncate text-[0.85rem] text-clay">{item.tags.join(' · ')}</p>
                 </div>
-                <IconButton onClick={() => openEdit(item)} aria-label="Modifica">
-                  <EditIcon fontSize="small" />
-                </IconButton>
-                <IconButton onClick={() => setDeleteTarget(item)} aria-label="Elimina">
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
+                <AdminRowActions
+                  actions={[
+                    { key: 'edit', label: 'Modifica', icon: <EditIcon fontSize="small" />, onClick: () => openEdit(item) },
+                    {
+                      key: 'delete',
+                      label: 'Elimina',
+                      icon: <DeleteIcon fontSize="small" />,
+                      onClick: () => setDeleteTarget(item),
+                      danger: true,
+                    },
+                  ]}
+                />
               </div>
             </div>
           )}
@@ -194,58 +199,58 @@ export default function AdminDishesPage() {
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingId ? 'Modifica piatto' : 'Nuovo piatto'}</DialogTitle>
         <DialogContent>
-          <div className="mt-2 flex flex-col gap-5">
-            <TextField
-              label="Nome"
-              fullWidth
-              value={form.name}
-              onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-              required
-            />
-            <TextField
-              select
-              label="Categoria"
-              fullWidth
-              value={form.category}
-              onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}
-            >
-              {CATEGORIES.map((c) => (
-                <MenuItem key={c.value} value={c.value}>
-                  {c.label}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              label="Descrizione"
-              fullWidth
-              multiline
-              minRows={3}
-              value={form.description}
-              onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-            />
-            <TextField
-              label="Tag (separati da virgola)"
-              fullWidth
-              value={tagsInput}
-              onChange={(e) => setTagsInput(e.target.value)}
-              helperText="Es: tradizione, comfort food"
-            />
-            <ImageUploadField
-              label="Immagine"
-              value={form.imageUrl ?? null}
-              onChange={(url) => setForm((p) => ({ ...p, imageUrl: url }))}
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={form.published ?? true}
-                  onChange={(e) => setForm((p) => ({ ...p, published: e.target.checked }))}
-                />
-              }
-              label="Pubblicato (visibile sul sito)"
-            />
-          </div>
-        </DialogContent>
+  <Stack spacing={2.5} className="mt-2">
+    <TextField
+      label="Nome"
+      fullWidth
+      value={form.name}
+      onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+      required
+    />
+    <TextField
+      select
+      label="Categoria"
+      fullWidth
+      value={form.category}
+      onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}
+    >
+      {CATEGORIES.map((c) => (
+        <MenuItem key={c.value} value={c.value}>
+          {c.label}
+        </MenuItem>
+      ))}
+    </TextField>
+    <TextField
+      label="Descrizione"
+      fullWidth
+      multiline
+      minRows={3}
+      value={form.description}
+      onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+    />
+    <TextField
+      label="Tag (separati da virgola)"
+      fullWidth
+      value={tagsInput}
+      onChange={(e) => setTagsInput(e.target.value)}
+      helperText="Es: tradizione, comfort food"
+    />
+    <ImageUploadField
+      label="Immagine"
+      value={form.imageUrl ?? null}
+      onChange={(url) => setForm((p) => ({ ...p, imageUrl: url }))}
+    />
+    <FormControlLabel
+      control={
+        <Switch
+          checked={form.published ?? true}
+          onChange={(e) => setForm((p) => ({ ...p, published: e.target.checked }))}
+        />
+      }
+      label="Pubblicato (visibile sul sito)"
+    />
+  </Stack>
+</DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)} disabled={saving} className="normal-case">
             Annulla

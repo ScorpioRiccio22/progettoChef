@@ -9,11 +9,10 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
-  IconButton,
   Switch,
   TextField,
+  Stack
 } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
@@ -29,6 +28,7 @@ import VideoUploadField from '@/components/admin/VideoUploadField'
 import GalleryMediaEditor from '@/components/admin/GalleryMediaEditor'
 import ReorderableList from '@/components/admin/ReorderableList'
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'
+import AdminRowActions from '@/components/admin/AdminRowActions'
 import type { EventType } from '@/types'
 
 const EMPTY_FORM: EventTypeRequest = {
@@ -150,9 +150,8 @@ export default function AdminEventsPage() {
         </div>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
           onClick={openCreate}
-          className="whitespace-nowrap bg-gold-500 text-ink normal-case hover:bg-gold-300"
+          className="text-sm bg-gold-500 text-ink normal-case hover:bg-gold-300"
         >
           Nuova tipologia
         </Button>
@@ -192,12 +191,18 @@ export default function AdminEventsPage() {
                   </p>
                   <p className="mt-1 text-[0.78rem] text-clay">{item.details.length} dettagli elencati</p>
                 </div>
-                <IconButton onClick={() => openEdit(item)} aria-label="Modifica">
-                  <EditIcon fontSize="small" />
-                </IconButton>
-                <IconButton onClick={() => setDeleteTarget(item)} aria-label="Elimina">
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
+                <AdminRowActions
+                  actions={[
+                    { key: 'edit', label: 'Modifica', icon: <EditIcon fontSize="small" />, onClick: () => openEdit(item) },
+                    {
+                      key: 'delete',
+                      label: 'Elimina',
+                      icon: <DeleteIcon fontSize="small" />,
+                      onClick: () => setDeleteTarget(item),
+                      danger: true,
+                    },
+                  ]}
+                />
               </div>
             </div>
           )}
@@ -207,7 +212,7 @@ export default function AdminEventsPage() {
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingId ? 'Modifica tipologia evento' : 'Nuova tipologia evento'}</DialogTitle>
         <DialogContent>
-          <div className="mt-2 flex flex-col gap-5">
+           <Stack spacing={2.5} className="mt-2">
             <TextField
               label="Titolo"
               fullWidth
@@ -281,7 +286,7 @@ export default function AdminEventsPage() {
               }
               label="Pubblicato (visibile sul sito)"
             />
-          </div>
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)} disabled={saving} className="normal-case">

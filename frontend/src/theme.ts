@@ -55,5 +55,55 @@ export const muiTheme = createTheme({
     MuiChip: {
       styleOverrides: { root: { borderRadius: 999 } },
     },
+    // Modali dell'area admin: prima erano poco spaziati e con poco respiro
+    // interno. Questi override valgono per tutti i Dialog dell'app (schede
+    // "Nuovo/Modifica ..." di ogni sezione admin + i dialog di conferma),
+    // così restano coerenti senza dover intervenire pagina per pagina.
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: 16,
+          width: '100%',
+        },
+      },
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          padding: '1.5rem 1.75rem 1rem',
+          fontFamily: '"Fraunces", "Cormorant Garamond", serif',
+          fontWeight: 600,
+          fontSize: '1.25rem',
+        },
+      },
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: {
+          padding: '0.25rem 1.75rem 1.5rem',
+          '&.MuiDialogContent-dividers': {
+            padding: '1.25rem 1.75rem',
+          },
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          padding: '1rem 1.75rem 1.5rem',
+          gap: '0.5rem',
+        },
+      },
+    },
+    // Gruppi di pulsanti/icone nelle righe delle liste admin (modifica,
+    // elimina, ecc.): dimensione e spaziatura coerenti ovunque.
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 10,
+          padding: '8px',
+        },
+      },
+    },
   },
 })
