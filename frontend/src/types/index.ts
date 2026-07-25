@@ -165,8 +165,19 @@ export interface ContactFormValues {
 }
 
 export interface NewsletterFormValues {
+  firstName: string
+  lastName: string
   email: string
   consent: boolean
+}
+
+// --- Diritto all'oblio (pagina /privacy) ----------------------------------
+// Vedi publicRequestErasureOtp / publicConfirmErasureRequest in leadsApi.ts.
+
+export interface ErasureRequestFormValues {
+  firstName: string
+  lastName: string
+  email: string
 }
 
 export type SubmissionStatus = 'idle' | 'submitting' | 'success' | 'error'
@@ -226,6 +237,8 @@ export interface ContactMessage {
 
 export interface NewsletterSubscriber {
   id: number
+  firstName: string
+  lastName: string
   email: string
   subscribedAt: string
 }

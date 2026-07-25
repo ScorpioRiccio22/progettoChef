@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Alert, Button, CircularProgress, IconButton } from '@mui/material'
+import { Alert, Button, CircularProgress } from '@mui/material'
 import DownloadIcon from '@mui/icons-material/Download'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
@@ -8,6 +8,7 @@ import {
   adminListNewsletterSubscribers,
 } from '@/services/leadsApi'
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'
+import AdminRowActions from '@/components/admin/AdminRowActions'
 import type { NewsletterSubscriber } from '@/types'
 
 export default function AdminNewsletterPage() {
@@ -88,12 +89,23 @@ export default function AdminNewsletterPage() {
         <div className="flex flex-col gap-3">
           {items.map((s) => (
             <div key={s.id} className="rounded-xl border border-black/10 p-4">
-              <div className="flex items-center gap-4">
-                <p className="flex-1">{s.email}</p>
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="min-w-[180px] flex-1">
+                  <p className="font-semibold">{[s.firstName, s.lastName].filter(Boolean).join(' ') || '—'}</p>
+                  <p className="text-[0.85rem] text-clay">{s.email}</p>
+                </div>
                 <p className="whitespace-nowrap text-[0.78rem] text-clay">iscritto il {formatDate(s.subscribedAt)}</p>
-                <IconButton onClick={() => setDeleteTarget(s)} aria-label="Elimina">
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
+                <AdminRowActions
+                  actions={[
+                    {
+                      key: 'delete',
+                      label: 'Elimina',
+                      icon: <DeleteIcon fontSize="small" />,
+                      onClick: () => setDeleteTarget(s),
+                      danger: true,
+                    },
+                  ]}
+                />
               </div>
             </div>
           ))}

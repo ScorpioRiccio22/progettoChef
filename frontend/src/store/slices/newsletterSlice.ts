@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { publicSubscribeNewsletter } from '@/services/leadsApi'
+import { publicSubscribeNewsletter, type NewsletterSubscribePayload } from '@/services/leadsApi'
 import type { SubmissionStatus } from '@/types'
 
 interface NewsletterState {
@@ -22,10 +22,10 @@ function extractErrorMessage(error: unknown, fallback: string): string {
 
 export const subscribeToNewsletter = createAsyncThunk(
   'newsletter/subscribe',
-  async (email: string, { rejectWithValue }) => {
+  async (payload: NewsletterSubscribePayload, { rejectWithValue }) => {
     try {
-      await publicSubscribeNewsletter(email)
-      return { email }
+      await publicSubscribeNewsletter(payload)
+      return { email: payload.email }
     } catch (error) {
       return rejectWithValue(extractErrorMessage(error, 'Si è verificato un errore. Riprova più tardi.'))
     }

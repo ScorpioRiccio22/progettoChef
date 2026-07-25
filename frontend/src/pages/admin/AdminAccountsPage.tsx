@@ -20,8 +20,8 @@ import {
   TableRow,
   TextField,
   Tooltip,
+  Stack
 } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import KeyIcon from '@mui/icons-material/VpnKey'
 import {
@@ -161,9 +161,8 @@ export default function AdminAccountsPage() {
         </div>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
           onClick={openCreate}
-          className="whitespace-nowrap bg-gold-500 text-ink normal-case hover:bg-gold-300"
+          className="text-sm bg-gold-500 text-ink normal-case hover:bg-gold-300"
         >
           Nuovo account
         </Button>
@@ -227,18 +226,26 @@ export default function AdminAccountsPage() {
                     </TableCell>
                     <TableCell>{formatDate(account.lastLoginAt)}</TableCell>
                     <TableCell align="right">
-                      <Tooltip title="Reimposta password">
-                        <IconButton onClick={() => setResetTarget(account)} aria-label="Reimposta password">
-                          <KeyIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title={isSelf ? 'Non puoi eliminare il tuo account' : 'Elimina account'}>
-                        <span>
-                          <IconButton onClick={() => setDeleteTarget(account)} aria-label="Elimina" disabled={isSelf}>
-                            <DeleteIcon fontSize="small" />
+                      <div className="flex items-center justify-end gap-1">
+                        <Tooltip title="Reimposta password">
+                          <IconButton onClick={() => setResetTarget(account)} aria-label="Reimposta password" size="small">
+                            <KeyIcon fontSize="small" />
                           </IconButton>
-                        </span>
-                      </Tooltip>
+                        </Tooltip>
+                        <Tooltip title={isSelf ? 'Non puoi eliminare il tuo account' : 'Elimina account'}>
+                          <span>
+                            <IconButton
+                              onClick={() => setDeleteTarget(account)}
+                              aria-label="Elimina"
+                              disabled={isSelf}
+                              size="small"
+                              className="text-red-700 hover:bg-red-700/10"
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </span>
+                        </Tooltip>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )
@@ -252,7 +259,7 @@ export default function AdminAccountsPage() {
       <Dialog open={createOpen} onClose={() => setCreateOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Nuovo account admin</DialogTitle>
         <DialogContent>
-          <div className="mt-2 flex flex-col gap-5">
+           <Stack spacing={2.5} className="mt-2">
             <TextField
               label="Nome completo"
               fullWidth
@@ -290,7 +297,7 @@ export default function AdminAccountsPage() {
                 </MenuItem>
               ))}
             </TextField>
-          </div>
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setCreateOpen(false)} disabled={saving} className="normal-case">
@@ -311,6 +318,7 @@ export default function AdminAccountsPage() {
       <Dialog open={!!resetTarget} onClose={() => setResetTarget(null)} maxWidth="xs" fullWidth>
         <DialogTitle>Reimposta password</DialogTitle>
         <DialogContent>
+           <Stack spacing={2.5} className="mt-2">
           <DialogContentText className="mb-4">
             Stai per reimpostare la password di <strong>{resetTarget?.fullName}</strong>.
           </DialogContentText>
@@ -322,6 +330,7 @@ export default function AdminAccountsPage() {
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button

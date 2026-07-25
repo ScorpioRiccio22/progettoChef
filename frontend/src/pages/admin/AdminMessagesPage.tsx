@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Alert, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material'
+import { Alert, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle,Stack } from '@mui/material'
 import DownloadIcon from '@mui/icons-material/Download'
 import DeleteIcon from '@mui/icons-material/Delete'
 import MailOpenIcon from '@mui/icons-material/DraftsOutlined'
@@ -10,6 +10,7 @@ import {
   adminMarkMessageRead,
 } from '@/services/leadsApi'
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'
+import AdminRowActions from '@/components/admin/AdminRowActions'
 import type { ContactMessage } from '@/types'
 
 export default function AdminMessagesPage() {
@@ -116,15 +117,19 @@ export default function AdminMessagesPage() {
                   <p className="truncate text-[0.88rem] text-clay">{m.subject}</p>
                 </div>
                 <p className="whitespace-nowrap text-[0.78rem] text-clay">{formatDate(m.createdAt)}</p>
-                <IconButton
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setDeleteTarget(m)
-                  }}
-                  aria-label="Elimina"
-                >
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <AdminRowActions
+                    actions={[
+                      {
+                        key: 'delete',
+                        label: 'Elimina',
+                        icon: <DeleteIcon fontSize="small" />,
+                        onClick: () => setDeleteTarget(m),
+                        danger: true,
+                      },
+                    ]}
+                  />
+                </div>
               </div>
             </div>
           ))}
@@ -138,13 +143,13 @@ export default function AdminMessagesPage() {
               <MailOpenIcon fontSize="small" /> {selected.subject}
             </DialogTitle>
             <DialogContent>
-              <div className="flex flex-col gap-3">
+               <Stack spacing={2.5} className="mt-2">
                 <p className="text-[0.85rem] text-clay">
                   Da <strong>{selected.name}</strong> ({selected.email})
                   {selected.phone ? ` · ${selected.phone}` : ''} — {formatDate(selected.createdAt)}
                 </p>
                 <p className="whitespace-pre-wrap text-ink-soft">{selected.message}</p>
-              </div>
+              </Stack>
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setSelected(null)} className="normal-case">

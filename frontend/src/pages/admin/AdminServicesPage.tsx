@@ -9,11 +9,10 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
-  IconButton,
   Switch,
   TextField,
+  Stack
 } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
@@ -29,6 +28,7 @@ import VideoUploadField from '@/components/admin/VideoUploadField'
 import GalleryMediaEditor from '@/components/admin/GalleryMediaEditor'
 import ReorderableList from '@/components/admin/ReorderableList'
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'
+import AdminRowActions from '@/components/admin/AdminRowActions'
 import type { ServiceOffering } from '@/types'
 
 const EMPTY_FORM: ServiceOfferingRequest = {
@@ -142,9 +142,8 @@ export default function AdminServicesPage() {
         </div>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
           onClick={openCreate}
-          className="whitespace-nowrap bg-gold-500 text-ink normal-case hover:bg-gold-300"
+          className=" text-sm bg-gold-500 text-ink normal-case hover:bg-gold-300"
         >
           Nuovo servizio
         </Button>
@@ -183,12 +182,18 @@ export default function AdminServicesPage() {
                     /servizi/{item.slug} · {item.tagline}
                   </p>
                 </div>
-                <IconButton onClick={() => openEdit(item)} aria-label="Modifica">
-                  <EditIcon fontSize="small" />
-                </IconButton>
-                <IconButton onClick={() => setDeleteTarget(item)} aria-label="Elimina">
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
+                <AdminRowActions
+                  actions={[
+                    { key: 'edit', label: 'Modifica', icon: <EditIcon fontSize="small" />, onClick: () => openEdit(item) },
+                    {
+                      key: 'delete',
+                      label: 'Elimina',
+                      icon: <DeleteIcon fontSize="small" />,
+                      onClick: () => setDeleteTarget(item),
+                      danger: true,
+                    },
+                  ]}
+                />
               </div>
             </div>
           )}
@@ -198,10 +203,11 @@ export default function AdminServicesPage() {
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingId ? 'Modifica servizio' : 'Nuovo servizio'}</DialogTitle>
         <DialogContent>
-          <div className="mt-2 flex flex-col gap-5">
+           <Stack spacing={2.5} className="mt-2">
             <TextField
               label="Titolo"
               fullWidth
+              className="mb-4"
               value={form.title}
               onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
               required
@@ -209,6 +215,7 @@ export default function AdminServicesPage() {
             <TextField
               label="Slug URL (opzionale)"
               fullWidth
+              className="mb-4"
               value={form.slug}
               onChange={(e) => setForm((p) => ({ ...p, slug: e.target.value }))}
               helperText={`Lascia vuoto per generarlo dal titolo. Pagina pubblica: /servizi/${form.slug || '...'}`}
@@ -270,7 +277,7 @@ export default function AdminServicesPage() {
               }
               label="Pubblicato (visibile sul sito)"
             />
-          </div>
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)} disabled={saving} className="normal-case">

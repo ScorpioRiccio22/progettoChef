@@ -9,7 +9,42 @@ import type { ContactFormValues, ContactMessage, NewsletterSubscriber } from '@/
 
 export const publicSendContactMessage = (values: ContactFormValues) => api.post('/public/contact', values)
 
-export const publicSubscribeNewsletter = (email: string) => api.post('/public/newsletter', { email })
+export interface NewsletterSubscribePayload {
+  firstName: string
+  lastName: string
+  email: string
+}
+
+export const publicSubscribeNewsletter = (payload: NewsletterSubscribePayload) =>
+  api.post('/public/newsletter', payload)
+
+// --- Pubblico: diritto all'oblio (pagina /privacy) -----------------------
+//
+// Flusso a due step con verifica via OTP inviato per email:
+// 1) l'utente invia nome, cognome ed email -> il backend genera un OTP,
+//    lo associa alla richiesta e lo invia via email all'indirizzo indicato;
+// 2) l'utente inserisce l'OTP ricevuto -> il backend verifica la coppia
+//    email/OTP e, se valida, processa la richiesta di cancellazione dati
+//    (diritto all'oblio, art. 17 GDPR).
+// Il backend dovrà esporre questi due endpoint pubblici.
+
+export interface ErasureRequestPayload {
+  firstName: string
+  lastName: string
+  email: string
+}
+
+/** Step 1: avvia la richiesta di esercizio del diritto all'oblio; il backend invia l'OTP via email. */
+export const publicRequestErasureOtp = (payload: ErasureRequestPayload) =>
+  api.post<void>('/public/newsletter/erasure-request', payload)
+
+export interface ConfirmErasureRequestPayload extends ErasureRequestPayload {
+  otp: string
+}
+
+/** Step 2: conferma la richiesta con l'OTP ricevuto via email; il backend elabora la cancellazione. */
+export const publicConfirmErasureRequest = (payload: ConfirmErasureRequestPayload) =>
+  api.post<void>('/public/newsletter/erasure-request/confirm', payload)
 
 // --- Admin: messaggi di contatto ----------------------------------------
 

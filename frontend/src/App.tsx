@@ -15,9 +15,9 @@ import RecipesPage from '@/pages/RecipesPage'
 import EventsPage from '@/pages/EventsPage'
 import EventDetailPage from '@/pages/EventDetailPage'
 import ContactPage from '@/pages/ContactPage'
-import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage'
 import ServicesPage from '@/pages/ServicesPage'
 import ServiceDetailPage from '@/pages/ServiceDetailPage'
+import PrivacyPage from '@/pages/PrivacyPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import AdminLoginPage from '@/pages/admin/AdminLoginPage'
 import AdminForgotPasswordPage from '@/pages/admin/AdminForgotPasswordPage'
@@ -66,7 +66,7 @@ export default function App() {
               <Route path="/servizi" element={<ServicesPage />} />
               <Route path="/servizi/:slug" element={<ServiceDetailPage />} />
               <Route path="/contatti" element={<ContactPage />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
 
