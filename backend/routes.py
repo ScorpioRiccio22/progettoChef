@@ -20,6 +20,7 @@ from database import get_db
 from email_service import (
     notify_newsletter_subscribers,
     send_newsletter_erasure_otp_email,
+    send_newsletter_welcome_email,
     send_password_reset_email,
 )
 from exceptions import BadRequestException, ConflictException, InvalidCredentialsException, NotFoundException
@@ -1336,7 +1337,7 @@ def export(db: Session = Depends(get_db)) -> Response:
 
 
 @newsletter_public_router.post("", status_code=status.HTTP_204_NO_CONTENT)
-def subscribe(request: NewsletterSubscribeRequest, db: Session = Depends(get_db)) -> None:
+def subscribe(request: NewsletterSubscribeRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)) -> None:
     """Iscrive alla newsletter. La ricerca copre sia gli iscritti attivi
     (email in chiaro) sia chi ha già esercitato il diritto all'oblio in
     passato (email sostituita dal suo HMAC): in quel caso la riga viene
@@ -1349,7 +1350,7 @@ def subscribe(request: NewsletterSubscribeRequest, db: Session = Depends(get_db)
     )
 
     if existing is not None and existing.attivo and existing.privacy_status == "accettata":
-        # Già iscritto e attivo: nessuna modifica, nessun errore (idempotente).
+        # Già iscritto e attivo: nessuna modifica, nessuna nuova email, nessun errore.
         return None
 
     if existing is not None:
@@ -1363,6 +1364,7 @@ def subscribe(request: NewsletterSubscribeRequest, db: Session = Depends(get_db)
         existing.otp = None
         existing.otp_expires_at = None
         db.add(existing)
+        background_tasks.add_task(send_newsletter_welcome_email, request.email, request.firstName)
         return None
 
     db.add(NewsletterSubscriber(
@@ -1372,6 +1374,7 @@ def subscribe(request: NewsletterSubscribeRequest, db: Session = Depends(get_db)
         attivo=True,
         privacy_status="accettata",
     ))
+    background_tasks.add_task(send_newsletter_welcome_email, request.email, request.firstName)
 
 
 @newsletter_public_router.post("/erasure-request", status_code=status.HTTP_204_NO_CONTENT)

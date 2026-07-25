@@ -83,6 +83,23 @@ async def send_newsletter_erasure_otp_email(to_email: str, otp: str) -> bool:
     return await send_email(to_email, subject, html_body)
 
 
+async def send_newsletter_welcome_email(to_email: str, first_name: str) -> bool:
+    """Email di conferma inviata quando qualcuno si iscrive (o si re-iscrive
+    dopo aver esercitato in passato il diritto all'oblio)."""
+    subject = "Iscrizione confermata — Andrea Moio Chef"
+    privacy_link = f"{settings.frontend_base_url}/privacy"
+    html_body = f"""
+    <p>Ciao {first_name},</p>
+    <p>La tua iscrizione alla newsletter di Andrea Moio Chef è confermata. Riceverai
+    aggiornamenti su nuovi piatti, eventi e servizi.</p>
+    <p style="font-size: 12px; color: #888;">
+        Puoi cancellare i tuoi dati in qualsiasi momento dalla pagina
+        <a href="{privacy_link}">Privacy e diritto all'oblio</a>.
+    </p>
+    """
+    return await send_email(to_email, subject, html_body)
+
+
 async def notify_newsletter_subscribers(
     emails: list[str],
     resource_label: str,
