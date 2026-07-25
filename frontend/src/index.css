@@ -81,3 +81,7 @@
   background: #D9B679;
   border-radius: 999px;
 }
+
+.MuiDialogContent-root{
+  padding-top: 6px !important;
+}
