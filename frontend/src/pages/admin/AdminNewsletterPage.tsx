@@ -69,7 +69,7 @@ export default function AdminNewsletterPage() {
           disabled={exporting || items.length === 0}
           className="whitespace-nowrap border-gold-500 text-ink normal-case"
         >
-          {exporting ? 'Esportazione…' : 'Esporta CSV'}
+          {exporting ? 'Esportazioneâ€¦' : 'Esporta CSV'}
         </Button>
       </div>
 
@@ -91,7 +91,7 @@ export default function AdminNewsletterPage() {
             <div key={s.id} className="rounded-xl border border-black/10 p-4">
               <div className="flex flex-wrap items-center gap-4">
                 <div className="min-w-[180px] flex-1">
-                  <p className="font-semibold">{[s.firstName, s.lastName].filter(Boolean).join(' ') || '—'}</p>
+                  <p className="font-semibold">{[s.firstName, s.lastName].filter(Boolean).join(' ') || 'â€”'}</p>
                   <p className="text-[0.85rem] text-clay">{s.email}</p>
                 </div>
                 <p className="whitespace-nowrap text-[0.78rem] text-clay">iscritto il {formatDate(s.subscribedAt)}</p>

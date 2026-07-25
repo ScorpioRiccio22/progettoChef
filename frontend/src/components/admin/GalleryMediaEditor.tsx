@@ -19,12 +19,12 @@ interface GalleryMediaEditorProps {
 }
 
 /**
- * Galleria di più immagini o video (uno per slot), usata nelle pagine di dettaglio di
+ * Galleria di piÃ¹ immagini o video (uno per slot), usata nelle pagine di dettaglio di
  * servizi ed eventi: sul sito viene mostrata come un carosello con autoplay.
  */
 export default function GalleryMediaEditor({ label, helperText, value, onChange }: GalleryMediaEditorProps) {
   // Per gli slot ancora vuoti serve sapere se caricare un'immagine o un video:
-  // per gli slot già valorizzati il tipo si deduce dall'URL, per quelli nuovi si sceglie qui.
+  // per gli slot giÃ  valorizzati il tipo si deduce dall'URL, per quelli nuovi si sceglie qui.
   const [newSlotKinds, setNewSlotKinds] = useState<Record<number, 'image' | 'video'>>({})
 
   const updateAt = (index: number, url: string | null) => {

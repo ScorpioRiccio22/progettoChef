@@ -68,14 +68,14 @@ export default function AdminMenuPage({ type = 'SHOP' }: AdminMenuPageProps) {
       ? {
           title: 'Menu eventi',
           intro:
-            'Crea liste di piatti (dal catalogo "A MoDo mio" o del tutto nuovi) con un prezzo dedicato agli eventi. Un solo menu alla volta può essere segnato come attivo: è quello mostrato nella pagina Eventi come proposta in evidenza.',
+            'Crea liste di piatti (dal catalogo "A MoDo mio" o del tutto nuovi) con un prezzo dedicato agli eventi. Un solo menu alla volta puÃ² essere segnato come attivo: Ã¨ quello mostrato nella pagina Eventi come proposta in evidenza.',
           activeChip: 'Attivo ora per gli eventi',
           activateVerb: 'Rendi attivo per gli eventi',
         }
       : {
           title: 'Menu del negozio',
           intro:
-            'Crea liste di piatti (dal catalogo "A MoDo mio" o del tutto nuovi) con un prezzo dedicato. Un solo menu alla volta può essere segnato come attivo: è quello mostrato sul sito come il menu in vetrina per il negozio fisico in questo momento.',
+            'Crea liste di piatti (dal catalogo "A MoDo mio" o del tutto nuovi) con un prezzo dedicato. Un solo menu alla volta puÃ² essere segnato come attivo: Ã¨ quello mostrato sul sito come il menu in vetrina per il negozio fisico in questo momento.',
           activeChip: 'Attivo ora nel negozio',
           activateVerb: 'Rendi attivo',
         }
@@ -316,7 +316,7 @@ export default function AdminMenuPage({ type = 'SHOP' }: AdminMenuPageProps) {
                   </div>
                   <p className="text-[0.85rem] text-clay">
                     {menu.items.length} {menu.items.length === 1 ? 'piatto' : 'piatti'}
-                    {menu.description ? ` · ${menu.description}` : ''}
+                    {menu.description ? ` Â· ${menu.description}` : ''}
                   </p>
                 </div>
                 <Button
@@ -386,7 +386,7 @@ export default function AdminMenuPage({ type = 'SHOP' }: AdminMenuPageProps) {
             disabled={savingMenu || !menuForm.name}
             className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
-            {savingMenu ? 'Salvataggio…' : 'Salva'}
+            {savingMenu ? 'Salvataggioâ€¦' : 'Salva'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -473,7 +473,7 @@ export default function AdminMenuPage({ type = 'SHOP' }: AdminMenuPageProps) {
                   onChange={(e) => handlePrefillFromDish(e.target.value === '' ? '' : Number(e.target.value))}
                   helperText="Scegli un piatto esistente per copiarne nome, categoria, descrizione e immagine, poi imposta il prezzo per questo menu."
                 >
-                  <SelectMenuItem value="">— Nessuno, piatto nuovo —</SelectMenuItem>
+                  <SelectMenuItem value="">â€” Nessuno, piatto nuovo â€”</SelectMenuItem>
                   {dishes.map((dish) => (
                     <SelectMenuItem key={dish.id} value={dish.id}>
                       {dish.name}
@@ -522,7 +522,7 @@ export default function AdminMenuPage({ type = 'SHOP' }: AdminMenuPageProps) {
               fullWidth
               value={itemForm.price}
               onChange={(e) => setItemForm((p) => ({ ...p, price: Number(e.target.value) }))}
-              InputProps={{ startAdornment: <InputAdornment position="start">€</InputAdornment> }}
+              InputProps={{ startAdornment: <InputAdornment position="start">â‚¬</InputAdornment> }}
               inputProps={{ min: 0, step: 0.5 }}
               required
             />
@@ -538,7 +538,7 @@ export default function AdminMenuPage({ type = 'SHOP' }: AdminMenuPageProps) {
             disabled={savingItem || !itemForm.name || itemForm.price < 0}
             className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
-            {savingItem ? 'Salvataggio…' : 'Salva'}
+            {savingItem ? 'Salvataggioâ€¦' : 'Salva'}
           </Button>
         </DialogActions>
       </Dialog>

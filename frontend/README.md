@@ -1,4 +1,4 @@
-# 🎨 Frontend — Andrea Moio Chef
+# ðŸŽ¨ Frontend â€” Andrea Moio Chef
 
 App React (TypeScript) per il sito vetrina dello chef Andrea Moio.
 
@@ -12,12 +12,12 @@ App React (TypeScript) per il sito vetrina dello chef Andrea Moio.
 - **Tailwind CSS v3** (utility styling, configurato per non entrare in conflitto con MUI)
 - **Axios** (HTTP client, predisposto per il backend)
 
-> In questa fase il backend Spring Boot espone già l'autenticazione admin
+> In questa fase il backend Spring Boot espone giÃ  l'autenticazione admin
 > (`/api/auth/...`), collegata al frontend tramite `authSlice` e
 > `services/api.ts`. I form pubblici (newsletter e contatti) usano ancora
-> thunk Redux "mock" che simulano una chiamata di rete: sono già nella forma
+> thunk Redux "mock" che simulano una chiamata di rete: sono giÃ  nella forma
 > corretta per essere sostituiti da vere chiamate API quando i relativi
-> endpoint backend saranno pronti (vedi sezione "Collegare il backend" più
+> endpoint backend saranno pronti (vedi sezione "Collegare il backend" piÃ¹
 > sotto).
 
 ## Avvio in locale
@@ -40,18 +40,18 @@ Crea un file `.env.local`:
 VITE_API_BASE_URL=http://localhost:8080/api
 ```
 
-Non è strettamente necessario in sviluppo locale: Vite fa già da proxy su
+Non Ã¨ strettamente necessario in sviluppo locale: Vite fa giÃ  da proxy su
 `/api` verso `localhost:8080` (vedi `vite.config.ts`).
 
 ## Area admin
 
-- `/admin/login` — form di accesso (email + password)
-- `/admin` — dashboard protetta (richiede login); ogni nuova pagina admin
+- `/admin/login` â€” form di accesso (email + password)
+- `/admin` â€” dashboard protetta (richiede login); ogni nuova pagina admin
   futura va aggiunta come route figlia, sempre dentro `ProtectedRoute`
 
 Lo stato di autenticazione vive in `store/slices/authSlice.ts`: il token JWT
 viene salvato in `localStorage` e allegato automaticamente alle richieste da
-`services/api.ts`. Al refresh della pagina, se c'è un token salvato, viene
+`services/api.ts`. Al refresh della pagina, se c'Ã¨ un token salvato, viene
 richiamato `/api/auth/me` per ripristinare la sessione senza richiedere di
 nuovo le credenziali.
 
@@ -59,34 +59,34 @@ nuovo le credenziali.
 
 ```
 src/
-├── components/
-│   ├── layout/      # Navbar, Footer, Layout, ScrollToTop
-│   ├── sections/    # Sezioni della homepage (Hero, About, Servizi, ...)
-│   ├── ui/          # Componenti riutilizzabili (DishCard, SectionHeading,
-│   │                 # PageHero, VesuvioMark — l'elemento grafico ricorrente)
-│   └── admin/       # AdminLayout, ProtectedRoute (area admin)
-├── pages/           # Una pagina per ogni route
-│   └── admin/       # AdminLoginPage, AdminDashboardPage
-├── store/
-│   ├── index.ts     # Store Redux
-│   └── slices/      # newsletterSlice, contactSlice, uiSlice, authSlice
-├── services/
-│   └── api.ts       # Client Axios + interceptor JWT (area admin)
-├── hooks/           # useAppDispatch, useAppSelector
-├── types/           # Tutti i tipi TypeScript condivisi
-├── lib/
-│   └── content.ts   # Contenuti del sito (servizi, piatti, eventi, contatti,
-│                     # social): oggi sono dati statici, in futuro arriveranno
-│                     # dal backend
-├── theme.ts          # Tema MUI (palette derivata dal logo)
-└── index.css          # Tailwind + stili globali + font
+â”œâ”€â”€ components/
+â”‚   â”œâ”€â”€ layout/      # Navbar, Footer, Layout, ScrollToTop
+â”‚   â”œâ”€â”€ sections/    # Sezioni della homepage (Hero, About, Servizi, ...)
+â”‚   â”œâ”€â”€ ui/          # Componenti riutilizzabili (DishCard, SectionHeading,
+â”‚   â”‚                 # PageHero, VesuvioMark â€” l'elemento grafico ricorrente)
+â”‚   â””â”€â”€ admin/       # AdminLayout, ProtectedRoute (area admin)
+â”œâ”€â”€ pages/           # Una pagina per ogni route
+â”‚   â””â”€â”€ admin/       # AdminLoginPage, AdminDashboardPage
+â”œâ”€â”€ store/
+â”‚   â”œâ”€â”€ index.ts     # Store Redux
+â”‚   â””â”€â”€ slices/      # newsletterSlice, contactSlice, uiSlice, authSlice
+â”œâ”€â”€ services/
+â”‚   â””â”€â”€ api.ts       # Client Axios + interceptor JWT (area admin)
+â”œâ”€â”€ hooks/           # useAppDispatch, useAppSelector
+â”œâ”€â”€ types/           # Tutti i tipi TypeScript condivisi
+â”œâ”€â”€ lib/
+â”‚   â””â”€â”€ content.ts   # Contenuti del sito (servizi, piatti, eventi, contatti,
+â”‚                     # social): oggi sono dati statici, in futuro arriveranno
+â”‚                     # dal backend
+â”œâ”€â”€ theme.ts          # Tema MUI (palette derivata dal logo)
+â””â”€â”€ index.css          # Tailwind + stili globali + font
 ```
 
 ## Mappa del sito
 
 | Path | Pagina | Contenuto |
 |------|--------|-----------|
-| `/` | Homepage | Scroll verticale fluido: Hero → Chi siamo → Servizi → A MoDo Mio → Eventi → Testimonianze → Newsletter → Contatti |
+| `/` | Homepage | Scroll verticale fluido: Hero â†’ Chi siamo â†’ Servizi â†’ A MoDo Mio â†’ Eventi â†’ Testimonianze â†’ Newsletter â†’ Contatti |
 | `/chi-siamo` | Chi siamo | Storia, percorso, principi della cucina |
 | `/A MoDo Mio` | A MoDo Mio | Piatti con filtro per categoria (antipasti/primi/secondi/dolci) |
 | `/eventi` | Eventi | Tipologie di evento, come funziona il servizio |
@@ -103,13 +103,13 @@ alla pagina completa dedicata.
 ## Placeholder da sostituire
 
 In `src/lib/content.ts`, oggetto `CONTACT`:
-- `email` — al momento un placeholder
-- `whatsappNumber` / `whatsappLink` — al momento placeholder
+- `email` â€” al momento un placeholder
+- `whatsappNumber` / `whatsappLink` â€” al momento placeholder
 
 In `src/lib/content.ts`, oggetto `SOCIAL_LINKS`: verificare che gli URL
 puntino ai profili reali (Instagram, Facebook, TikTok, Threads, WhatsApp).
 
-## Collegare il backend (quando sarà pronto)
+## Collegare il backend (quando sarÃ  pronto)
 
 1. Sostituire il corpo dei thunk in `store/slices/newsletterSlice.ts` e
    `store/slices/contactSlice.ts` con chiamate reali tramite `services/api.ts`
@@ -132,6 +132,6 @@ npm run build
 - Tutti i contenuti "di marketing" sono centralizzati in `src/lib/content.ts`
 - Usare sempre `useAppDispatch` / `useAppSelector` per Redux
 - Tailwind per layout e spaziatura, MUI per componenti interattivi e sx-styling
-- L'elemento grafico del Vesuvio (`components/ui/VesuvioMark.tsx`) è la
+- L'elemento grafico del Vesuvio (`components/ui/VesuvioMark.tsx`) Ã¨ la
   firma visiva del brand: va riusato con coerenza, non introdotto altrove
   in forme diverse

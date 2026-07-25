@@ -10,13 +10,13 @@ export default function HeroSection() {
   const heroTitle = settings?.heroTitle || 'La cucina napoletana, portata a casa tua.'
   const heroSubtitle =
     settings?.heroSubtitle ||
-    `Sono ${brand.name}: chef a domicilio per cene private, eventi e nuove attività che vogliono partire con il piede giusto in cucina.`
+    `Sono ${brand.name}: chef a domicilio per cene private, eventi e nuove attivitÃ  che vogliono partire con il piede giusto in cucina.`
   const heroImageUrl = settings?.heroImageUrl // <-- verifica il nome esatto in @/types (SiteSettings)
 
   return (
     <div id="home" className="relative flex min-h-screen items-center overflow-hidden bg-ink">
       {heroImageUrl ? (
-        // Se è presente un'immagine hero nel CMS, usala come sfondo
+        // Se Ã¨ presente un'immagine hero nel CMS, usala come sfondo
         <div className="absolute inset-0">
           <img
             src={heroImageUrl}

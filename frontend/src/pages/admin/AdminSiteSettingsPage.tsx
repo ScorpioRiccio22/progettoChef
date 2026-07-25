@@ -88,7 +88,7 @@ export default function AdminSiteSettingsPage() {
   return (
     <div>
       <h1 className="mb-1 font-display text-xl font-semibold">Impostazioni del sito</h1>
-      <p className="mb-6 text-clay">Brand, contatti, social e testi che compaiono in più punti del sito pubblico.</p>
+      <p className="mb-6 text-clay">Brand, contatti, social e testi che compaiono in piÃ¹ punti del sito pubblico.</p>
 
       {error && (
         <Alert severity="error" className="mb-6">
@@ -103,7 +103,7 @@ export default function AdminSiteSettingsPage() {
             <TextField label="Nome" fullWidth value={form.brandName} onChange={field('brandName')} />
             <TextField label="Handle social (es. @chefandreamoio)" fullWidth value={form.brandHandle} onChange={field('brandHandle')} />
             <TextField label="Ruolo (es. Chef)" fullWidth value={form.brandRole} onChange={field('brandRole')} />
-            <TextField label="Città" fullWidth value={form.brandCity} onChange={field('brandCity')} />
+            <TextField label="CittÃ " fullWidth value={form.brandCity} onChange={field('brandCity')} />
             <TextField
               label="Payoff / slogan"
               fullWidth
@@ -129,7 +129,7 @@ export default function AdminSiteSettingsPage() {
               placeholder="Es. Via Toledo 1, 80134 Napoli NA"
               value={form.mapAddress}
               onChange={field('mapAddress')}
-              helperText="Indirizzo completo (via, civico, CAP, città): viene geolocalizzato automaticamente per mostrare la mappa. Lascia vuoto per non mostrare nessuna mappa."
+              helperText="Indirizzo completo (via, civico, CAP, cittÃ ): viene geolocalizzato automaticamente per mostrare la mappa. Lascia vuoto per non mostrare nessuna mappa."
               className="md:col-span-2"
             />
           </div>
@@ -217,10 +217,10 @@ export default function AdminSiteSettingsPage() {
           <p className="mb-2 font-bold">Recensioni Google</p>
           <p className="text-[0.92rem] leading-relaxed text-clay">
             La homepage mostra automaticamente le recensioni Google reali del locale al posto delle testimonianze
-            manuali, quando l'integrazione è configurata. Per attivarla il tuo sviluppatore deve impostare, solo
+            manuali, quando l'integrazione Ã¨ configurata. Per attivarla il tuo sviluppatore deve impostare, solo
             lato server (mai in questo pannello, per sicurezza), le variabili d'ambiente{' '}
             <code>GOOGLE_PLACES_API_KEY</code> (la chiave API di Google Cloud) e{' '}
-            <code>GOOGLE_PLACES_PLACE_ID</code> (l'identificativo della tua scheda Google). Finché non sono
+            <code>GOOGLE_PLACES_PLACE_ID</code> (l'identificativo della tua scheda Google). FinchÃ© non sono
             impostate, il sito continua a mostrare le testimonianze inserite manualmente qui sopra.
           </p>
         </div>
@@ -234,7 +234,7 @@ export default function AdminSiteSettingsPage() {
             startIcon={saving ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}
             className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
-            {saving ? 'Salvataggio…' : 'Salva modifiche'}
+            {saving ? 'Salvataggioâ€¦' : 'Salva modifiche'}
           </Button>
         </div>
       </div>

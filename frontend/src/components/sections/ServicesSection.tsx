@@ -27,7 +27,7 @@ export default function ServicesSection() {
           title={t('home.services.title', 'Tre modi per portare la mia cucina da te')}
           description={t(
             'home.services.description',
-            "Dalla cena tra amici al lancio della tua attività: ogni servizio è pensato su misura, partendo da quello che ti serve davvero.",
+            "Dalla cena tra amici al lancio della tua attivitÃ : ogni servizio Ã¨ pensato su misura, partendo da quello che ti serve davvero.",
           )}
         />
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -50,7 +50,7 @@ export default function ServicesSection() {
                 <p className="mb-3 text-[0.88rem] font-semibold text-gold-600">{service.tagline}</p>
                 <p className="leading-relaxed text-ink-soft">{service.description}</p>
                 <div className="mt-4 flex items-center gap-1.5 text-[0.88rem] font-semibold text-gold-600">
-                  <span>{t('common.discoverMore', 'Scopri di più')}</span>
+                  <span>{t('common.discoverMore', 'Scopri di piÃ¹')}</span>
                   <ArrowForwardIcon className="text-base" />
                 </div>
               </RouterLink>

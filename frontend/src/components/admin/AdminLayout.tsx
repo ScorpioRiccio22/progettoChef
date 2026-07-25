@@ -33,7 +33,7 @@ export default function AdminLayout() {
         <Toolbar className="gap-4">
           <VesuvioMark className="h-7 w-20" />
           <p className="flex-grow font-display font-semibold tracking-[0.02em] text-ivory">
-            Area Admin — Andrea Moio Chef
+            Area Admin â€” Andrea Moio Chef
           </p>
           {user && (
             <div className="mr-2 flex items-center gap-2">

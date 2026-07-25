@@ -5,7 +5,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 
 const AUTOPLAY_MS = 4000
 
-/** Un file è considerato video se l'URL termina con un'estensione video nota (i video caricati sono sempre mp4). */
+/** Un file Ã¨ considerato video se l'URL termina con un'estensione video nota (i video caricati sono sempre mp4). */
 function isVideoUrl(url: string) {
   return /\.(mp4|webm|mov)$/i.test(url.split('?')[0])
 }
@@ -22,7 +22,7 @@ interface MediaCarouselProps {
 /**
  * Carosello per gallerie di immagini/video (usato nelle pagine di dettaglio di servizi ed eventi).
  * Autoplay ogni 4 secondi, frecce assolute centrate verticalmente, responsive: 4 slide da
- * desktop fino a 1 su mobile. Ogni slide è una singola immagine o un singolo video.
+ * desktop fino a 1 su mobile. Ogni slide Ã¨ una singola immagine o un singolo video.
  */
 export default function MediaCarousel({
   items,

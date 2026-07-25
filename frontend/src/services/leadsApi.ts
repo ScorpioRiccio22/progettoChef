@@ -26,7 +26,7 @@ export const publicSubscribeNewsletter = (payload: NewsletterSubscribePayload) =
 // 2) l'utente inserisce l'OTP ricevuto -> il backend verifica la coppia
 //    email/OTP e, se valida, processa la richiesta di cancellazione dati
 //    (diritto all'oblio, art. 17 GDPR).
-// Il backend dovrà esporre questi due endpoint pubblici.
+// Il backend dovrÃ  esporre questi due endpoint pubblici.
 
 export interface ErasureRequestPayload {
   firstName: string

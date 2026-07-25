@@ -1,6 +1,6 @@
 # Ambiente di sviluppo completo: database + backend + frontend.
 #
-# Uso tipico: lavorare sul frontend con il backend e il DB già pronti.
+# Uso tipico: lavorare sul frontend con il backend e il DB giÃ  pronti.
 #
 #   docker compose up --build
 #
@@ -9,10 +9,10 @@
 # - Postgres:                     localhost:5432 (utile per un client SQL esterno)
 #
 # Le modifiche ai file in frontend/src si riflettono subito nel browser
-# (il codice è montato come volume nel container). Per il backend, invece,
+# (il codice Ã¨ montato come volume nel container). Per il backend, invece,
 # va rilanciato `docker compose up --build backend` dopo una modifica
 # (oppure si lancia il backend in locale con `uvicorn main:app --reload`,
-# tenendo solo `db` su Docker — vedi sezione in fondo).
+# tenendo solo `db` su Docker â€” vedi sezione in fondo).
 
 services:
   db:
@@ -61,12 +61,12 @@ services:
       GOOGLE_PLACES_PLACE_ID: ${GOOGLE_PLACES_PLACE_ID:-}
       GOOGLE_PLACES_CACHE_MINUTES: ${GOOGLE_PLACES_CACHE_MINUTES:-180}
       GOOGLE_PLACES_MAX_REVIEWS: ${GOOGLE_PLACES_MAX_REVIEWS:-6}
-      # Diritto all'oblio newsletter (HMAC + OTP) — obbligatorio, nessun default:
+      # Diritto all'oblio newsletter (HMAC + OTP) â€” obbligatorio, nessun default:
       # l'app non parte se manca (vedi config.py).
-      NEWSLETTER_HMAC_SEED: "${NEWSLETTER_HMAC_SEED:?un seed HMAC lungo e casuale è obbligatorio (genera con openssl rand -base64 48)}"
+      NEWSLETTER_HMAC_SEED: "${NEWSLETTER_HMAC_SEED:?un seed HMAC lungo e casuale Ã¨ obbligatorio (genera con openssl rand -base64 48)}"
       NEWSLETTER_ERASURE_OTP_EXPIRATION_MINUTES: ${NEWSLETTER_ERASURE_OTP_EXPIRATION_MINUTES:-15}
-      # Email (SMTP, es. Brevo) — opzionali: se lasciate vuote, l'invio email
-      # è disabilitato (log di avviso invece di errore).
+      # Email (SMTP, es. Brevo) â€” opzionali: se lasciate vuote, l'invio email
+      # Ã¨ disabilitato (log di avviso invece di errore).
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USERNAME: ${SMTP_USERNAME:-}
@@ -110,7 +110,7 @@ volumes:
   andreamoiochef-uploads:
 
 # ---------------------------------------------------------------------------
-# Alternativa: solo DB su Docker, backend e frontend in locale (più comodo
+# Alternativa: solo DB su Docker, backend e frontend in locale (piÃ¹ comodo
 # per il debug passo-passo in IDE):
 #
 #   docker compose up db

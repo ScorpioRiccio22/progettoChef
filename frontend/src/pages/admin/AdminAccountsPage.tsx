@@ -51,7 +51,7 @@ const ROLE_COLORS: Record<AdminRole, 'error' | 'primary' | 'default'> = {
 const EMPTY_FORM: CreateAdminAccountPayload = { email: '', fullName: '', password: '', role: 'EDITOR' }
 
 function formatDate(value: string | null) {
-  if (!value) return '—'
+  if (!value) return 'â€”'
   return new Date(value).toLocaleString('it-IT', { dateStyle: 'medium', timeStyle: 'short' })
 }
 
@@ -279,7 +279,7 @@ export default function AdminAccountsPage() {
               label="Password provvisoria"
               type="password"
               fullWidth
-              helperText="Almeno 8 caratteri. L'utente potrà cambiarla dopo il primo accesso."
+              helperText="Almeno 8 caratteri. L'utente potrÃ  cambiarla dopo il primo accesso."
               value={form.password}
               onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
               required
@@ -309,7 +309,7 @@ export default function AdminAccountsPage() {
             disabled={saving || !form.email || !form.fullName || form.password.length < 8}
             className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
-            {saving ? 'Creazione…' : 'Crea account'}
+            {saving ? 'Creazioneâ€¦' : 'Crea account'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -349,7 +349,7 @@ export default function AdminAccountsPage() {
             disabled={resetting || newPassword.length < 8}
             className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
-            {resetting ? 'Salvataggio…' : 'Reimposta'}
+            {resetting ? 'Salvataggioâ€¦' : 'Reimposta'}
           </Button>
         </DialogActions>
       </Dialog>

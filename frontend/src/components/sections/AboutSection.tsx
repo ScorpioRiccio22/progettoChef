@@ -9,7 +9,7 @@ export default function AboutSection() {
 
   const aboutIntro =
     settings?.aboutIntro ||
-    "Cresciuto tra i fornelli di casa e le cucine professionali di Napoli, porto la tradizione partenopea dove serve davvero: sulla tua tavola. Ogni servizio nasce da un'idea semplice — la cucina di qualità non ha bisogno di un ristorante, ha bisogno di cura."
+    "Cresciuto tra i fornelli di casa e le cucine professionali di Napoli, porto la tradizione partenopea dove serve davvero: sulla tua tavola. Ogni servizio nasce da un'idea semplice â€” la cucina di qualitÃ  non ha bisogno di un ristorante, ha bisogno di cura."
 
   const stats = [
     { value: settings?.statYearsValue || '8+', label: settings?.statYearsLabel || 'anni di esperienza' },

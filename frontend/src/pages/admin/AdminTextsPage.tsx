@@ -16,7 +16,7 @@ import { adminListSiteTexts, adminUpdateSiteText, type SiteTextItem } from '@/se
 
 const CATEGORY_LABELS: Record<string, string> = {
   home: 'Homepage',
-  common: 'Testi comuni (usati in più pagine)',
+  common: 'Testi comuni (usati in piÃ¹ pagine)',
   services: 'Servizi',
   events: 'Eventi',
   recipes: 'A MoDo mio',
@@ -87,7 +87,7 @@ export default function AdminTextsPage() {
       <div className="mb-6">
         <h1 className="font-display text-xl font-semibold">Testi del sito</h1>
         <p className="text-clay">
-          Ogni titolo, descrizione e testo di pulsante del sito pubblico è qui, raggruppato per pagina. Modifica un
+          Ogni titolo, descrizione e testo di pulsante del sito pubblico Ã¨ qui, raggruppato per pagina. Modifica un
           testo e premi "Salva modifiche" in fondo a ciascuna sezione: cambia subito sul sito, senza toccare codice.
         </p>
       </div>
@@ -147,7 +147,7 @@ export default function AdminTextsPage() {
                     onClick={() => handleSaveCategory(category)}
                     className="self-start bg-gold-500 text-ink normal-case hover:bg-gold-600"
                   >
-                    {savingCategory === category ? 'Salvataggio…' : 'Salva modifiche'}
+                    {savingCategory === category ? 'Salvataggioâ€¦' : 'Salva modifiche'}
                   </Button>
                 </div>
               </AccordionDetails>

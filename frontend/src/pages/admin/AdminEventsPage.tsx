@@ -144,7 +144,7 @@ export default function AdminEventsPage() {
           <h1 className="font-display text-xl font-semibold">Eventi</h1>
           <p className="text-clay">
             Le tipologie di evento mostrate nella pagina "Eventi". Ognuna ha anche una sua landing page dedicata,
-            raggiungibile da "Scopri di più" sul sito (per gli eventi "privati" resta volutamente minimale: solo
+            raggiungibile da "Scopri di piÃ¹" sul sito (per gli eventi "privati" resta volutamente minimale: solo
             foto/video e descrizione breve).
           </p>
         </div>
@@ -187,7 +187,7 @@ export default function AdminEventsPage() {
                     )}
                   </div>
                   <p className="text-[0.85rem] text-clay">
-                    /eventi/{item.slug} · {item.description}
+                    /eventi/{item.slug} Â· {item.description}
                   </p>
                   <p className="mt-1 text-[0.78rem] text-clay">{item.details.length} dettagli elencati</p>
                 </div>
@@ -298,7 +298,7 @@ export default function AdminEventsPage() {
             disabled={saving || !form.title}
             className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
-            {saving ? 'Salvataggio…' : 'Salva'}
+            {saving ? 'Salvataggioâ€¦' : 'Salva'}
           </Button>
         </DialogActions>
       </Dialog>

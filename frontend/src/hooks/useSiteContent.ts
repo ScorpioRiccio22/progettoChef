@@ -1,6 +1,6 @@
 // Espone i contenuti caricati dal backend (store.siteContent) con una shape
 // equivalente alle vecchie costanti statiche di lib/content.ts (BRAND,
-// CONTACT, SOCIAL_LINKS, ecc.), così i componenti che le usavano richiedono
+// CONTACT, SOCIAL_LINKS, ecc.), cosÃ¬ i componenti che le usavano richiedono
 // modifiche minime: sostituiscono l'import statico con questo hook.
 
 import { useMemo } from 'react'

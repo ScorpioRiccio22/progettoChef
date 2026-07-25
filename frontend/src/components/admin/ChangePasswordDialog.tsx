@@ -98,7 +98,7 @@ export default function ChangePasswordDialog({ open, onClose }: ChangePasswordDi
           disabled={saving || !currentPassword || newPassword.length < 8}
           className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
         >
-          {saving ? 'Salvataggio…' : 'Aggiorna password'}
+          {saving ? 'Salvataggioâ€¦' : 'Aggiorna password'}
         </Button>
       </DialogActions>
     </Dialog>

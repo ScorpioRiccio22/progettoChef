@@ -54,7 +54,7 @@ export default function ContactPage() {
                   {t('contact.whatsappCard.title', 'WhatsApp aziendale')}
                 </p>
                 <p className="mb-6 text-[0.95rem] text-ivory/75">
-                  {t('contact.whatsappCard.description', 'Il modo più veloce per ricevere disponibilità e prima proposta di menu.')}
+                  {t('contact.whatsappCard.description', 'Il modo piÃ¹ veloce per ricevere disponibilitÃ  e prima proposta di menu.')}
                 </p>
                 <Button
                   href={contact.whatsappLink}
@@ -73,7 +73,7 @@ export default function ContactPage() {
                 <EmailIcon className="mb-3 text-3xl text-gold-600" />
                 <p className="mb-2 font-display text-[1.3rem] font-semibold">{t('contact.emailCard.title', 'Email')}</p>
                 <p className="mb-6 text-[0.95rem] text-ink-soft">
-                  {t('contact.emailCard.description', 'Per richieste più strutturate o preventivi per eventi importanti.')}
+                  {t('contact.emailCard.description', 'Per richieste piÃ¹ strutturate o preventivi per eventi importanti.')}
                 </p>
                 <Button
                   href={`mailto:${contact.email}`}
@@ -120,7 +120,7 @@ export default function ContactPage() {
 
               {status === 'success' ? (
                 <Alert severity="success" className="rounded-xl">
-                  {t('contact.form.successMessage', 'Messaggio inviato! Ti risponderò il prima possibile.')}
+                  {t('contact.form.successMessage', 'Messaggio inviato! Ti risponderÃ² il prima possibile.')}
                 </Alert>
               ) : (
                 <form onSubmit={handleSubmit}>

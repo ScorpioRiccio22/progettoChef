@@ -20,7 +20,7 @@ server {
         proxy_ssl_server_name on;
 
         # Necessario per l'upload dei video mp4 dall'area admin (fino a 200MB,
-        # vedi FileStorageService nel backend); il default di nginx è 1MB.
+        # vedi FileStorageService nel backend); il default di nginx Ã¨ 1MB.
         client_max_body_size 210M;
         proxy_request_buffering off;
     }
@@ -39,7 +39,7 @@ server {
         proxy_buffering off;
     }
 
-    # SPA fallback — sempre restituisce index.html
+    # SPA fallback â€” sempre restituisce index.html
     location / {
         try_files $uri $uri/ /index.html;
     }

@@ -22,7 +22,7 @@ export default function GoogleReviewsSection() {
   const hasGoogleReviews = googleData?.configured && googleData.reviews.length > 0
   const hasFallback = testimonials.length > 0
 
-  // Finché non sappiamo se Google è configurato, evitiamo un flash del
+  // FinchÃ© non sappiamo se Google Ã¨ configurato, evitiamo un flash del
   // fallback statico: se ci sono comunque testimonianze manuali le mostriamo
   // subito, altrimenti aspettiamo la risposta prima di decidere se non
   // renderizzare nulla.

@@ -1,14 +1,14 @@
 # Ambiente di STAGING (da mostrare al cliente), pensato per girare su un
-# singolo VPS (es. Aruba Cloud VPS O2A4, Hetzner, DigitalOcean — pochi euro
+# singolo VPS (es. Aruba Cloud VPS O2A4, Hetzner, DigitalOcean â€” pochi euro
 # al mese bastano).
 #
 # Differenze rispetto a docker-compose.yml (sviluppo locale):
 # - il frontend usa la build di produzione (Dockerfile.prod, nginx statico)
 #   invece di Vite in hot-reload;
-# - c'è un servizio "caddy" davanti a tutto, che espone le porte 80/443 e
+# - c'Ã¨ un servizio "caddy" davanti a tutto, che espone le porte 80/443 e
 #   genera automaticamente un certificato HTTPS (Let's Encrypt) per il
 #   dominio di staging;
-# - nessuna porta del DB o del backend è esposta sull'host: solo Caddy è
+# - nessuna porta del DB o del backend Ã¨ esposta sull'host: solo Caddy Ã¨
 #   raggiungibile da internet.
 #
 # Uso (sul server di staging):
@@ -24,7 +24,7 @@ services:
     environment:
       POSTGRES_DB: ${DB_NAME:-andreamoiochef}
       POSTGRES_USER: ${DB_USERNAME:-andreamoiochef}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:?la password del DB è obbligatoria in staging}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?la password del DB Ã¨ obbligatoria in staging}
     volumes:
       - andreamoiochef-pgdata-staging:/var/lib/postgresql/data
     healthcheck:
@@ -47,8 +47,8 @@ services:
       DB_PORT: 5432
       DB_NAME: ${DB_NAME:-andreamoiochef}
       DB_USERNAME: ${DB_USERNAME:-andreamoiochef}
-      DB_PASSWORD: ${DB_PASSWORD:?la password del DB è obbligatoria in staging}
-      JWT_SECRET: ${JWT_SECRET:?un JWT secret lungo e casuale è obbligatorio in staging}
+      DB_PASSWORD: ${DB_PASSWORD:?la password del DB Ã¨ obbligatoria in staging}
+      JWT_SECRET: ${JWT_SECRET:?un JWT secret lungo e casuale Ã¨ obbligatorio in staging}
       JWT_EXPIRATION_MINUTES: ${JWT_EXPIRATION_MINUTES:-480}
       CORS_ALLOWED_ORIGINS: https://${STAGING_DOMAIN:?impostare STAGING_DOMAIN, es. staging.andreamoiochef.it}
       ADMIN_SEED_ENABLED: ${ADMIN_SEED_ENABLED:-true}
@@ -62,11 +62,11 @@ services:
       GOOGLE_PLACES_PLACE_ID: ${GOOGLE_PLACES_PLACE_ID:-}
       GOOGLE_PLACES_CACHE_MINUTES: ${GOOGLE_PLACES_CACHE_MINUTES:-180}
       GOOGLE_PLACES_MAX_REVIEWS: ${GOOGLE_PLACES_MAX_REVIEWS:-6}
-      # Diritto all'oblio newsletter (HMAC + OTP) — obbligatorio, nessun default.
-      NEWSLETTER_HMAC_SEED: "${NEWSLETTER_HMAC_SEED:?un seed HMAC lungo e casuale è obbligatorio (genera con openssl rand -base64 48)}"
+      # Diritto all'oblio newsletter (HMAC + OTP) â€” obbligatorio, nessun default.
+      NEWSLETTER_HMAC_SEED: "${NEWSLETTER_HMAC_SEED:?un seed HMAC lungo e casuale Ã¨ obbligatorio (genera con openssl rand -base64 48)}"
       NEWSLETTER_ERASURE_OTP_EXPIRATION_MINUTES: ${NEWSLETTER_ERASURE_OTP_EXPIRATION_MINUTES:-15}
-      # Email (SMTP, es. Brevo) — opzionali: se lasciate vuote, l'invio email
-      # è disabilitato (log di avviso invece di errore).
+      # Email (SMTP, es. Brevo) â€” opzionali: se lasciate vuote, l'invio email
+      # Ã¨ disabilitato (log di avviso invece di errore).
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USERNAME: ${SMTP_USERNAME:-}
@@ -93,7 +93,7 @@ services:
     depends_on:
       - backend
     environment:
-      # Su un singolo VPS con docker-compose, "backend" è raggiungibile per
+      # Su un singolo VPS con docker-compose, "backend" Ã¨ raggiungibile per
       # nome di servizio sulla rete Docker interna. Su piattaforme senza rete
       # privata condivisa tra servizi (es. Render), impostare qui l'URL
       # pubblico del backend, es. https://andreamoiochef-backend.onrender.com

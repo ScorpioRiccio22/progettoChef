@@ -27,7 +27,7 @@ export default function ServicesPage() {
         title={t('services.page.title', 'Tre modi per portare la mia cucina da te')}
         description={t(
           'services.page.description',
-          "Dalla cena tra amici al lancio della tua attività: ogni servizio è pensato su misura, partendo da quello che ti serve davvero.",
+          "Dalla cena tra amici al lancio della tua attivitÃ : ogni servizio Ã¨ pensato su misura, partendo da quello che ti serve davvero.",
         )}
       />
 
@@ -53,7 +53,7 @@ export default function ServicesPage() {
                   <p className="mb-3 text-[0.88rem] font-semibold text-gold-600">{service.tagline}</p>
                   <p className="leading-relaxed text-ink-soft">{service.description}</p>
                   <div className="mt-4 flex items-center gap-1.5 text-[0.88rem] font-semibold text-gold-600">
-                    <span>{t('common.discoverMore', 'Scopri di più')}</span>
+                    <span>{t('common.discoverMore', 'Scopri di piÃ¹')}</span>
                     <ArrowForwardIcon className="text-base" />
                   </div>
                 </RouterLink>
@@ -71,7 +71,7 @@ export default function ServicesPage() {
           <p className="mb-6 text-ink-soft">
             {t(
               'services.cta.description',
-              'Scrivimi su WhatsApp raccontandomi cosa hai in mente: ti aiuto a capire la formula più adatta.',
+              'Scrivimi su WhatsApp raccontandomi cosa hai in mente: ti aiuto a capire la formula piÃ¹ adatta.',
             )}
           </p>
           <Button

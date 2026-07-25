@@ -1,10 +1,10 @@
 {
-	email {$STAGING_DOMAIN_EMAIL:admin@{$STAGING_DOMAIN}}
+	email admin@{$STAGING_DOMAIN}
 }
 
 {$STAGING_DOMAIN} {
 	# Caddy ottiene e rinnova da solo il certificato HTTPS (Let's Encrypt)
-	# per questo dominio, a patto che il DNS punti già all'IP del server.
+	# per questo dominio, a patto che il DNS punti giÃ  all'IP del server.
 	reverse_proxy frontend:80
 
 	encode gzip
