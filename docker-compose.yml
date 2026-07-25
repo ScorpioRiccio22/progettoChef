@@ -61,6 +61,19 @@ services:
       GOOGLE_PLACES_PLACE_ID: ${GOOGLE_PLACES_PLACE_ID:-}
       GOOGLE_PLACES_CACHE_MINUTES: ${GOOGLE_PLACES_CACHE_MINUTES:-180}
       GOOGLE_PLACES_MAX_REVIEWS: ${GOOGLE_PLACES_MAX_REVIEWS:-6}
+      # Diritto all'oblio newsletter (HMAC + OTP) — obbligatorio, nessun default:
+      # l'app non parte se manca (vedi config.py).
+      NEWSLETTER_HMAC_SEED: "${NEWSLETTER_HMAC_SEED:?un seed HMAC lungo e casuale è obbligatorio (genera con openssl rand -base64 48)}"
+      NEWSLETTER_ERASURE_OTP_EXPIRATION_MINUTES: ${NEWSLETTER_ERASURE_OTP_EXPIRATION_MINUTES:-15}
+      # Email (SMTP, es. Brevo) — opzionali: se lasciate vuote, l'invio email
+      # è disabilitato (log di avviso invece di errore).
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_SENDER_EMAIL: ${SMTP_SENDER_EMAIL:-noreply@andreamoiochef.it}
+      SMTP_SENDER_NAME: ${SMTP_SENDER_NAME:-Andrea Moio Chef}
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-http://localhost:5173}
     ports:
       - '8180:8180'
     volumes:
