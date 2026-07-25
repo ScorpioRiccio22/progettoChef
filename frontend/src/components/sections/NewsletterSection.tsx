@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Alert, Button, Checkbox, CircularProgress, Container, FormControlLabel, TextField } from '@mui/material'
+import { Alert, Button, CircularProgress, Container, TextField, FormControlLabel, Checkbox } from '@mui/material'
 import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import { Link as RouterLink } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
@@ -10,30 +10,28 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function NewsletterSection() {
   const [email, setEmail] = useState('')
-  const [emailTouched, setEmailTouched] = useState(false)
-  const [privacyAccepted, setPrivacyAccepted] = useState(false)
-  const [privacyTouched, setPrivacyTouched] = useState(false)
-
+    const [emailTouched, setEmailTouched] = useState(false)
   const dispatch = useAppDispatch()
   const { status, error } = useAppSelector((state) => state.newsletter)
   const { t } = useSiteContent()
-
-  const isEmailValid = EMAIL_REGEX.test(email)
-  const showEmailError = emailTouched && !isEmailValid
-  const showPrivacyError = privacyTouched && !privacyAccepted
+    const [privacyAccepted, setPrivacyAccepted] = useState(false)
+  const [privacyTouched, setPrivacyTouched] = useState(false)
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
-    setEmailTouched(true)
+        setEmailTouched(true)
     setPrivacyTouched(true)
 
     if (!isEmailValid || !privacyAccepted) return
-
     dispatch(resetNewsletterStatus())
     dispatch(subscribeToNewsletter(email))
   }
 
-  return (
+    const isEmailValid = EMAIL_REGEX.test(email)
+  const showEmailError = emailTouched && !isEmailValid
+  const showPrivacyError = privacyTouched && !privacyAccepted
+
+ return (
     <div id="newsletter" className="relative overflow-hidden bg-ink py-[72px] md:py-[88px]">
       <Container maxWidth="sm" className="relative text-center">
 <div className="mb-4 text-gold-300">

@@ -15,10 +15,13 @@ import RecipesPage from '@/pages/RecipesPage'
 import EventsPage from '@/pages/EventsPage'
 import EventDetailPage from '@/pages/EventDetailPage'
 import ContactPage from '@/pages/ContactPage'
+import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage'
 import ServicesPage from '@/pages/ServicesPage'
 import ServiceDetailPage from '@/pages/ServiceDetailPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import AdminLoginPage from '@/pages/admin/AdminLoginPage'
+import AdminForgotPasswordPage from '@/pages/admin/AdminForgotPasswordPage'
+import AdminResetPasswordPage from '@/pages/admin/AdminResetPasswordPage'
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
 import AdminLayout from '@/components/admin/AdminLayout'
 import ProtectedRoute from '@/components/admin/ProtectedRoute'
@@ -63,11 +66,14 @@ export default function App() {
               <Route path="/servizi" element={<ServicesPage />} />
               <Route path="/servizi/:slug" element={<ServiceDetailPage />} />
               <Route path="/contatti" element={<ContactPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
 
             {/* Area admin: login pubblico + sezione protetta da JWT */}
             <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route path="/admin/forgot-password" element={<AdminForgotPasswordPage />} />
+            <Route path="/admin/reset-password" element={<AdminResetPasswordPage />} />
             <Route
               path="/admin"
               element={

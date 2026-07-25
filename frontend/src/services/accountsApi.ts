@@ -24,6 +24,13 @@ export const adminResetAccountPassword = (id: number, newPassword: string) =>
 
 export const adminDeleteAccount = (id: number) => api.delete(`/admin/accounts/${id}`)
 
+// --- Password dimenticata (pubblico) ---------------------------------------
+
+export const forgotPassword = (email: string) => api.post<void>('/auth/forgot-password', { email })
+
+export const resetPassword = (token: string, newPassword: string) =>
+  api.post<void>('/auth/reset-password', { token, newPassword })
+
 // --- Cambio password personale (qualsiasi ruolo autenticato) -------------
 
 export const changeOwnPassword = (payload: ChangeOwnPasswordPayload) =>

@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { Alert, Button, CircularProgress, IconButton, InputAdornment, TextField } from '@mui/material'
+import { Navigate, Link as RouterLink, useLocation, useNavigate } from 'react-router-dom'
+import { Alert, Button, CircularProgress, IconButton, InputAdornment, Link as MuiLink, TextField } from '@mui/material'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
@@ -93,6 +93,14 @@ export default function AdminLoginPage() {
                 ),
               }}
             />
+            <MuiLink
+              component={RouterLink}
+              to="/admin/forgot-password"
+              underline="none"
+              className="-mt-2 self-end text-[0.85rem] text-ink-soft hover:text-gold-600"
+            >
+              Password dimenticata?
+            </MuiLink>
             <Button
               type="submit"
               variant="contained"
