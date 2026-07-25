@@ -25,6 +25,7 @@ export default defineConfig({
     },
   },
   server: {
+    allowedHosts: ['andreamoiochef.it', 'www.andreamoiochef.it'],
     port: 5173,
     host: true,
     proxy: {
