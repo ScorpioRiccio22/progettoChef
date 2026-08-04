@@ -12,10 +12,10 @@ interface ProtectedRouteProps {
 }
 
 /**
- * Protegge le route sotto /admin: se non c'Ã¨ un utente in stato Redux ma Ã¨
+ * Protegge le route sotto /admin: se non c'è un utente in stato Redux ma è
  * presente un token salvato (refresh pagina), prova prima a recuperare
  * l'utente corrente con /auth/me; solo se questo fallisce reindirizza al login.
- * Se `roles` Ã¨ specificato, un utente autenticato ma privo del ruolo richiesto
+ * Se `roles` è specificato, un utente autenticato ma privo del ruolo richiesto
  * viene reindirizzato alla dashboard invece che poter vedere la pagina.
  */
 export default function ProtectedRoute({ children, roles }: ProtectedRouteProps) {

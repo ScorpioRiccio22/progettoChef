@@ -144,7 +144,7 @@ export default function AdminTestimonialsPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <p className="font-semibold">{item.author}</p>
-                    <p className="text-[0.8rem] text-clay">Â· {item.role}</p>
+                    <p className="text-[0.8rem] text-clay">· {item.role}</p>
                     {!item.published && <Chip label="Non pubblicato" size="small" color="default" />}
                   </div>
                   <p className="text-[0.88rem] text-clay">{item.quote}</p>
@@ -214,7 +214,7 @@ export default function AdminTestimonialsPage() {
             disabled={saving || !form.author || !form.quote}
             className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
-            {saving ? 'Salvataggioâ€¦' : 'Salva'}
+            {saving ? 'Salvataggio…' : 'Salva'}
           </Button>
         </DialogActions>
       </Dialog>

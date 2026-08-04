@@ -179,7 +179,7 @@ export default function AdminServicesPage() {
                     )}
                   </div>
                   <p className="truncate text-[0.85rem] text-clay">
-                    /servizi/{item.slug} Â· {item.tagline}
+                    /servizi/{item.slug} · {item.tagline}
                   </p>
                 </div>
                 <AdminRowActions
@@ -289,7 +289,7 @@ export default function AdminServicesPage() {
             disabled={saving || !form.title}
             className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
-            {saving ? 'Salvataggioâ€¦' : 'Salva'}
+            {saving ? 'Salvataggio…' : 'Salva'}
           </Button>
         </DialogActions>
       </Dialog>

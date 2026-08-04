@@ -19,7 +19,7 @@ export default function RecipesPreviewSection() {
           title={t('home.recipes.title', 'Un assaggio di quello che cucino')}
           description={t(
             'home.recipes.description',
-            'Ricette di famiglia e qualche idea piÃ¹ creativa: ogni menu nasce da "A MoDo mio", adattato ai tuoi gusti e all\'occasione.',
+            'Ricette di famiglia e qualche idea più creativa: ogni menu nasce da "A MoDo mio", adattato ai tuoi gusti e all\'occasione.',
           )}
         />
         <div className="mb-10 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">

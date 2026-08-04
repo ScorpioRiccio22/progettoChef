@@ -14,7 +14,7 @@ export default function ConfirmDeleteDialog({ open, itemLabel, onConfirm, onCanc
       <DialogTitle>Confermi l'eliminazione?</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Stai per eliminare <strong>{itemLabel}</strong>. L'operazione non puÃ² essere annullata.
+          Stai per eliminare <strong>{itemLabel}</strong>. L'operazione non può essere annullata.
         </DialogContentText>
       </DialogContent>
       <DialogActions>

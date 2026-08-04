@@ -293,7 +293,7 @@ export default function AdminAboutPage() {
             disabled={saving || !milestoneForm.year || !milestoneForm.text}
             className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
-            {saving ? 'Salvataggioâ€¦' : 'Salva'}
+            {saving ? 'Salvataggio…' : 'Salva'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -331,7 +331,7 @@ export default function AdminAboutPage() {
             disabled={saving || !valueForm.title || !valueForm.text}
             className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
-            {saving ? 'Salvataggioâ€¦' : 'Salva'}
+            {saving ? 'Salvataggio…' : 'Salva'}
           </Button>
         </DialogActions>
       </Dialog>

@@ -63,7 +63,7 @@ export default function AdminDashboardPage() {
     {
       to: '/admin/a-modo-mio/menu',
       title: 'Menu del negozio',
-      description: 'Liste di piatti con prezzo; segna quale Ã¨ attivo ora nel negozio fisico.',
+      description: 'Liste di piatti con prezzo; segna quale è attivo ora nel negozio fisico.',
       icon: <StorefrontIcon fontSize="large" />,
     },
     {
@@ -75,7 +75,7 @@ export default function AdminDashboardPage() {
     {
       to: '/admin/eventi/menu',
       title: 'Menu eventi',
-      description: 'Liste di piatti con prezzo dedicate agli eventi; segna quale Ã¨ in evidenza.',
+      description: 'Liste di piatti con prezzo dedicate agli eventi; segna quale è in evidenza.',
       icon: <MenuBookIcon fontSize="large" />,
     },
     {

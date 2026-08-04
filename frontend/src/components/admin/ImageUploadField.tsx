@@ -10,7 +10,7 @@ interface ImageUploadFieldProps {
   onChange: (url: string | null) => void
   /**
    * Nasconde il pulsante "Rimuovi immagine" interno: usato quando questo
-   * campo vive dentro un contenitore (es. GalleryMediaEditor) che offre giÃ 
+   * campo vive dentro un contenitore (es. GalleryMediaEditor) che offre già
    * un proprio pulsante per rimuovere l'intero slot, per evitare due
    * pulsanti di eliminazione affiancati con lo stesso significato.
    */
@@ -64,7 +64,7 @@ export default function ImageUploadField({ label, value, onChange, hideRemove = 
             startIcon={uploading ? <CircularProgress size={16} /> : <UploadIcon />}
             className="border-gold-500 text-ink normal-case"
           >
-            {uploading ? 'Caricamentoâ€¦' : value ? 'Cambia immagine' : 'Carica immagine'}
+            {uploading ? 'Caricamento…' : value ? 'Cambia immagine' : 'Carica immagine'}
             <input
               ref={inputRef}
               type="file"

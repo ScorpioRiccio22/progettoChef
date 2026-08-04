@@ -27,7 +27,7 @@ export const sendContactMessage = createAsyncThunk(
       await publicSendContactMessage(values)
       return values
     } catch (error) {
-      return rejectWithValue(extractErrorMessage(error, 'Si Ã¨ verificato un errore. Riprova piÃ¹ tardi.'))
+      return rejectWithValue(extractErrorMessage(error, 'Si è verificato un errore. Riprova più tardi.'))
     }
   },
 )
@@ -52,7 +52,7 @@ const contactSlice = createSlice({
       })
       .addCase(sendContactMessage.rejected, (state, action) => {
         state.status = 'error'
-        state.error = (action.payload as string) ?? 'Si Ã¨ verificato un errore.'
+        state.error = (action.payload as string) ?? 'Si è verificato un errore.'
       })
   },
 })

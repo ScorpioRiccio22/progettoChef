@@ -1,7 +1,7 @@
 // Centralizza tutte le chiamate REST verso le risorse di contenuto del
 // backend (package it.andreamoiochef.backend.content). Le funzioni "public*"
 // leggono solo i contenuti pubblicati (usate dal sito pubblico); le funzioni
-// "admin*" richiedono il token JWT (giÃ  allegato automaticamente da
+// "admin*" richiedono il token JWT (già allegato automaticamente da
 // services/api.ts) e permettono il CRUD completo dall'area admin.
 
 import api from '@/services/api'

@@ -1,6 +1,6 @@
 // Recensioni Google del locale, lette dal backend (package
-// it.andreamoiochef.backend.reviews). L'endpoint Ã¨ pubblico e non richiede
-// nÃ© restituisce mai alcuna chiave API: quella resta configurata solo lato
+// it.andreamoiochef.backend.reviews). L'endpoint è pubblico e non richiede
+// né restituisce mai alcuna chiave API: quella resta configurata solo lato
 // server come variabile d'ambiente (vedi backend/README.md).
 
 import api from '@/services/api'

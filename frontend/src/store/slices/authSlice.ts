@@ -10,7 +10,7 @@ interface AuthState {
   token: string | null
   status: AuthStatus
   error: string | null
-  // true mentre verifichiamo un token giÃ  salvato (refresh pagina) prima di
+  // true mentre verifichiamo un token già salvato (refresh pagina) prima di
   // decidere se mostrare l'area admin o il login.
   isBootstrapping: boolean
 }
@@ -43,8 +43,8 @@ export const login = createAsyncThunk(
   },
 )
 
-// Richiamato all'avvio dell'app se in localStorage c'Ã¨ giÃ  un token, per
-// verificarne la validitÃ  e recuperare i dati dell'admin senza richiedere
+// Richiamato all'avvio dell'app se in localStorage c'è già un token, per
+// verificarne la validità e recuperare i dati dell'admin senza richiedere
 // di nuovo le credenziali a ogni refresh della pagina.
 export const fetchCurrentUser = createAsyncThunk(
   'auth/fetchCurrentUser',

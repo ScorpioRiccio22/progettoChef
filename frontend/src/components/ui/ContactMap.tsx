@@ -64,7 +64,7 @@ interface ContactMapProps {
 /**
  * Mini mappa della pagina Contatti: geocodifica l'indirizzo configurato in
  * admin tramite Nominatim e mostra un marker su una mappa Leaflet (tile
- * OpenStreetMap). Se l'indirizzo non Ã¨ configurato o non viene trovato, il
+ * OpenStreetMap). Se l'indirizzo non è configurato o non viene trovato, il
  * componente non renderizza nulla (fallback silenzioso).
  */
 export default function ContactMap({ address, className = '' }: ContactMapProps) {
@@ -95,7 +95,7 @@ export default function ContactMap({ address, className = '' }: ContactMapProps)
   if (state === 'loading') {
     return (
       <div className={`flex h-56 items-center justify-center rounded-2xl bg-ivory-deep text-sm text-clay ${className}`}>
-        Carico la mappaâ€¦
+        Carico la mappa…
       </div>
     )
   }

@@ -8,10 +8,10 @@ export default function AboutPage() {
 
   const paragraph1 =
     settings?.aboutParagraph1 ||
-    "Sono Andrea, e cucino da quando ero un bambino seduto al bancone di cucina di mia nonna, a guardare come si prepara una vera genovese. Quella tavola Ã¨ il punto da cui parte ancora oggi ogni mio menu: ingredienti semplici, tempi lunghi e rispetto per la materia prima."
+    "Sono Andrea, e cucino da quando ero un bambino seduto al bancone di cucina di mia nonna, a guardare come si prepara una vera genovese. Quella tavola è il punto da cui parte ancora oggi ogni mio menu: ingredienti semplici, tempi lunghi e rispetto per la materia prima."
   const paragraph2 =
     settings?.aboutParagraph2 ||
-    "Dopo anni nelle cucine di alcuni ristoranti storici di Napoli, ho deciso di portare quella stessa cura fuori dalle quattro mura di un locale: a casa tua, nel tuo ufficio, nella location del tuo evento. Oggi affianco famiglie per cene speciali, aziende per i loro eventi e nuove attivitÃ  che vogliono partire con un'identitÃ  di cucina chiara."
+    "Dopo anni nelle cucine di alcuni ristoranti storici di Napoli, ho deciso di portare quella stessa cura fuori dalle quattro mura di un locale: a casa tua, nel tuo ufficio, nella location del tuo evento. Oggi affianco famiglie per cene speciali, aziende per i loro eventi e nuove attività che vogliono partire con un'identità di cucina chiara."
 
   const milestones = about?.milestones ?? []
   const values = about?.values ?? []

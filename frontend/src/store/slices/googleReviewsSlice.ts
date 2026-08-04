@@ -13,8 +13,8 @@ const initialState: GoogleReviewsState = {
 }
 
 /**
- * Caricamento separato da loadSiteContent: la chiamata a Google puÃ² essere
- * piÃ¹ lenta o momentaneamente non disponibile, e non deve bloccare il resto
+ * Caricamento separato da loadSiteContent: la chiamata a Google può essere
+ * più lenta o momentaneamente non disponibile, e non deve bloccare il resto
  * del sito. In caso di errore la sezione recensioni mostra semplicemente le
  * testimonianze manuali come fallback (vedi GoogleReviewsSection).
  */

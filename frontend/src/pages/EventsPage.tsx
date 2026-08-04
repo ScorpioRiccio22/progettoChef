@@ -127,7 +127,7 @@ export default function EventsPage() {
                     to={`/eventi/${event.slug}`}
                     className="inline-flex items-center gap-1.5 text-[0.88rem] font-semibold text-gold-600 no-underline"
                   >
-                    <span>{t('common.discoverMore', 'Scopri di piÃ¹')}</span>
+                    <span>{t('common.discoverMore', 'Scopri di più')}</span>
                     <ArrowForwardIcon className="text-base" />
                   </RouterLink>
                 </div>
@@ -158,11 +158,11 @@ export default function EventsPage() {
 
       <div className="bg-ivory-deep py-16 md:py-20">
         <Container maxWidth="sm" className="text-center">
-          <h2 className="mb-3 font-display text-2xl font-semibold md:text-3xl">{t('events.cta.title', 'Hai giÃ  una data in mente?')}</h2>
+          <h2 className="mb-3 font-display text-2xl font-semibold md:text-3xl">{t('events.cta.title', 'Hai già una data in mente?')}</h2>
           <p className="mb-6 text-ink-soft">
             {t(
               'events.cta.description',
-              'Scrivimi su WhatsApp con i dettagli del tuo evento: ti rispondo con disponibilitÃ  e prima proposta di menu.',
+              'Scrivimi su WhatsApp con i dettagli del tuo evento: ti rispondo con disponibilità e prima proposta di menu.',
             )}
           </p>
           <Button

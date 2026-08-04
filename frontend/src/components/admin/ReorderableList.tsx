@@ -10,7 +10,7 @@ interface ReorderableListProps<T extends { id: number }> {
 }
 
 /**
- * Mostra una lista con freccette su/giÃ¹ per riordinare gli elementi e
+ * Mostra una lista con freccette su/giù per riordinare gli elementi e
  * invoca onReorder con la lista completa di id nel nuovo ordine, pronta da
  * passare alle funzioni adminReorder* del client API.
  */
@@ -40,7 +40,7 @@ export default function ReorderableList<T extends { id: number }>({
               size="small"
               disabled={index === items.length - 1}
               onClick={() => move(index, 1)}
-              aria-label="Sposta giÃ¹"
+              aria-label="Sposta giù"
             >
               <ArrowDownwardIcon fontSize="small" />
             </IconButton>

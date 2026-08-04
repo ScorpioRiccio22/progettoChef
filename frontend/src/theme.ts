@@ -58,7 +58,7 @@ export const muiTheme = createTheme({
     // Modali dell'area admin: prima erano poco spaziati e con poco respiro
     // interno. Questi override valgono per tutti i Dialog dell'app (schede
     // "Nuovo/Modifica ..." di ogni sezione admin + i dialog di conferma),
-    // cosÃ¬ restano coerenti senza dover intervenire pagina per pagina.
+    // così restano coerenti senza dover intervenire pagina per pagina.
     MuiDialog: {
       styleOverrides: {
         paper: {

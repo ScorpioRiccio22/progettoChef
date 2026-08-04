@@ -88,7 +88,7 @@ export default function EventDetailPage() {
           </Button>
 
           {isPrivate ? (
-            // Landing minimale: solo la descrizione breve (giÃ  nell'hero) e le foto.
+            // Landing minimale: solo la descrizione breve (già nell'hero) e le foto.
             <p className={`leading-loose text-ink-soft ${event.galleryImageUrls.length ? 'mb-10' : ''}`}>
               {event.description}
             </p>
@@ -126,12 +126,12 @@ export default function EventDetailPage() {
       <div className="bg-ivory-deep py-16 md:py-20">
         <Container maxWidth="sm" className="text-center">
           <h2 className="mb-3 font-display text-2xl font-semibold md:text-3xl">
-            {t('events.detail.cta.title', 'Hai giÃ  una data in mente?')}
+            {t('events.detail.cta.title', 'Hai già una data in mente?')}
           </h2>
           <p className="mb-6 text-ink-soft">
             {t(
               'events.detail.cta.description',
-              'Scrivimi su WhatsApp con i dettagli del tuo evento: ti rispondo con disponibilitÃ  e prima proposta.',
+              'Scrivimi su WhatsApp con i dettagli del tuo evento: ti rispondo con disponibilità e prima proposta.',
             )}
           </p>
           <Button

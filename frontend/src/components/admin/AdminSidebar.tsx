@@ -20,7 +20,7 @@ interface NavLinkItem {
   to: string
   label: string
   icon: JSX.Element
-  /** Se omesso, la voce Ã¨ visibile a tutti i ruoli admin. */
+  /** Se omesso, la voce è visibile a tutti i ruoli admin. */
   roles?: AdminRole[]
 }
 

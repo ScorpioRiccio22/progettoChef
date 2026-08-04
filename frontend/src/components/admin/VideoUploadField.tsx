@@ -10,7 +10,7 @@ interface VideoUploadFieldProps {
   onChange: (url: string | null) => void
   /**
    * Nasconde il pulsante "Rimuovi video" interno: usato quando questo campo
-   * vive dentro un contenitore (es. GalleryMediaEditor) che offre giÃ  un
+   * vive dentro un contenitore (es. GalleryMediaEditor) che offre già un
    * proprio pulsante per rimuovere l'intero slot, per evitare due pulsanti
    * di eliminazione affiancati con lo stesso significato.
    */
@@ -82,7 +82,7 @@ export default function VideoUploadField({ label, value, onChange, hideRemove = 
             startIcon={uploading ? <CircularProgress size={16} /> : <UploadIcon />}
             className="border-gold-500 text-ink normal-case"
           >
-            {uploading ? `Caricamentoâ€¦ ${progress}%` : value ? 'Cambia video' : 'Carica video (mp4)'}
+            {uploading ? `Caricamento… ${progress}%` : value ? 'Cambia video' : 'Carica video (mp4)'}
             <input ref={inputRef} type="file" hidden accept="video/mp4" onChange={handleFileSelected} />
           </Button>
           {uploading && <LinearProgress variant="determinate" value={progress} className="w-full rounded" />}
@@ -94,7 +94,7 @@ export default function VideoUploadField({ label, value, onChange, hideRemove = 
         </div>
       </div>
       <p className="mt-1 text-[0.72rem] text-black/45">
-        Formato MP4, max 200MB. Consigliato: video orizzontale, breve (10â€“60 secondi).
+        Formato MP4, max 200MB. Consigliato: video orizzontale, breve (10–60 secondi).
       </p>
       {error && <p className="mt-1 text-xs text-danger">{error}</p>}
     </div>

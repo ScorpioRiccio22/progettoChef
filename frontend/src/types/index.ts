@@ -8,7 +8,7 @@ export interface ServiceOffering {
   slug: string
   tagline: string
   description: string
-  /** Testo piÃ¹ esteso mostrato nella pagina di dettaglio (paragrafi separati da riga vuota). */
+  /** Testo più esteso mostrato nella pagina di dettaglio (paragrafi separati da riga vuota). */
   bodyContent: string
   icon: 'home' | 'event' | 'business' | string
   imageUrl: string | null
@@ -45,7 +45,7 @@ export interface Menu {
   /** 'SHOP' = negozio fisico, 'EVENTS' = eventi. */
   type: 'SHOP' | 'EVENTS' | string
   description: string
-  /** Se true, Ã¨ il menu mostrato in vetrina (per il negozio o per gli eventi) in questo momento. */
+  /** Se true, è il menu mostrato in vetrina (per il negozio o per gli eventi) in questo momento. */
   active: boolean
   sortOrder: number
   items: MenuItem[]
@@ -57,7 +57,7 @@ export interface EventType {
   /** Usato per l'URL della landing page pubblica: /eventi/{slug} */
   slug: string
   description: string
-  /** Testo piÃ¹ esteso per la landing page (per gli eventi "privati" consigliato breve). */
+  /** Testo più esteso per la landing page (per gli eventi "privati" consigliato breve). */
   bodyContent: string
   icon: 'private' | 'corporate' | 'catering' | 'cooking-class' | string
   imageUrl: string | null

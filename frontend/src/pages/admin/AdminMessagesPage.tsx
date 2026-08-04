@@ -83,7 +83,7 @@ export default function AdminMessagesPage() {
           disabled={exporting || items.length === 0}
           className="whitespace-nowrap border-gold-500 text-ink normal-case"
         >
-          {exporting ? 'Esportazioneâ€¦' : 'Esporta CSV'}
+          {exporting ? 'Esportazione…' : 'Esporta CSV'}
         </Button>
       </div>
 
@@ -111,7 +111,7 @@ export default function AdminMessagesPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <p className={m.read ? 'font-medium' : 'font-bold'}>{m.name}</p>
-                    <p className="text-[0.8rem] text-clay">Â· {m.email}</p>
+                    <p className="text-[0.8rem] text-clay">· {m.email}</p>
                     {!m.read && <Chip label="Nuovo" size="small" color="warning" />}
                   </div>
                   <p className="truncate text-[0.88rem] text-clay">{m.subject}</p>
@@ -146,7 +146,7 @@ export default function AdminMessagesPage() {
                <Stack spacing={2.5} className="mt-2">
                 <p className="text-[0.85rem] text-clay">
                   Da <strong>{selected.name}</strong> ({selected.email})
-                  {selected.phone ? ` Â· ${selected.phone}` : ''} â€” {formatDate(selected.createdAt)}
+                  {selected.phone ? ` · ${selected.phone}` : ''} — {formatDate(selected.createdAt)}
                 </p>
                 <p className="whitespace-pre-wrap text-ink-soft">{selected.message}</p>
               </Stack>

@@ -100,7 +100,7 @@ export default function ServiceDetailPage() {
           <p className="mb-6 text-ink-soft">
             {t(
               'services.detail.cta.description',
-              'Scrivimi su WhatsApp raccontandomi cosa hai in mente: ti rispondo con disponibilitÃ  e prima proposta.',
+              'Scrivimi su WhatsApp raccontandomi cosa hai in mente: ti rispondo con disponibilità e prima proposta.',
             )}
           </p>
           <Button

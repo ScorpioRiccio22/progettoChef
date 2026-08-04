@@ -176,7 +176,7 @@ export default function AdminDishesPage() {
                     <Chip label={CATEGORIES.find((c) => c.value === item.category)?.label ?? item.category} size="small" />
                     {!item.published && <Chip label="Non pubblicato" size="small" color="default" />}
                   </div>
-                  <p className="truncate text-[0.85rem] text-clay">{item.tags.join(' Â· ')}</p>
+                  <p className="truncate text-[0.85rem] text-clay">{item.tags.join(' · ')}</p>
                 </div>
                 <AdminRowActions
                   actions={[
@@ -261,7 +261,7 @@ export default function AdminDishesPage() {
             disabled={saving || !form.name}
             className="bg-gold-500 text-ink normal-case hover:bg-gold-300"
           >
-            {saving ? 'Salvataggioâ€¦' : 'Salva'}
+            {saving ? 'Salvataggio…' : 'Salva'}
           </Button>
         </DialogActions>
       </Dialog>

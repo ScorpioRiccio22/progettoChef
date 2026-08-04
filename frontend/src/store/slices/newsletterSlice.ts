@@ -27,7 +27,7 @@ export const subscribeToNewsletter = createAsyncThunk(
       await publicSubscribeNewsletter(payload)
       return { email: payload.email }
     } catch (error) {
-      return rejectWithValue(extractErrorMessage(error, 'Si Ã¨ verificato un errore. Riprova piÃ¹ tardi.'))
+      return rejectWithValue(extractErrorMessage(error, 'Si è verificato un errore. Riprova più tardi.'))
     }
   },
 )
@@ -52,7 +52,7 @@ const newsletterSlice = createSlice({
       })
       .addCase(subscribeToNewsletter.rejected, (state, action) => {
         state.status = 'error'
-        state.error = (action.payload as string) ?? 'Si Ã¨ verificato un errore.'
+        state.error = (action.payload as string) ?? 'Si è verificato un errore.'
       })
   },
 })
