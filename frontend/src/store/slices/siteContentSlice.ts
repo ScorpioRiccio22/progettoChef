@@ -6,6 +6,7 @@ import {
   publicGetSiteTexts,
   publicListDishes,
   publicListEventTypes,
+  publicListMenus,
   publicListServices,
   publicListTestimonials,
 } from '@/services/contentApi'
@@ -25,6 +26,8 @@ interface SiteContentState {
   dishes: Dish[]
   /** Il menu "A Modo Mio" attivo in questo momento per il negozio fisico (null se nessuno). */
   activeMenu: Menu | null
+  /** Tutti i menu "A Modo Mio" (SHOP), attivo compreso, per la tab "Menù" della pagina pubblica. */
+  menus: Menu[]
   /** Il menu attivo in questo momento per gli eventi (null se nessuno). */
   activeEventsMenu: Menu | null
   eventTypes: EventType[]
@@ -41,6 +44,7 @@ const initialState: SiteContentState = {
   services: [],
   dishes: [],
   activeMenu: null,
+  menus: [],
   activeEventsMenu: null,
   eventTypes: [],
   testimonials: [],
@@ -57,19 +61,20 @@ const initialState: SiteContentState = {
  * vecchie costanti statiche in lib/content.ts.
  */
 export const loadSiteContent = createAsyncThunk('siteContent/load', async () => {
-  const [settings, services, dishes, activeMenu, activeEventsMenu, eventTypes, testimonials, about, texts] =
+  const [settings, services, dishes, activeMenu, menus, activeEventsMenu, eventTypes, testimonials, about, texts] =
     await Promise.all([
       publicGetSiteSettings(),
       publicListServices(),
       publicListDishes(),
       publicGetActiveMenu('SHOP'),
+      publicListMenus('SHOP'),
       publicGetActiveMenu('EVENTS'),
       publicListEventTypes(),
       publicListTestimonials(),
       publicGetAboutPage(),
       publicGetSiteTexts(),
     ])
-  return { settings, services, dishes, activeMenu, activeEventsMenu, eventTypes, testimonials, about, texts }
+  return { settings, services, dishes, activeMenu, menus, activeEventsMenu, eventTypes, testimonials, about, texts }
 })
 
 const siteContentSlice = createSlice({
@@ -88,6 +93,7 @@ const siteContentSlice = createSlice({
         state.services = action.payload.services
         state.dishes = action.payload.dishes
         state.activeMenu = action.payload.activeMenu
+        state.menus = action.payload.menus
         state.activeEventsMenu = action.payload.activeEventsMenu
         state.eventTypes = action.payload.eventTypes
         state.testimonials = action.payload.testimonials

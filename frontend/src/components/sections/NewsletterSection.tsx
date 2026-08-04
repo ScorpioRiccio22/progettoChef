@@ -138,7 +138,7 @@ export default function NewsletterSection() {
               label={
                 <span className="text-[0.8rem] leading-snug text-ivory/70">
                   Accettando acconsenti al trattamento dei tuoi dati secondo le regole della{' '}
-                  <IubendaPrivacyLink linkClassName="text-gold-300 underline hover:text-gold-500" />.
+                  <IubendaPrivacyLink linkClassName="text-gold-300 underline hover:text-gold-500" />
                 </span>
               }
             />

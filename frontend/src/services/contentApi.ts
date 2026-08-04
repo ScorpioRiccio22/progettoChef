@@ -109,6 +109,14 @@ export interface MenuItemRequest {
 export const publicGetActiveMenu = (type: 'SHOP' | 'EVENTS' = 'SHOP') =>
   api.get<Menu>('/public/menus/active', { params: { type } }).then((r) => (r.status === 204 ? null : r.data))
 
+/**
+ * Tutti i menu (attivo + passati) per il tipo indicato, per la tab "Menù" della
+ * pagina pubblica "A Modo Mio". Richiede l'endpoint pubblico GET /public/menus
+ * lato backend (equivalente a /admin/menus ma senza autenticazione).
+ */
+export const publicListMenus = (type: 'SHOP' | 'EVENTS' = 'SHOP') =>
+  api.get<Menu[]>('/public/menus', { params: { type } }).then((r) => r.data)
+
 export const adminListMenus = (type: 'SHOP' | 'EVENTS' = 'SHOP') =>
   api.get<Menu[]>('/admin/menus', { params: { type } }).then((r) => r.data)
 

@@ -1053,6 +1053,15 @@ def reorder_items(menu_id: int, request: ReorderRequest, db: Session = Depends(g
 
 # --- Endpoint pubblico ------------------------------------------------------
 
+@menus_public_router.get("", response_model=list[MenuDto])
+def list_all_public(type: str = Query(default="SHOP"), db: Session = Depends(get_db)) -> list[MenuDto]:
+    """Tutti i menu (attivo compreso) per il tipo indicato, per la tab "Menù"
+    della pagina pubblica "A Modo Mio" (storico dei menu passati)."""
+    menu_type = _menu_normalize_type(type)
+    rows = db.query(Menu).filter(Menu.type == menu_type).order_by(Menu.sort_order.asc()).all()
+    return [_menu_to_dto(db, m) for m in rows]
+
+
 @menus_public_router.get("/active", response_model=MenuDto | None)
 def active(type: str = Query(default="SHOP"), db: Session = Depends(get_db)):
     """Il menu attualmente "in vetrina" per il tipo indicato (SHOP o EVENTS).
